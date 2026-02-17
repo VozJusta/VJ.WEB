@@ -31,7 +31,7 @@ const Button = forwardRef<HTMLButtonElement | HTMLAnchorElement, ButtonProps>(
         <a
           ref={ref as React.Ref<HTMLAnchorElement>}
           href={href}
-          className={classes}
+          className={classes + ' cursor-pointer'}
           aria-disabled={isDisabled}
           {...(isDisabled ? { tabIndex: -1, role: 'button' } : {})}
           {...anchorProps}
@@ -70,7 +70,7 @@ const Button = forwardRef<HTMLButtonElement | HTMLAnchorElement, ButtonProps>(
     return (
       <button
         ref={ref as React.Ref<HTMLButtonElement>}
-        className={classes}
+        className={classes + ' cursor-pointer'}
         disabled={isDisabled}
         aria-busy={loading}
         type={(props as React.ButtonHTMLAttributes<HTMLButtonElement>).type || 'button'}
