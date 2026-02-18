@@ -29,7 +29,7 @@ export function PlanCard({
         ${planCardBaseStyles}
         ${styles.container}
         ${className}
-        h-[430px]
+        min-h-107.5
       `}
       role="article"
       aria-label={`Plano ${name}`}

@@ -58,6 +58,7 @@ export function PricingSection({
                 tracking-wide
                 transition-all
                 duration-300
+                cursor-pointer
                 ${
                   activeAudience === "citizen"
                     ? "bg-blue-600 text-white shadow-lg shadow-blue-500/30 scale-105"
@@ -82,6 +83,7 @@ export function PricingSection({
                 tracking-wide
                 transition-all
                 duration-300
+                cursor-pointer
                 ${
                   activeAudience === "lawyer"
                     ? "bg-blue-600 text-white shadow-lg shadow-blue-500/30 scale-105"
