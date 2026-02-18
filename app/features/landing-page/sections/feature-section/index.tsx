@@ -1,11 +1,11 @@
 import { FeatureCard } from "@/components/ui/feature-card";
 import { GradientDivider } from "@/components/ui/gradient-divider";
-import { MessageSquare } from "lucide-react";
+import { featureCardsData } from "./feature-section.cards";
 
 export function FeaturesSection() {
   return (
     <section
-      className="relative w-full overflow-hidden bg-background py-16 sm:py-20 lg:py-24 items-center flex flex-col gap-12"
+      className="relative w-full overflow-hidden bg-background items-center flex flex-col gap-12"
       aria-labelledby="features-section-heading"
     >
       <h2
@@ -19,34 +19,12 @@ export function FeaturesSection() {
         <GradientDivider height="h-1" />
       </div>
 
-      <div className="flex w-full justify-between gap-24">
-        <FeatureCard
-          icon={<MessageSquare color="#1978E5" />}
-          title="Acesso à Justiça"
-          description=""
-          variant="elevated"
-          animated 
-        />
-        <FeatureCard
-          icon={<MessageSquare color="#1978E5" />}
-          title="Digital First"
-          description="Desabafe em linguagem natural. Nossa IA
-                      traduz sua história para termos jurídicos
-                      precisos, sem que você precise saber
-                      uma única lei."
-          variant="elevated"
-          animated 
-        />
-        <FeatureCard
-          icon={<MessageSquare color="#1978E5" />}
-          title="Acesso à Justiça"
-          description="Desabafe em linguagem natural. Nossa IA
-                      traduz sua história para termos jurídicos
-                      precisos, sem que você precise saber
-                      uma única lei."
-          variant="elevated"
-          animated 
-        />
+      <div className="flex flex-col md:flex-row md:justify-between gap-12 md:gap-8 lg:gap-12 w-full max-w-7xl px-4 items-center">
+        {
+          featureCardsData.map((card, index) => (
+            <FeatureCard key={index} {...card} animated/>
+          ))
+        }
       </div>
     </section>
   );

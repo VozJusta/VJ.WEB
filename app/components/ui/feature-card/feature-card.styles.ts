@@ -9,10 +9,10 @@ export const baseCardClasses =
 
 export const cardVariants: Record<FeatureCardVariant, string> = {
   default:
-    "border border-foreground/10 bg-background hover:border-foreground/20",
+    "border border-foreground/10 bg-[#0F1319] hover:border-foreground/20",
 
   elevated:
-    "bg-background shadow-sm hover:shadow-md border border-foreground/5",
+    "bg-[#0F1319] shadow-sm hover:shadow-md border border-foreground/5",
 
   flat: "bg-foreground/5 hover:bg-foreground/10",
 
@@ -30,9 +30,9 @@ export const alignmentClasses: Record<FeatureCardAlignment, string> = {
 };
 
 export const sizeClasses: Record<FeatureCardSize, string> = {
-  sm: "p-4 gap-3",
-  md: "p-6 gap-4",
-  lg: "p-8 gap-6",
+  sm: "p-4 gap-3 max-w-sm",
+  md: "p-6 gap-4 max-w-md",
+  lg: "p-8 gap-6 max-w-lg",
 };
 
 export const animationClasses =
