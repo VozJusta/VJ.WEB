@@ -6,11 +6,11 @@ import { CTASection } from "./sections/cta-section";
 
 export default function LandingPage() {
   return (
-    <main className="flex flex-col py-8 px-8 gap-20">
+    <main className="flex flex-col gap-20 px-8 max-w-[1280px]">
       <HeroSection />
       <FeaturesSection />
       <SimulatorSection />
-      <CTASection/>
+      <CTASection />
     </main>
   );
 }

@@ -14,6 +14,10 @@ export function CTASection({
     <section
       className={`
         relative
+        w-full
+        items-center
+        justify-center
+        flex
       `}
       aria-labelledby="cta-section-title"
     >
@@ -25,6 +29,12 @@ export function CTASection({
           w-full
           border border-blue-500/20
           backdrop-blur-sm
+          flex flex-col lg:flex-row
+          gap-12 lg:gap-20
+          justify-center
+          items-center
+          text-center lg:text-left
+          max-w-480
         "
       >
 
