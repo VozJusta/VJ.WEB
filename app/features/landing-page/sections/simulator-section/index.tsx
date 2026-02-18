@@ -68,7 +68,7 @@ export function SimulatorSection({
         quality={100}
       />
 
-      <div className="order-1 lg:order-2 space-y-8">
+      <div className="order-1 lg:order-2 space-y-6">
         <Badge text={tag} variant="blue" className="inline-flex" />
 
         <h2 className="text-white text-4xl lg:text-5xl xl:text-6xl font-bold leading-tight">
