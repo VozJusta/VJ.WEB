@@ -4,7 +4,7 @@ import heroImage from "@/../public/illustrations/hero-section-chat.png";
 
 export function HeroSection() {
   return (
-    <section className="relative overflow-hidden bg-background pt-32 pb-16 md:pt-48 md:pb-32 flex flex-col items-center text-center">
+    <section className="relative overflow-hidden bg-background pt-32 pb-16 md:pt-48 md:pb-32 flex flex-col items-center text-center w-full">
       <h1 className="text-5xl font-bold tracking-tight sm:text-6xl md:text-7xl hover:text-white text-gray-500 transition-colors duration-300 ease-in-out">
         Justiça não precisa ser difícil.
       </h1>
@@ -40,10 +40,8 @@ export function HeroSection() {
         height={1080}
         quality={100}
         priority
-        className="w-full h-auto mt-12 hover:rotate-6 hover:scale-105 transition-all duration-300"
+        className="w-fit h-fit mt-12 hover:scale-110 hover:border-2 transition-all duration-300"
       />
-
-      <div className="absolute -inset-0.5 -z-10 bg-linear-to-br from-primary/30 to-purple-600/30 opacity-40 blur-3xl rounded-3xl" />
     </section>
   );
 }
