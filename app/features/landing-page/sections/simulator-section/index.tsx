@@ -49,10 +49,9 @@ export function SimulatorSection({
       className={`
         flex 
         flex-col lg:flex-row
+        justify-center
         items-center
         gap-12 lg:gap-20
-        py-20 lg:py-32
-        px-6 lg:px-8
         bg-gradient-to-bottom from-slate-950 via-slate-900 to-slate-950
         overflow-hidden
         ${className}
