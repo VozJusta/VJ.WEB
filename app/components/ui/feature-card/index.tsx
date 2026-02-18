@@ -104,7 +104,7 @@ export function FeatureCard({
       ariaLabel={ariaLabel || `${title}: ${description}`}
     >
       {icon && (
-        <div className={`${iconContainerClasses} ${iconClassName || ""} w-14 h-14 flex items-center justify-center rounded-2xl border-1 border-foreground/10 bg-foreground/5`}>
+        <div className={`${iconContainerClasses} ${iconClassName || ""} w-14 h-14 flex items-center justify-center rounded-2xl border border-foreground/10 bg-foreground/5`}>
           {icon}
         </div>
       )}
