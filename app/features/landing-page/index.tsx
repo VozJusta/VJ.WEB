@@ -3,14 +3,16 @@ import { FeaturesSection } from "@/features/landing-page/sections/feature-sectio
 import { HeroSection } from "@/features/landing-page/sections/hero-section";
 import { SimulatorSection } from "./sections/simulator-section";
 import { CTASection } from "./sections/cta-section";
+import { PricingSection } from "./sections/pricing-section";
 
 export default function LandingPage() {
   return (
-    <main className="flex flex-col gap-20 px-8 max-w-[1280px]">
+    <main className="flex flex-col gap-20 px-8 max-w-7xl">
       <HeroSection />
       <FeaturesSection />
       <SimulatorSection />
       <CTASection />
+      <PricingSection />
     </main>
   );
 }
