@@ -5,7 +5,7 @@ import {
 } from "./feature-card.types";
 
 export const baseCardClasses =
-  "group relative overflow-hidden rounded-[var(--radius-default)] transition-all duration-300";
+  "group relative overflow-hidden rounded-[var(--radius-default)] transition-all duration-300 min-h-[310px] flex flex-col justify-center text-[16px]";
 
 export const cardVariants: Record<FeatureCardVariant, string> = {
   default:
@@ -30,9 +30,9 @@ export const alignmentClasses: Record<FeatureCardAlignment, string> = {
 };
 
 export const sizeClasses: Record<FeatureCardSize, string> = {
-  sm: "p-4 gap-3 max-w-sm",
-  md: "p-6 gap-4 max-w-md",
-  lg: "p-8 gap-6 max-w-lg",
+  sm: "p-4 gap-3 w-full",
+  md: "p-6 gap-4 w-full",
+  lg: "p-8 gap-6 w-full",
 };
 
 export const animationClasses =
