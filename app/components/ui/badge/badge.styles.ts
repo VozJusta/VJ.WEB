@@ -16,7 +16,7 @@ export const badgeVariants: Record<BadgeVariant, VariantStyles> = {
   },
 
   green: {
-    bg: "bg-green-50/80",
+    bg: "bg-[#11282B]",
     text: "text-green-600",
     rounded: "rounded-full",
     icon: "text-green-500",

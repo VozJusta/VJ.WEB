@@ -20,7 +20,10 @@ export function PrivacySection({
         relative
         py-20 lg:py-32
         px-6 lg:px-8
-        bg-gradient-to-b from-slate-900 via-slate-950 to-slate-900
+        w-full
+        items-start
+        justify-start
+        flex
         ${className}
       `}
       aria-labelledby="privacy-section-title"
