@@ -40,11 +40,11 @@ export function HeroSection() {
           <Image
             src={heroImage}
             alt="Interface da VozJusta demonstrando uma conversa simplificada com a assistente jurídica IA"
-            width={1200}
-            height={600}
+            width={1920}
+            height={1080}
             quality={100}
             priority
-            className="w-full max-w-5xl h-auto mt-12 hover:rotate-6 hover:scale-105 transition-all duration-300"
+            className="w-full h-auto mt-12 hover:rotate-6 hover:scale-105 transition-all duration-300"
           />
 
           <div className="absolute -inset-0.5 -z-10 bg-linear-to-br from-primary/30 to-purple-600/30 opacity-40 blur-3xl rounded-3xl" />
