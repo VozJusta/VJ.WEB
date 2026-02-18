@@ -3,7 +3,7 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
-  --primary: #2585F4;
+  --primary: #2585f4;
   --primary-foreground: #ffffff;
   --radius-pill: 9999px;
 }
@@ -19,9 +19,9 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0B1523;
+    --background: #0b1523;
     --foreground: #ededed;
-    --primary: #2585F4;
+    --primary: #2585f4;
     --primary-foreground: #ffffff;
   }
 }

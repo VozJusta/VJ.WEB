@@ -1,9 +1,9 @@
-import { Button } from "./components/ui/button";
+import { HeroSection } from "./features/sections/HeroSection";
 
 export default function Home() {
   return (
-    <main>  
-      <h1 className="font-bold text-2xl">Home</h1>
+    <main className="flex min-h-screen flex-col items-center justify-between">
+      <HeroSection />
     </main>
   );
 }

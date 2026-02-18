@@ -8,7 +8,6 @@ const inter = Inter({
   subsets: ["latin"],
 });
 
-
 export const metadata: Metadata = {
   title: "VozJusta",
   description: "Plataforma de gestão de processos judiciais",
@@ -21,13 +20,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body
-        className={`${inter.variable} ${inter.className} antialiased`}
-      >
+      <body className={`${inter.variable} ${inter.className} antialiased`}>
         <Header />
         {children}
       </body>
     </html>
   );
 }
-
