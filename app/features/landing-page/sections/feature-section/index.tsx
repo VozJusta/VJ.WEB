@@ -19,7 +19,7 @@ export function FeaturesSection() {
         <GradientDivider height="h-1" />
       </div>
 
-      <div className="flex flex-col md:flex-row md:justify-between gap-12 md:gap-8 lg:gap-12 w-full max-w-7xl px-4 items-center">
+      <div className="flex flex-col md:flex-row md:justify-between gap-12 md:gap-8 lg:gap-12 w-full max-w-7xl items-center">
         {
           featureCardsData.map((card, index) => (
             <FeatureCard key={index} {...card} animated/>
