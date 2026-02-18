@@ -51,7 +51,7 @@ export function PlanCard({
       <ul className="space-y-3 flex-grow" role="list">
         {features.map((feature) => (
           <li key={feature.id} className="flex items-start gap-3 group">
-            <span
+            <div
               className={`
                 flex-shrink-0
                 transition-transform
@@ -62,11 +62,11 @@ export function PlanCard({
               aria-hidden="true"
             >
               <CheckCircleOutlined sx={{ fontSize: 20 }} />
-            </span>
+            </div>
 
-            <span className={`text-sm leading-relaxed ${styles.featureText}`}>
+            <p className={`text-sm leading-relaxed ${styles.featureText}`}>
               {feature.text}
-            </span>
+            </p>
           </li>
         ))}
       </ul>

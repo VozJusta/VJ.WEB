@@ -4,6 +4,7 @@ import { HeroSection } from "@/features/landing-page/sections/hero-section";
 import { SimulatorSection } from "./sections/simulator-section";
 import { CTASection } from "./sections/cta-section";
 import { PricingSection } from "./sections/pricing-section";
+import { PrivacySection } from "./sections/privacy-section";
 
 export default function LandingPage() {
   return (
@@ -13,6 +14,7 @@ export default function LandingPage() {
       <SimulatorSection />
       <CTASection />
       <PricingSection />
+      <PrivacySection />
     </main>
   );
 }
