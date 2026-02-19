@@ -10,7 +10,7 @@ export const headerNavigation: NavItem[] = [
     href: "#plans-section",
   },
   {
-    label: "Perguntas Frequentes",
-    href: "#faq-section",
+    label: "Contato",
+    href: "/contato",
   },
 ];
