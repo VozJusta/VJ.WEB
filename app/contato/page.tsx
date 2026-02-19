@@ -1,38 +1,19 @@
 "use client";
 
 import { useState } from "react";
-import { z } from "zod";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/toast/toast-provider";
 import Header from "@/components/layout/header";
 import Footer from "@/components/layout/footer";
+import { contactSchema, type ContactFormData } from "./contact.schema";
 import {
   WhatsApp,
   EmailOutlined,
   LocationOnOutlined,
   SendOutlined,
 } from "@mui/icons-material";
-
-// Schema de validação com Zod
-const contactSchema = z.object({
-  name: z
-    .string()
-    .min(3, "Nome deve ter no mínimo 3 caracteres")
-    .max(100, "Nome deve ter no máximo 100 caracteres"),
-  email: z.string().email("E-mail inválido").min(1, "E-mail é obrigatório"),
-  subject: z
-    .string()
-    .min(5, "Assunto deve ter no mínimo 5 caracteres")
-    .max(200, "Assunto deve ter no máximo 200 caracteres"),
-  message: z
-    .string()
-    .min(20, "Mensagem deve ter no mínimo 20 caracteres")
-    .max(1000, "Mensagem deve ter no máximo 1000 caracteres"),
-});
-
-type ContactFormData = z.infer<typeof contactSchema>;
 
 export default function ContatoPage() {
   const { toast } = useToast();
@@ -55,7 +36,6 @@ export default function ContatoPage() {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
 
-    // Limpa erro do campo ao digitar
     if (errors[name as keyof ContactFormData]) {
       setErrors((prev) => ({ ...prev, [name]: undefined }));
     }
@@ -65,7 +45,6 @@ export default function ContatoPage() {
     e.preventDefault();
     setErrors({});
 
-    // Validação com Zod
     const result = contactSchema.safeParse(formData);
 
     if (!result.success) {
@@ -88,7 +67,6 @@ export default function ContatoPage() {
     setIsSubmitting(true);
 
     try {
-      // TODO: Implementar envio real do formulário
       await new Promise((resolve) => setTimeout(resolve, 2000));
 
       console.log("Form data:", result.data);
