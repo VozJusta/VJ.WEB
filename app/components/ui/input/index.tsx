@@ -3,22 +3,6 @@ import { cn } from "@/lib/utils";
 import { inputStyles } from "./input.styles";
 import type { InputProps } from "./input.types";
 
-/**
- * Input Component
- *
- * Componente de input reutilizável com suporte a labels, erros, ícones e estados
- *
- * @component
- * @example
- * ```tsx
- * <Input
- *   label="E-mail"
- *   type="email"
- *   placeholder="seu@email.com"
- *   error="E-mail inválido"
- * />
- * ```
- */
 export const Input = forwardRef<HTMLInputElement, InputProps>(
   (
     {
