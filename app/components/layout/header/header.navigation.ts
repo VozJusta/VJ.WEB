@@ -6,11 +6,11 @@ export const headerNavigation: NavItem[] = [
     href: "#features-section",
   },
   {
-    label: "Como Funciona",
-    href: "#how-it-works-section",
-  },
-  {
     label: "Planos",
     href: "#plans-section",
+  },
+  {
+    label: "Perguntas Frequentes",
+    href: "#faq-section",
   },
 ];

@@ -2,23 +2,11 @@ import { FaqItem } from "@/components/ui/faq-item";
 import type { FaqSectionProps } from "./faq-section.types";
 import { faqData } from "./faq-section.data";
 
-/**
- * Seção de FAQ (Perguntas Frequentes)
- *
- * Server Component que renderiza uma lista de perguntas e respostas
- * com animação de acordeão para melhor UX
- *
- * @component
- * @example
- * ```tsx
- * <FaqSection />
- * ```
- */
 export function FaqSection({ className = "" }: FaqSectionProps) {
   return (
     <section
       id="faq-section"
-      className={`flex flex-col gap-12 ${className}`}
+      className={`flex flex-col gap-12 ${className} pb-12`}
       aria-labelledby="faq-heading"
     >
       <div className="flex flex-col items-center gap-4">

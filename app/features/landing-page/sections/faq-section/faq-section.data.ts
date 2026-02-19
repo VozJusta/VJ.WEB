@@ -11,7 +11,7 @@ export const faqData: Faq[] = [
     id: "faq-2",
     question: "Quanto custa o diagnóstico?",
     answer:
-      "O diagnóstico inicial é completamente gratuito. Você compartilha seu caso, nossa IA analisa e entrega um relatório detalhado sem nenhum custo. Caso deseje contratar um advogado para prosseguir com a ação, os honorários serão apresentados de forma transparente.",
+      "O diagnóstico inicial é completamente gratuito. Você compartilha seu caso, nossa IA analisa e entrega um relatório detalhado sem nenhum custo. Caso deseje contratar um advogado para prosseguir com a ação, o valor é combinado diretamente com o profissional, sem intermediários ou taxas adicionais da nossa plataforma.",
   },
   {
     id: "faq-3",

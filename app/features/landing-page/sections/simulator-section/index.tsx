@@ -46,7 +46,7 @@ export function SimulatorSection({
 
   return (
     <section
-      id="how-it-works-section"
+      id="simulator-section"
       className={`
         flex 
         flex-col lg:flex-row
@@ -62,13 +62,14 @@ export function SimulatorSection({
       <Image
         src={illustrationPath}
         alt={simulatorContent.illustrationAlt}
-        width={570}
-        height={570}
+        className="w-full h-full hover:rotate-2 transition-transform duration-300 rounded-lg"
+        width={600}
+        height={600}
         priority
         quality={100}
       />
 
-      <div className="order-1 lg:order-2 space-y-6">
+      <div className="order-1 lg:order-2 space-y-6 w-full">
         <Badge text={tag} variant="blue" className="inline-flex" />
 
         <h2 className="text-white text-4xl lg:text-5xl xl:text-6xl font-bold leading-tight">
@@ -83,7 +84,7 @@ export function SimulatorSection({
 
         <ul className="space-y-4" role="list">
           {featuresWithIcons.map((feature) => (
-            <li key={feature.id} className="flex items-center jus gap-3 group">
+            <li key={feature.id} className="flex items-center justify-start gap-3 group">
               <div
                 className={`
                       w-10 h-10
