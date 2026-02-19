@@ -21,13 +21,6 @@ const toastIcons = {
   info: InfoOutlined,
 };
 
-/**
- * Toast Component
- *
- * Componente individual de notificação toast
- *
- * @component
- */
 export function Toast({
   id,
   title,

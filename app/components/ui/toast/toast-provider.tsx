@@ -6,20 +6,6 @@ import type { Toast as ToastType, ToastContextValue } from "./toast.types";
 
 const ToastContext = createContext<ToastContextValue | undefined>(undefined);
 
-/**
- * Hook para usar o sistema de toast
- *
- * @example
- * ```tsx
- * const { toast } = useToast();
- *
- * toast({
- *   title: "Sucesso!",
- *   description: "Operação realizada",
- *   variant: "success"
- * });
- * ```
- */
 export function useToast() {
   const context = useContext(ToastContext);
   if (!context) {

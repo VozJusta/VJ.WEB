@@ -3,23 +3,6 @@ import { cn } from "@/lib/utils";
 import { textareaStyles } from "./textarea.styles";
 import type { TextareaProps } from "./textarea.types";
 
-/**
- * Textarea Component
- *
- * Componente de textarea reutilizável com suporte a labels, erros e contador de caracteres
- *
- * @component
- * @example
- * ```tsx
- * <Textarea
- *   label="Mensagem"
- *   placeholder="Descreva sua solicitação..."
- *   rows={5}
- *   maxLength={500}
- *   showCharCount
- * />
- * ```
- */
 export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
   (
     {
