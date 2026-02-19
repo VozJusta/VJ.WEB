@@ -16,7 +16,6 @@ export default function Header() {
     e: React.MouseEvent<HTMLAnchorElement>,
     href: string,
   ) => {
-    // Se é um anchor link (começa com #), faz scroll suave
     if (href.startsWith("#")) {
       e.preventDefault();
       const element = document.querySelector(href);
@@ -60,7 +59,6 @@ export default function Header() {
             Começar Agora
           </Button>
 
-          {/* Hamburger Button - Mobile Only */}
           <button
             onClick={() => setIsMobileMenuOpen(true)}
             className="
@@ -83,7 +81,7 @@ export default function Header() {
         </div>
       </header>
 
-      {/* Mobile Menu */}
+      {/* Mobile Mnu */}
       <MobileMenu
         isOpen={isMobileMenuOpen}
         onClose={() => setIsMobileMenuOpen(false)}

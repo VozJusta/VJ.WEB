@@ -11,7 +11,6 @@ interface MobileMenuProps {
 }
 
 export function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
-  // Previne scroll quando menu está aberto
   useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = "hidden";
@@ -43,7 +42,6 @@ export function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
 
   return (
     <>
-      {/* Overlay */}
       <div
         className={`
           fixed inset-0 bg-black/60 backdrop-blur-sm z-40
@@ -53,7 +51,6 @@ export function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
         onClick={onClose}
       />
 
-      {/* Menu */}
       <div
         className={`
           fixed top-0 right-0 h-full w-70 bg-[#0A0E14] z-50
@@ -64,7 +61,6 @@ export function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
         `}
       >
         <div className="flex flex-col h-full">
-          {/* Header */}
           <div className="flex items-center justify-between p-6 border-b border-zinc-800/50">
             <h2 className="text-lg font-bold text-white">Menu</h2>
             <button
@@ -87,7 +83,6 @@ export function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
             </button>
           </div>
 
-          {/* Navigation */}
           <nav className="flex-1 p-6">
             <ul className="space-y-2">
               {headerNavigation.map((item) => (
@@ -112,7 +107,6 @@ export function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
             </ul>
           </nav>
 
-          {/* Footer CTA */}
           <div className="p-6 border-t border-zinc-800/50">
             <Button size="md" className="w-full" onClick={onClose}>
               Começar Agora
