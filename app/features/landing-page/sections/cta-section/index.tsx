@@ -12,6 +12,7 @@ export function CTASection({
 }: CTASectionProps = {}) {
   return (
     <section
+      id="cta-section"
       className={`
         relative
         w-full
@@ -37,7 +38,6 @@ export function CTASection({
           max-w-480
         "
       >
-
         <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
           <div className="space-y-8">
             <h2
@@ -51,15 +51,15 @@ export function CTASection({
               {description}
             </p>
 
-              <Button
-                href={ctaHref}
-                variant="primary"
-                size="lg"
-                className="w-full sm:w-auto text-center mt-2"
-                aria-label={ctaText}
-              >
-                {ctaText}
-              </Button>
+            <Button
+              href={ctaHref}
+              variant="primary"
+              size="lg"
+              className="w-full sm:w-auto text-center mt-2"
+              aria-label={ctaText}
+            >
+              {ctaText}
+            </Button>
           </div>
 
           <div className="flex flex-col sm:grid sm:grid-cols-2 gap-4 lg:gap-6">

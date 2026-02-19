@@ -3,14 +3,14 @@ import { NavItem } from "./header.types";
 export const headerNavigation: NavItem[] = [
   {
     label: "Funcionalidades",
-    href: "/",
+    href: "#features-section",
   },
   {
     label: "Como Funciona",
-    href: "/como-funciona",
+    href: "#how-it-works-section",
   },
   {
     label: "Planos",
-    href: "/planos",
+    href: "#plans-section",
   },
 ];

@@ -23,6 +23,7 @@ export function PricingSection({
         px-6 lg:px-8
         ${className}
       `}
+      id="plans-section"
       aria-labelledby="pricing-section-title"
     >
       <div className="relative max-w-7xl mx-auto">

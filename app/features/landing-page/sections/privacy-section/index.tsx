@@ -16,6 +16,7 @@ export function PrivacySection({
 }: PrivacySectionProps = {}) {
   return (
     <section
+      id="privacy-section"
       className={`
         relative
         py-20 lg:py-32

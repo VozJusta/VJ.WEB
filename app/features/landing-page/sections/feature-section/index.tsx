@@ -7,6 +7,7 @@ export function FeaturesSection() {
     <section
       className="relative w-full overflow-hidden bg-background items-center flex flex-col gap-12"
       aria-labelledby="features-section-heading"
+      id="features-section"
     >
       <h2
         id="features-section-heading"

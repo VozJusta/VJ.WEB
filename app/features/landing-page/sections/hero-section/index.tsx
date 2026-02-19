@@ -4,7 +4,10 @@ import heroImage from "@/../public/illustrations/hero-section-chat.png";
 
 export function HeroSection() {
   return (
-    <section className="overflow-hidden bg-background pt-32 md:pt-48  flex flex-col items-center text-center w-full">
+    <section
+      id="hero-section"
+      className="overflow-hidden bg-background pt-32 md:pt-48  flex flex-col items-center text-center w-full"
+    >
       <h1 className="text-5xl font-bold tracking-tight sm:text-6xl md:text-7xl hover:text-white text-gray-500 transition-colors duration-300 ease-in-out">
         Justiça não precisa ser difícil.
       </h1>

@@ -46,6 +46,7 @@ export function SimulatorSection({
 
   return (
     <section
+      id="how-it-works-section"
       className={`
         flex 
         flex-col lg:flex-row

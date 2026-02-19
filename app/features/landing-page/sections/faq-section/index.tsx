@@ -17,6 +17,7 @@ import { faqData } from "./faq-section.data";
 export function FaqSection({ className = "" }: FaqSectionProps) {
   return (
     <section
+      id="faq-section"
       className={`flex flex-col gap-12 ${className}`}
       aria-labelledby="faq-heading"
     >
