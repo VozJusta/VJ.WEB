@@ -4,6 +4,7 @@ import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { useToast } from "@/components/ui/toast/toast-provider";
 import { footerNavigation } from "./footer.navigation";
 import type { FooterProps } from "./footer.types";
 import logo from "@/../public/logo/logo+name.svg";
@@ -17,6 +18,7 @@ import {
 export default function Footer({ className = "" }: FooterProps) {
   const [email, setEmail] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const { toast } = useToast();
 
   const handleNewsletterSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -34,6 +36,16 @@ export default function Footer({ className = "" }: FooterProps) {
       top: 0,
       behavior: "smooth",
     });
+  };
+
+  const handleShareClick = async () => {
+    try {
+      const url = window.location.href;
+      await navigator.clipboard.writeText(url);
+      toast({ title: "Link da página copiado", variant: "success" });
+    } catch (error) {
+      toast({ title: "Erro ao copiar link", variant: "error" });
+    }
   };
 
   const handleAnchorClick = (
@@ -79,6 +91,7 @@ export default function Footer({ className = "" }: FooterProps) {
 
             <div className="flex items-center gap-4">
               <button
+                onClick={handleShareClick}
                 className="
                   w-10 h-10
                   rounded-full

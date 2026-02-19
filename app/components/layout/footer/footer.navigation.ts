@@ -14,7 +14,7 @@ export const footerNavigation: FooterColumn[] = [
     title: "SUPORTE",
     items: [
       { label: "Ajuda", href: "#help" },
-      { label: "Contato", href: "#contact" },
+      { label: "Contato", href: "/contato" },
       { label: "Status", href: "#status" },
       { label: "FAQ", href: "#faq-section" },
     ],

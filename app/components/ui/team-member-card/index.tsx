@@ -3,22 +3,6 @@ import { cn } from "@/lib/utils";
 import { teamMemberCardStyles } from "./team-member-card.styles";
 import type { TeamMemberProps } from "./team-member-card.types";
 
-/**
- * Team Member Card Component
- *
- * Card para exibir informações de um membro da equipe
- *
- * @component
- * @example
- * ```tsx
- * <TeamMemberCard
- *   name="Pedro Sales"
- *   role="AI Lead Engineer"
- *   description="Especialista em IA..."
- *   image="/team/pedro.jpg"
- * />
- * ```
- */
 export function TeamMemberCard({
   name,
   role,
