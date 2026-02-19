@@ -3,24 +3,80 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
+  --foreground-muted: #6b7280;
+  --primary: #2585f4;
+  --primary-foreground: #ffffff;
+  --brand-blue: #1978e5;
+  --radius-pill: 9999px;
+  --radius-default: 0.75rem;
+  --spacing-section: 6rem;
+  --spacing-section-sm: 4rem;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-foreground-muted: var(--foreground-muted);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-brand-blue: var(--brand-blue);
+  --radius-pill: var(--radius-pill);
+  --radius-default: var(--radius-default);
+  --font-sans: var(--font-inter);
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
+    --background: #0a0e14;
     --foreground: #ededed;
+    --foreground-muted: #9ca3af;
+    --primary: #2585f4;
+    --primary-foreground: #ffffff;
   }
+}
+
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 120px; /* Offset for fixed header */
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-inter), sans-serif;
+}
+
+/* ============================================
+   Animações
+   ============================================ */
+
+@keyframes fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in-up {
+  animation: fade-in-up 0.6s ease-out forwards;
+  opacity: 0;
+}
+
+@keyframes slide-in-right {
+  from {
+    opacity: 0;
+    transform: translateX(100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.animate-slide-in-right {
+  animation: slide-in-right 0.3s ease-out forwards;
 }
