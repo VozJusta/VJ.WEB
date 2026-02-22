@@ -5,7 +5,7 @@ import { featureCardsData } from "./feature-section.cards";
 export function FeaturesSection() {
   return (
     <section
-      className="relative w-full overflow-hidden bg-background items-center flex flex-col gap-12"
+      className="relative w-full overflow-visible bg-background items-center flex flex-col gap-12"
       aria-labelledby="features-section-heading"
       id="features-section"
     >

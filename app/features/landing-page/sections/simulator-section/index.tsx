@@ -54,7 +54,8 @@ export function SimulatorSection({
         items-center
         gap-12 lg:gap-20
         bg-gradient-to-bottom from-slate-950 via-slate-900 to-slate-950
-        overflow-hidden
+        overflow-visible
+        py-12 lg:py-16
         ${className}
       `}
       aria-labelledby="simulator-section-title"
