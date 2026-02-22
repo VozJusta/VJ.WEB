@@ -1,17 +1,25 @@
-import type { Meta, StoryObj } from '@storybook/nextjs';
-import Footer from './index';
+import type { Meta, StoryObj } from "@storybook/nextjs";
+import Footer from "./index";
+import { ToastProvider } from "@/components/ui/toast/toast-provider";
 
 const meta = {
-  title: 'Layout/Footer',
+  title: "Layout/Footer",
   component: Footer,
   parameters: {
-    layout: 'fullscreen',
+    layout: "fullscreen",
   },
-  tags: ['autodocs'],
+  tags: ["autodocs"],
+  decorators: [
+    (Story) => (
+      <ToastProvider>
+        <Story />
+      </ToastProvider>
+    ),
+  ],
   argTypes: {
     className: {
-      control: 'text',
-      description: 'Additional CSS classes',
+      control: "text",
+      description: "Additional CSS classes",
     },
   },
 } satisfies Meta<typeof Footer>;
@@ -25,21 +33,23 @@ export const Default: Story = {
 
 export const WithScrollableContent: Story = {
   render: () => (
-    <div>
-      <div className="min-h-screen bg-slate-900 flex items-center justify-center">
-        <div className="text-white text-center">
-          <h1 className="text-4xl font-bold mb-4">Página de Exemplo</h1>
-          <p className="text-xl">Role para baixo para ver o footer</p>
+    <ToastProvider>
+      <div>
+        <div className="min-h-screen bg-slate-900 flex items-center justify-center">
+          <div className="text-white text-center">
+            <h1 className="text-4xl font-bold mb-4">Página de Exemplo</h1>
+            <p className="text-xl">Role para baixo para ver o footer</p>
+          </div>
         </div>
+        <Footer />
       </div>
-      <Footer />
-    </div>
+    </ToastProvider>
   ),
 };
 
 export const Isolated: Story = {
   args: {},
   parameters: {
-    layout: 'fullscreen',
+    layout: "fullscreen",
   },
 };

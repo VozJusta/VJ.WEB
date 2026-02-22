@@ -1,13 +1,13 @@
-import type { Meta, StoryObj } from '@storybook/nextjs';
-import Header from './index';
+import type { Meta, StoryObj } from "@storybook/nextjs";
+import Header from "./index";
 
 const meta = {
-  title: 'Layout/Header',
+  title: "Layout/Header",
   component: Header,
   parameters: {
-    layout: 'fullscreen',
+    layout: "fullscreen",
   },
-  tags: ['autodocs'],
+  tags: ["autodocs"],
 } satisfies Meta<typeof Header>;
 
 export default meta;
@@ -62,7 +62,7 @@ export const Isolated: Story = {
 export const MobileView: Story = {
   parameters: {
     viewport: {
-      defaultViewport: 'mobile1',
+      defaultViewport: "mobile1",
     },
   },
   render: () => (

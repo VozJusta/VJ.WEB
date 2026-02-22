@@ -88,7 +88,8 @@ export const LeadershipTeam: Story = {
   args: {
     name: "João Silva",
     role: "CEO & Fundador",
-    description: "Especialista em transformação digital com 15 anos de experiência.",
+    description:
+      "Especialista em transformação digital com 15 anos de experiência.",
   },
   render: () => (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-6xl">
