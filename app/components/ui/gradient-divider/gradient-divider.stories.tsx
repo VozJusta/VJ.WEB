@@ -1,31 +1,36 @@
-import type { Meta, StoryObj } from '@storybook/nextjs';
-import { GradientDivider } from './index';
-import { GradientDirection } from './gradient-divider.types';
+import type { Meta, StoryObj } from "@storybook/nextjs";
+import { GradientDivider } from "./index";
+import { GradientDirection } from "./gradient-divider.types";
 
 const meta = {
-  title: 'UI/GradientDivider',
+  title: "UI/GradientDivider",
   component: GradientDivider,
   parameters: {
-    layout: 'padded',
+    layout: "padded",
   },
-  tags: ['autodocs'],
+  tags: ["autodocs"],
   argTypes: {
     direction: {
-      control: 'select',
-      options: ['to-right', 'to-left', 'to-top', 'to-bottom'] as GradientDirection[],
-      description: 'Direction of the gradient',
+      control: "select",
+      options: [
+        "to-right",
+        "to-left",
+        "to-top",
+        "to-bottom",
+      ] as GradientDirection[],
+      description: "Direction of the gradient",
     },
     height: {
-      control: 'text',
-      description: 'Tailwind height class',
+      control: "text",
+      description: "Tailwind height class",
     },
     className: {
-      control: 'text',
-      description: 'Additional CSS classes',
+      control: "text",
+      description: "Additional CSS classes",
     },
     stops: {
-      control: 'object',
-      description: 'Array of gradient stops',
+      control: "object",
+      description: "Array of gradient stops",
     },
   },
 } satisfies Meta<typeof GradientDivider>;
@@ -35,58 +40,58 @@ type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
   args: {
-    direction: 'to-right',
+    direction: "to-right",
   },
 };
 
 export const ToLeft: Story = {
   args: {
-    direction: 'to-left',
+    direction: "to-left",
   },
 };
 
 export const ToTop: Story = {
   args: {
-    direction: 'to-top',
-    height: 'h-32',
+    direction: "to-top",
+    height: "h-32",
   },
 };
 
 export const ToBottom: Story = {
   args: {
-    direction: 'to-bottom',
-    height: 'h-32',
+    direction: "to-bottom",
+    height: "h-32",
   },
 };
 
 export const Thick: Story = {
   args: {
-    direction: 'to-right',
-    height: 'h-1',
+    direction: "to-right",
+    height: "h-1",
   },
 };
 
 export const VeryThick: Story = {
   args: {
-    direction: 'to-right',
-    height: 'h-2',
+    direction: "to-right",
+    height: "h-2",
   },
 };
 
 export const Thin: Story = {
   args: {
-    direction: 'to-right',
-    height: 'h-px',
+    direction: "to-right",
+    height: "h-px",
   },
 };
 
 export const CustomStops: Story = {
   args: {
-    direction: 'to-right',
+    direction: "to-right",
     stops: [
-      { position: 0, color: '#3b82f6', opacity: 0 },
-      { position: 50, color: '#8b5cf6', opacity: 1 },
-      { position: 100, color: '#ec4899', opacity: 0 },
+      { position: 0, color: "#3b82f6", opacity: 0 },
+      { position: 50, color: "#8b5cf6", opacity: 1 },
+      { position: 100, color: "#ec4899", opacity: 0 },
     ],
   },
 };
