@@ -11,6 +11,6 @@ export default function OnboardingLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="isolate min-h-screen w-full bg-[#0A0E14]">{children}</div>
+    <div className="isolate min-h-screen w-full">{children}</div>
   );
 }
