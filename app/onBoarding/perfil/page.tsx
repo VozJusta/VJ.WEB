@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { Person, AccountBalance, ArrowForward } from "@mui/icons-material";
 import { RoleCard } from "@/components/ui/role-card";
 import { Button } from "@/components/ui/button";
@@ -26,6 +27,21 @@ const ROLES: { id: UserRole; title: string; description: string; icon: React.Ele
 
 export default function OnboardingPerfilPage() {
   const [selectedRole, setSelectedRole] = useState<UserRole | null>(null);
+  const router = useRouter();
+
+  const handleStartClick = () => {
+    if (!selectedRole) return;
+
+    if (selectedRole === "individual") {
+      router.push("/onBoarding/cidadao");
+      return;
+    }
+
+    if (selectedRole === "lawyer") {
+      router.push("/onBoarding/advogado");
+      return;
+    }
+  };
 
   return (
     <main
@@ -34,7 +50,7 @@ export default function OnboardingPerfilPage() {
     >
       <section
         aria-labelledby="onboarding-heading"
-        className="z-10 flex w-full max-w-3xl flex-col items-center gap-8"
+        className="flex w-full max-w-3xl flex-col items-center gap-8"
       >
           <figure>
             <Image
@@ -77,6 +93,7 @@ export default function OnboardingPerfilPage() {
             disabled={!selectedRole}
             rightIcon={<ArrowForward fontSize="small" />}
             className="rounded-full"
+            onClick={handleStartClick}
           >
             Começar agora
           </Button>
