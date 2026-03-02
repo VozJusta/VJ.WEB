@@ -108,7 +108,7 @@ export function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
           </nav>
 
           <div className="p-6 border-t border-zinc-800/50">
-            <Button size="md" className="w-full" onClick={onClose}>
+            <Button size="md" href="/onBoarding" className="w-full" onClick={onClose}>
               Começar Agora
             </Button>
           </div>
