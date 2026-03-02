@@ -1,8 +1,3 @@
-/**
- * Estilos do TestimonialCard
- * Design baseado em card escuro com borda sutil
- */
-
 export const testimonialCardBaseStyles = `
   relative
   p-8
@@ -17,9 +12,6 @@ export const testimonialCardBaseStyles = `
   hover:shadow-slate-900/50
 `;
 
-/**
- * Estilos do quote (texto do depoimento)
- */
 export const quoteStyles = `
   text-base
   lg:text-lg
@@ -30,9 +22,6 @@ export const quoteStyles = `
   after:content-['"']
 `;
 
-/**
- * Estilos do avatar (iniciais)
- */
 export const avatarStyles = `
   w-12
   h-12
@@ -51,9 +40,6 @@ export const avatarStyles = `
   border-slate-700
 `;
 
-/**
- * Estilos do autor (nome e cargo)
- */
 export const authorNameStyles = `
   text-white
   font-semibold

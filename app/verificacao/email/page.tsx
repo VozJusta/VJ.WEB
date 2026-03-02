@@ -1,0 +1,37 @@
+"use client";
+
+import { useRouter, useSearchParams } from "next/navigation";
+import { VerificationForm, type VerificationConfig } from "@/app/features/auth/verification";
+
+export default function EmailVerificationPage() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  
+  const email = searchParams.get("email") || "seu@email.com";
+
+  const config: VerificationConfig = {
+    type: "email",
+    contact: email,
+    expirationTime: 300,
+  };
+
+  const handleVerified = () => {
+    setTimeout(() => {
+      router.push("/dashboard");
+    }, 2000);
+  };
+
+  const handleBack = () => {
+    router.back();
+  };
+
+  return (
+    <main className="min-h-screen bg-[radial-gradient(circle_at_15%_20%,rgba(37,133,244,0.22)_0%,rgba(4,10,27,1)_55%)]">
+      <VerificationForm 
+        config={config} 
+        onVerified={handleVerified}
+        onBack={handleBack}
+      />
+    </main>
+  );
+}
