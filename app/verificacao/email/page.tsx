@@ -8,6 +8,7 @@ export default function EmailVerificationPage() {
   const searchParams = useSearchParams();
   
   const email = searchParams.get("email") || "seu@email.com";
+  const type = searchParams.get("type") || "signup";
 
   const config: VerificationConfig = {
     type: "email",
@@ -17,12 +18,20 @@ export default function EmailVerificationPage() {
 
   const handleVerified = () => {
     setTimeout(() => {
-      router.push("/dashboard");
+      if (type === "reset") {
+        router.push(`/redefinir-senha?email=${encodeURIComponent(email)}`);
+      } else {
+        router.push("/dashboard");
+      }
     }, 2000);
   };
 
   const handleBack = () => {
-    router.back();
+    if (type === "reset") {
+      router.push("/esqueci-minha-senha");
+    } else {
+      router.back();
+    }
   };
 
   return (
