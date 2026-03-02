@@ -14,6 +14,7 @@ import {
 } from "@mui/icons-material";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Select } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useToast } from "@/components/ui/toast/toast-provider";
 import { cn } from "@/lib/utils";
@@ -40,13 +41,23 @@ const initialFormState: LawyerSignupFormState = {
   acceptedTerms: false,
 };
 
-const formatCpf = (value: string) => {
-  const digits = value.replace(/\D/g, "").slice(0, 11);
-
+const formatCpfCnpj = (value: string) => {
+  const digits = value.replace(/\D/g, "");
+  
+  if (digits.length <= 11) {
+    return digits
+      .slice(0, 11)
+      .replace(/(\d{3})(\d)/, "$1.$2")
+      .replace(/(\d{3})(\d)/, "$1.$2")
+      .replace(/(\d{3})(\d{1,2})$/, "$1-$2");
+  }
+  
   return digits
+    .slice(0, 14)
+    .replace(/(\d{2})(\d)/, "$1.$2")
     .replace(/(\d{3})(\d)/, "$1.$2")
-    .replace(/(\d{3})(\d)/, "$1.$2")
-    .replace(/(\d{3})(\d{1,2})$/, "$1-$2");
+    .replace(/(\d{3})(\d)/, "$1/$2")
+    .replace(/(\d{4})(\d{1,2})$/, "$1-$2");
 };
 
 const formatOabNumber = (value: string) => {
@@ -154,10 +165,10 @@ export function LawyerSignupForm() {
             onChange={(event) =>
               setFormState((current) => ({
                 ...current,
-                cpf: formatCpf(event.target.value),
+                cpf: formatCpfCnpj(event.target.value),
               }))
             }
-            label="CPF"
+            label="CPF/CNPJ"
             placeholder="000.000.000-00"
             leftIcon={<Badge fontSize="small" aria-hidden="true" />}
             error={errors.cpf}
@@ -165,7 +176,7 @@ export function LawyerSignupForm() {
             className="h-12 rounded-xl border-white/10 bg-[#05112A] text-sm text-white placeholder:text-white/35 focus:ring-primary"
           />
 
-          <section className="grid gap-4 sm:grid-cols-[1fr_auto]">
+          <section className="flex flex-col lg:flex-row w-full gap-2">
             <Input
               id="oabNumber"
               name="oabNumber"
@@ -186,39 +197,23 @@ export function LawyerSignupForm() {
               className="h-12 rounded-xl border-white/10 bg-[#05112A] text-sm text-white placeholder:text-white/35 focus:ring-primary"
             />
 
-            <div className="space-y-2">
-              <label htmlFor="oabState" className="block text-sm font-medium text-zinc-300">
-                UF
-              </label>
-              <select
-                id="oabState"
-                name="oabState"
-                value={formState.oabState}
-                onChange={(event) =>
-                  setFormState((current) => ({
-                    ...current,
-                    oabState: event.target.value,
-                  }))
-                }
-                className={cn(
-                  "h-12 w-full rounded-xl border border-white/10 bg-[#05112A] px-4 text-sm text-white focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-200",
-                  errors.oabState && "border-red-500"
-                )}
-                aria-invalid={!!errors.oabState}
-              >
-                <option value="">SP</option>
-                {brazilianStates.map((state) => (
-                  <option key={state.value} value={state.value}>
-                    {state.label}
-                  </option>
-                ))}
-              </select>
-              {errors.oabState && (
-                <p className="text-xs text-red-400" role="alert">
-                  {errors.oabState}
-                </p>
-              )}
-            </div>
+            <Select
+              id="oabState"
+              name="oabState"
+              value={formState.oabState}
+              onChange={(event) =>
+                setFormState((current) => ({
+                  ...current,
+                  oabState: event.target.value,
+                }))
+              }
+              label="UF"
+              options={[...brazilianStates]}
+              placeholder="Selecione o estado"
+              error={errors.oabState}
+              containerClassName="space-y-2"
+              className="h-12 rounded-xl w-full border-white/10 bg-[#05112A] text-sm text-white placeholder:text-white/35 focus:ring-primary"
+            />
           </section>
 
           <Input

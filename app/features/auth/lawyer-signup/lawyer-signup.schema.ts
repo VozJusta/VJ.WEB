@@ -1,6 +1,7 @@
 import { z } from "zod";
 
 const cpfRegex = /^\d{3}\.\d{3}\.\d{3}-\d{2}$/;
+const cnpjRegex = /^\d{2}\.\d{3}\.\d{3}\/\d{4}-\d{2}$/;
 const oabNumberRegex = /^\d{1,6}$/;
 
 export const lawyerSignupSchema = z.object({
@@ -13,8 +14,11 @@ export const lawyerSignupSchema = z.object({
   
   cpf: z
     .string()
-    .min(1, "CPF é obrigatório")
-    .regex(cpfRegex, "CPF inválido. Use o formato 000.000.000-00"),
+    .min(1, "CPF/CNPJ é obrigatório")
+    .refine(
+      (value) => cpfRegex.test(value) || cnpjRegex.test(value),
+      "CPF/CNPJ inválido. Use o formato 000.000.000-00 ou 00.000.000/0000-00"
+    ),
   
   oabNumber: z
     .string()
