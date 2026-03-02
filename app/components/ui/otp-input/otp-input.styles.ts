@@ -1,0 +1,20 @@
+export const otpInputStyles = {
+  container: "flex items-center justify-center gap-1.5 xs:gap-2 sm:gap-2.5 md:gap-3",
+  input: [
+    "h-12 w-10",
+    "xs:h-13 xs:w-11",
+    "sm:h-14 sm:w-12",
+    "md:h-16 md:w-14",
+    "lg:h-16 lg:w-14",
+    "rounded-lg sm:rounded-xl",
+    "border border-white/10",
+    "bg-[#05112A]",
+    "text-center text-lg sm:text-xl md:text-2xl font-semibold text-white",
+    "transition-all duration-200",
+    "focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20",
+    "disabled:cursor-not-allowed disabled:opacity-50",
+    "touch-manipulation",
+  ].join(" "),
+  inputError: "border-red-400 focus:border-red-400 focus:ring-red-400/20",
+  error: "mt-2 text-center text-xs sm:text-sm text-red-400 px-2",
+};

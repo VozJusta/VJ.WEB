@@ -1,7 +1,3 @@
-/**
- * Estilos base do StatCard
- * Background escuro com borda sutil blue
- */
 export const statCardBaseStyles = `
   relative
   px-6 py-8
@@ -31,9 +27,6 @@ export const statValueStyles = `
   group-hover:scale-110
 `;
 
-/**
- * Estilos do label (texto descritivo)
- */
 export const statLabelStyles = `
   text-xs
   sm:text-sm
@@ -41,9 +34,6 @@ export const statLabelStyles = `
   leading-relaxed
 `;
 
-/**
- * Efeito de brilho no hover (pseudo-elemento)
- */
 export const glowEffectStyles = `
   before:absolute
   before:inset-0

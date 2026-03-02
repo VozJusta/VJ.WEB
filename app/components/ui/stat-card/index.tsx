@@ -8,31 +8,6 @@ import {
   glowEffectStyles,
 } from "./stat-card.styles";
 
-/**
- * StatCard Component
- *
- * Card de estatística reutilizável com:
- * - Background escuro com borda azul sutil
- * - Efeitos de hover (scale, glow, border)
- * - Animações suaves
- * - Totalmente customizável
- *
- * **Por que Client Component?**
- * - Animações e transições CSS dependem de estados visuais
- * - Hover effects precisam ser responsivos
- * - Performance não é impactada (componente leve)
- *
- * @example
- * ```tsx
- * <StatCard
- *   value="10h"
- *   label="Poupadas por semana"
- *   valueColor="text-blue-500"
- * />
- * ```
- *
- * @component
- */
 export function StatCard({
   value,
   label,
