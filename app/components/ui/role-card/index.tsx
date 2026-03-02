@@ -17,7 +17,7 @@ export function RoleCard({
       aria-checked={isSelected}
       onClick={onSelect}
       className={cn(
-        "relative flex flex-col gap-4 rounded-2xl p-5 text-left w-full",
+        "relative flex flex-col gap-4 rounded-2xl p-5 text-left w-full h-59 justify-center",
         "transition-all duration-300",
         "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white/50",
         isSelected
