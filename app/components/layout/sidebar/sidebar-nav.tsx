@@ -10,9 +10,10 @@ type SidebarNavLinkProps = {
   item: SidebarNavItem;
   isActive: boolean;
   isDanger?: boolean;
+  isOpen: boolean;
 };
 
-function SidebarNavLink({ item, isActive, isDanger = false }: SidebarNavLinkProps) {
+function SidebarNavLink({ item, isActive, isDanger = false, isOpen }: SidebarNavLinkProps) {
   const Icon = item.icon;
 
   return (
@@ -20,17 +21,20 @@ function SidebarNavLink({ item, isActive, isDanger = false }: SidebarNavLinkProp
       <Link
         href={item.href}
         aria-current={isActive ? "page" : undefined}
+        aria-label={!isOpen ? item.label : undefined}
+        title={!isOpen ? item.label : undefined}
         className={cn(
-          "group relative flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-all duration-200",
+          "group relative flex items-center rounded-xl text-sm font-medium transition-all duration-200",
+          isOpen ? "gap-3 px-3 py-2.5" : "justify-center p-2.5",
           isActive && [
-            "bg-[var(--dashboard-nav-active-bg)]",
+            "bg-[var(--nav-active-bg)]",
             "text-[var(--primary)]",
-            "border border-[var(--dashboard-nav-active-border)]",
+            "border border-[var(--nav-active-border)]",
           ],
           !isActive && !isDanger && [
-            "text-[var(--dashboard-text-secondary)]",
+            "text-[var(--text-secondary)]",
             "hover:bg-white/5",
-            "hover:text-[var(--dashboard-text-primary)]",
+            "hover:text-[var(--foreground)]",
             "border border-transparent",
           ],
           isDanger && [
@@ -46,14 +50,15 @@ function SidebarNavLink({ item, isActive, isDanger = false }: SidebarNavLinkProp
           className={cn(
             "shrink-0 transition-colors duration-200",
             isActive && "text-[var(--primary)]",
-            !isActive && !isDanger && "text-[var(--dashboard-text-muted)] group-hover:text-[var(--dashboard-text-primary)]",
+            !isActive && !isDanger && "text-[var(--text-muted)] group-hover:text-[var(--foreground)]",
             isDanger && "text-red-400 group-hover:text-red-300",
           )}
           aria-hidden="true"
         />
-        <span>{item.label}</span>
 
-        {isActive && (
+        {isOpen && <span>{item.label}</span>}
+
+        {isActive && isOpen && (
           <span
             aria-hidden="true"
             className="absolute left-0 top-1/2 h-4 w-0.5 -translate-y-1/2 rounded-r-full bg-[var(--primary)]"
@@ -64,7 +69,11 @@ function SidebarNavLink({ item, isActive, isDanger = false }: SidebarNavLinkProp
   );
 }
 
-export function SidebarNav() {
+type SidebarNavProps = {
+  isOpen: boolean;
+};
+
+export function SidebarNav({ isOpen }: SidebarNavProps) {
   const pathname = usePathname();
 
   return (
@@ -74,16 +83,18 @@ export function SidebarNav() {
           <SidebarNavLink
             key={item.href}
             item={item}
+            isOpen={isOpen}
             isActive={pathname === item.href || (item.href !== "/dashboard" && pathname.startsWith(item.href))}
           />
         ))}
       </ul>
 
-      <ul role="list" className="flex flex-col gap-1 border-t border-[var(--dashboard-border)] pt-4">
+      <ul role="list" className="flex flex-col gap-1 border-t border-[var(--border-subtle)] pt-4">
         {sidebarBottomNav.map((item, index) => (
           <SidebarNavLink
             key={item.href}
             item={item}
+            isOpen={isOpen}
             isActive={pathname === item.href}
             isDanger={index === sidebarBottomNav.length - 1}
           />
