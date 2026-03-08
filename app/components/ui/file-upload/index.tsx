@@ -9,6 +9,13 @@ import {
   type ChangeEvent,
   type KeyboardEvent,
 } from "react";
+import {
+  InsertDriveFileRounded,
+  AddRounded,
+  CloseRounded,
+  CloudUploadRounded,
+  CheckRounded,
+} from "@mui/icons-material";
 import { cn } from "@/lib/utils";
 import type { FileUploadProps, UploadedFile, UploadState } from "./file-upload.types";
 import {
@@ -20,101 +27,6 @@ import {
   filePreviewItem,
   removeButton,
 } from "./file-upload.styles";
-
-function FileIcon({ mimeType }: { mimeType: string }) {
-  const isPdf = mimeType === "application/pdf";
-  return (
-    <svg
-      aria-hidden="true"
-      className={cn("w-5 h-5 shrink-0", isPdf ? "text-red-400" : "text-blue-400")}
-      xmlns="http://www.w3.org/2000/svg"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth={1.5}
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-      <polyline points="14,2 14,8 20,8" />
-    </svg>
-  );
-}
-
-function CheckIcon() {
-  return (
-    <svg
-      aria-hidden="true"
-      className="w-6 h-6 text-green-400"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth={2.5}
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      style={{ strokeDasharray: 40, animation: "check-draw 0.4s ease-out forwards" }}
-    >
-      <polyline points="20,6 9,17 4,12" />
-    </svg>
-  );
-}
-
-function PlusIcon() {
-  return (
-    <svg
-      aria-hidden="true"
-      className="w-6 h-6"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth={2.5}
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <line x1="12" y1="5" x2="12" y2="19" />
-      <line x1="5" y1="12" x2="19" y2="12" />
-    </svg>
-  );
-}
-
-function CloudUploadIcon({ isDragging }: { isDragging: boolean }) {
-  return (
-    <svg
-      aria-hidden="true"
-      className={cn(
-        "w-8 h-8 text-[#2585F4] transition-all duration-300",
-        isDragging && "animate-[upload-bounce_0.6s_ease-in-out_infinite]"
-      )}
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth={1.5}
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <polyline points="16,16 12,12 8,16" />
-      <line x1="12" y1="12" x2="12" y2="21" />
-      <path d="M20.39,18.39A5,5,0,0,0,18,9h-1.26A8,8,0,1,0,3,16.3" />
-    </svg>
-  );
-}
-
-function XIcon() {
-  return (
-    <svg
-      aria-hidden="true"
-      className="w-3.5 h-3.5"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth={2.5}
-      strokeLinecap="round"
-    >
-      <line x1="18" y1="6" x2="6" y2="18" />
-      <line x1="6" y1="6" x2="18" y2="18" />
-    </svg>
-  );
-}
 
 function formatBytes(bytes: number): string {
   if (bytes < 1024) return `${bytes} B`;
@@ -308,14 +220,20 @@ export function FileUpload({
         />
 
         {isDragging ? (
-          <CloudUploadIcon isDragging />
+          <CloudUploadRounded
+            aria-hidden
+            className={cn(
+              "text-[#2585F4] transition-all duration-300",
+              isDragging && "animate-[upload-bounce_0.6s_ease-in-out_infinite]"
+            )}
+            sx={{ fontSize: 40 }}
+          />
         ) : (
           <span
             className={uploadTriggerButton}
             aria-hidden="true"
-            style={{ animation: isDragging ? undefined : undefined }}
           >
-            <PlusIcon />
+            <AddRounded aria-hidden sx={{ fontSize: 24 }} />
           </span>
         )}
 
@@ -368,7 +286,14 @@ export function FileUpload({
                   />
                 </figure>
               ) : (
-                <FileIcon mimeType={entry.file.type} />
+                <InsertDriveFileRounded
+                  aria-hidden
+                  fontSize="small"
+                  className={cn(
+                    "shrink-0",
+                    entry.file.type === "application/pdf" ? "text-red-400" : "text-blue-400"
+                  )}
+                />
               )}
 
               <div className="flex flex-col gap-1 flex-1 min-w-0">
@@ -397,7 +322,7 @@ export function FileUpload({
               </div>
 
               {entry.state === "success" ? (
-                <CheckIcon />
+                <CheckRounded aria-hidden className="w-6 h-6 text-green-400 animate-[file-enter_0.3s_ease-out]" />
               ) : (
                 <button
                   type="button"
@@ -408,7 +333,7 @@ export function FileUpload({
                     handleRemove(entry.id, entry.previewUrl);
                   }}
                 >
-                  <XIcon />
+                  <CloseRounded aria-hidden fontSize="small" />
                 </button>
               )}
             </li>

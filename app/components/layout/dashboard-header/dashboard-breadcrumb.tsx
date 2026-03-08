@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { ChevronRightRounded } from "@mui/icons-material";
 
 const routeLabels: Record<string, string> = {
   "/dashboard": "Dashboard",
@@ -15,14 +16,6 @@ const routeLabels: Record<string, string> = {
 interface Crumb {
   label: string;
   href?: string;
-}
-
-function ChevronRightIcon() {
-  return (
-    <svg aria-hidden="true" className="w-3.5 h-3.5 text-white/25" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
-      <polyline points="9,18 15,12 9,6" />
-    </svg>
-  );
 }
 
 export function DashboardBreadcrumb() {
@@ -50,7 +43,7 @@ export function DashboardBreadcrumb() {
                   >
                     {crumb.label}
                   </Link>
-                  <ChevronRightIcon />
+                  <ChevronRightRounded fontSize="small" aria-hidden className="text-white/25" />
                 </>
               ) : (
                 <span className="text-sm font-semibold text-[#2585F4]" aria-current="page">
