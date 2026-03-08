@@ -54,6 +54,14 @@ export const buttonVariants = cva(
           "shadow-sm",
           "focus-visible:ring-red-500",
         ],
+
+        white: [
+          "bg-white text-black",
+          "hover:bg-white/90",
+          "active:bg-white/80",
+          "shadow-[0_4px_15px_rgba(255,255,255,0.15)]",
+          "focus-visible:ring-white",
+        ],
       },
 
       size: {

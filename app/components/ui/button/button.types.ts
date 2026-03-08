@@ -5,7 +5,8 @@ export type ButtonVariant =
   | "secondary"
   | "outline"
   | "ghost"
-  | "danger";
+  | "danger"
+  | "white";
 export type ButtonSize = "sm" | "md" | "lg";
 
 interface BaseButtonProps {

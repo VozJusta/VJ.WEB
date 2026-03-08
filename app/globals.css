@@ -37,7 +37,7 @@
 
 html {
   scroll-behavior: smooth;
-  scroll-padding-top: 120px; /* Offset for fixed header */
+  scroll-padding-top: 120px; 
 }
 
 body {
@@ -46,37 +46,18 @@ body {
   font-family: var(--font-inter), sans-serif;
 }
 
-/* ============================================
-   Animações
-   ============================================ */
 
-@keyframes fade-in-up {
+@keyframes logo-reveal {
   from {
     opacity: 0;
-    transform: translateY(20px);
+    transform: scale(0);
+    filter: blur(16px);
   }
   to {
     opacity: 1;
-    transform: translateY(0);
+    transform: scale(1);
+    filter: blur(0px);
   }
 }
 
-.animate-fade-in-up {
-  animation: fade-in-up 0.6s ease-out forwards;
-  opacity: 0;
-}
 
-@keyframes slide-in-right {
-  from {
-    opacity: 0;
-    transform: translateX(100%);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
-}
-
-.animate-slide-in-right {
-  animation: slide-in-right 0.3s ease-out forwards;
-}
