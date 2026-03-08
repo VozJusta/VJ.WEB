@@ -7,7 +7,7 @@ import { SaveAllButton } from "./save-all-button";
 export function DocumentsFeature() {
   return (
     <main
-      className="flex flex-col gap-6 w-full max-w-3xl mx-auto px-4 py-6 md:px-6 md:py-8"
+      className="flex flex-col gap-6 w-full  px-4 py-6 md:px-6 md:py-8"
       aria-label="Gerenciamento de documentos"
     >
       <FileUpload
