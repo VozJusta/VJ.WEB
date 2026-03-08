@@ -34,16 +34,15 @@ export const inputStyles = {
   `,
   leftIcon: `
     absolute
-    left-3
-    top-1/2
-    -translate-y-1/2
     text-zinc-400
+    left-3
+    top-2.5
   `,
   rightIcon: `
     absolute
+    place-items-center
     right-3
-    top-1/2
-    -translate-y-1/2
+    top-3.5
     text-zinc-400
   `,
   inputWithLeftIcon: "pl-10",

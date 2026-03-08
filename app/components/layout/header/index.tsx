@@ -55,7 +55,7 @@ export default function Header() {
         </nav>
 
         <div className="flex items-center gap-3">
-          <Button size="sm" className="hidden md:inline-flex">
+          <Button size="sm" href="/onBoarding" className="hidden md:inline-flex">
             Começar Agora
           </Button>
 

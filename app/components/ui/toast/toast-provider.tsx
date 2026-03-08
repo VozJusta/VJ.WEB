@@ -14,13 +14,6 @@ export function useToast() {
   return context;
 }
 
-/**
- * ToastProvider Component
- *
- * Provider que gerencia o estado global dos toasts
- *
- * @component
- */
 export function ToastProvider({ children }: { children: React.ReactNode }) {
   const [toasts, setToasts] = useState<ToastType[]>([]);
 
@@ -47,7 +40,6 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
     <ToastContext.Provider value={{ toasts, toast, dismiss, dismissAll }}>
       {children}
 
-      {/* Toast Container */}
       <div
         className="fixed top-6 right-6 z-100 flex flex-col gap-3 pointer-events-none"
         aria-live="polite"
