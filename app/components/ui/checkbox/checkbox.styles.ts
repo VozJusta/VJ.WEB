@@ -7,7 +7,7 @@ export const checkboxStyles = {
     flex-none
     rounded-xl
     border-2
-    border-white/10
+    border-[#1B2233]
     bg-[#1a2642]
     text-primary
     transition-all
