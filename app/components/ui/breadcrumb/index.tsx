@@ -15,7 +15,7 @@ export function Breadcrumb({ items, className }: BreadcrumbProps) {
               {index > 0 && (
                 <ChevronRightRounded
                   fontSize="small"
-                  className="shrink-0 text-[var(--dashboard-text-muted)]"
+                  className="shrink-0 text-[var(--text-muted)]"
                   aria-hidden="true"
                 />
               )}
@@ -23,14 +23,14 @@ export function Breadcrumb({ items, className }: BreadcrumbProps) {
               {isLast ? (
                 <span
                   aria-current="page"
-                  className="font-semibold text-[var(--dashboard-text-primary)]"
+                  className="font-semibold text-[var(--foreground)]"
                 >
                   {item.label}
                 </span>
               ) : (
                 <Link
                   href={item.href ?? "#"}
-                  className="text-[var(--dashboard-text-secondary)] transition-colors hover:text-[var(--dashboard-text-primary)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--primary)] rounded"
+                  className="text-[var(--text-secondary)] transition-colors hover:text-[var(--foreground)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--primary)] rounded"
                 >
                   {item.label}
                 </Link>

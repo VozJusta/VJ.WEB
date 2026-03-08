@@ -13,10 +13,10 @@ export default function PrivateLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="min-h-screen bg-[var(--dashboard-bg)]">
+    <div className="layout-bg min-h-screen">
       <Sidebar />
 
-      <div className="flex min-h-screen flex-col pl-[var(--sidebar-width)]">
+      <div className="flex min-h-screen flex-col pl-[var(--sidebar-current-width)] transition-[padding-left] duration-300 ease-in-out">
         <DashboardHeader user={DEMO_USER} />
 
         <main

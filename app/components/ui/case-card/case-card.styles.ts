@@ -8,7 +8,7 @@ export const caseStatusBadgeVariants = cva(
         analysis: "bg-[var(--status-analysis-bg)] text-[var(--status-analysis)]",
         concluded: "bg-[var(--status-concluded-bg)] text-[var(--status-concluded)]",
         pending: "bg-[var(--status-pending-bg)] text-[var(--status-pending)]",
-        archived: "bg-white/5 text-[var(--dashboard-text-muted)]",
+        archived: "bg-white/5 text-[var(--text-muted)]",
       },
     },
     defaultVariants: {
@@ -23,7 +23,7 @@ export const caseStatusDotVariants = cva("h-1.5 w-1.5 rounded-full", {
       analysis: "bg-[var(--status-analysis)]",
       concluded: "bg-[var(--status-concluded)]",
       pending: "bg-[var(--status-pending)]",
-      archived: "bg-[var(--dashboard-text-muted)]",
+      archived: "bg-[var(--text-muted)]",
     },
   },
   defaultVariants: {

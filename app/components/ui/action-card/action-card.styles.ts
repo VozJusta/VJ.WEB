@@ -10,16 +10,16 @@ export const actionCardVariants = cva(
     variants: {
       variant: {
         primary: [
-          "border-[var(--dashboard-border)]",
-          "bg-[var(--dashboard-card-bg)]",
+          "border-[var(--border-subtle)]",
+          "bg-[var(--surface-elevated)]",
           "hover:border-[var(--primary)]/30",
-          "hover:bg-[var(--dashboard-card-hover-bg)]",
+          "hover:bg-[var(--surface-hover)]",
         ],
         secondary: [
-          "border-[var(--dashboard-border)]",
-          "bg-[var(--dashboard-card-bg)]",
-          "hover:border-[var(--dashboard-border-hover)]",
-          "hover:bg-[var(--dashboard-card-hover-bg)]",
+          "border-[var(--border-subtle)]",
+          "bg-[var(--surface-elevated)]",
+          "hover:border-[var(--border-subtle-hover)]",
+          "hover:bg-[var(--surface-hover)]",
         ],
       },
     },
@@ -46,7 +46,7 @@ export const actionCardButtonVariants = cva(
           "focus-visible:ring-[var(--primary)]",
         ],
         secondary: [
-          "border border-white/20 bg-white/5 text-[var(--dashboard-text-primary)]",
+          "border border-white/20 bg-white/5 text-[var(--foreground)]",
           "hover:bg-white/10 hover:border-white/30",
           "focus-visible:ring-white/40",
         ],
