@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { AllDocumentsFeature } from "@/features/dashboard/documents/all-documents-feature";
+import { DocumentsFeature } from "@/features/dashboard/documents";
 
 export const metadata: Metadata = {
   title: "Documentos | Voz Justa",
@@ -7,6 +7,6 @@ export const metadata: Metadata = {
 };
 
 export default function DocumentosPage() {
-  return <AllDocumentsFeature />;
+  return <DocumentsFeature />;
 }
 

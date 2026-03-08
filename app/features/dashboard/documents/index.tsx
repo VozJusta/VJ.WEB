@@ -26,7 +26,7 @@ export function DocumentsFeature() {
             Arquivos Recentes
           </h2>
           <Link
-            href="/documentos"
+            href="/documentos/todos"
             className="text-xs font-medium text-[#2585F4] hover:text-[#1978E5] transition-colors duration-150 focus-visible:outline-none focus-visible:underline"
           >
             Ver todos
