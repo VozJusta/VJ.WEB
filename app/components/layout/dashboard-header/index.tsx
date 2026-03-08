@@ -10,8 +10,8 @@ export function DashboardHeader({ user }: DashboardHeaderProps) {
       aria-label="Cabeçalho do dashboard"
       className={cn(
         "sticky top-0 z-30 flex h-16 shrink-0 items-center gap-4 px-6",
-        "bg-[var(--surface)]",
-        "border-b border-[var(--border-subtle)]",
+        "bg-surface",
+        "border-b border-(--border-subtle)",
       )}
     >
       <DynamicBreadcrumb />
