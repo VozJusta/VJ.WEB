@@ -54,7 +54,6 @@ export function ProfileFeature() {
           <div className="w-24 h-24 rounded-full p-0.5 bg-linear-to-br from-[#2585F4] to-[#1565C0] shadow-[0_0_24px_rgba(37,133,244,0.35)]">
             <div className="w-full h-full rounded-full bg-[#111c30] overflow-hidden flex items-center justify-center">
               {MOCK_USER.avatarUrl ? (
-                // eslint-disable-next-line @next/next/no-img-element
                 <img
                   src={MOCK_USER.avatarUrl}
                   alt={`Foto de ${MOCK_USER.name}`}
@@ -85,9 +84,8 @@ export function ProfileFeature() {
         </div>
       </div>
 
-      {/* Form card */}
       <section
-        className="w-full rounded-2xl bg-[#111c30] border border-[#1B2233] p-6 flex flex-col gap-5"
+        className="w-full rounded-2xl bg-[#0C1326] border border-[#1B2233] p-6 flex flex-col gap-5"
         aria-label="Dados do perfil"
       >
         <Input
@@ -141,7 +139,6 @@ export function ProfileFeature() {
         </Button>
       </section>
 
-      {/* Secondary actions */}
       <div className="w-full grid grid-cols-2 gap-3">
         <Button
           variant="outline"
