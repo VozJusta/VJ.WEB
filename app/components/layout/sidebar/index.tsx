@@ -19,7 +19,7 @@ export function Sidebar({ isOpen, onToggle, className }: SidebarProps) {
         "bg-[var(--surface)]",
         "border-r border-[var(--border-subtle)]",
         "transition-all duration-300 ease-in-out",
-        isOpen ? "w-[var(--sidebar-width)]" : "w-[var(--sidebar-collapsed-width)]",
+        isOpen ? "w-60" : "w-[4.5rem]",
         className,
       )}
     >

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { cn } from "@/lib/utils";
 import { Sidebar } from "@/app/components/layout/sidebar";
 import { DashboardHeader } from "@/app/components/layout/dashboard-header";
 
@@ -25,8 +26,10 @@ export default function PrivateLayout({
       />
 
       <div
-        className="flex min-h-screen flex-col transition-[padding-left] duration-300 ease-in-out"
-        style={{ paddingLeft: isSidebarOpen ? "var(--sidebar-width)" : "var(--sidebar-collapsed-width)" }}
+        className={cn(
+          "flex min-h-screen flex-col transition-[padding-left] duration-300 ease-in-out",
+          isSidebarOpen ? "pl-60" : "pl-[4.5rem]",
+        )}
       >
         <DashboardHeader user={DEMO_USER} />
 
