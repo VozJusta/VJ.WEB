@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { DescriptionRounded, CheckCircleOutlineRounded, ChevronRightRounded } from "@mui/icons-material";
+import { DescriptionRounded, CheckCircleOutlineRounded, ChevronRightRounded, ShieldRounded, BalanceRounded } from "@mui/icons-material";
 import { cn } from "@/lib/utils";
 import { caseStatusBadgeVariants, caseStatusDotVariants } from "./case-card.styles";
 import type { CaseCardProps, CaseStatus } from "./case-card.types";
@@ -7,7 +7,7 @@ import type { CaseCardProps, CaseStatus } from "./case-card.types";
 const statusLabel: Record<CaseStatus, string> = {
   analysis: "Em Análise Jurídica",
   concluded: "Concluído",
-  pending: "Aguardando",
+  pending: "Aguardando Advogado",
   archived: "Arquivado",
 };
 
@@ -17,9 +17,33 @@ const CaseIcon = ({ status }: { status: CaseStatus }) => {
   if (status === "concluded") {
     return (
       <span className={cn(baseClass, "bg-status-concluded-bg")}>
-        <CheckCircleOutlineRounded
+        <BalanceRounded
           fontSize="small"
           className="text-status-concluded"
+          aria-hidden="true"
+        />
+      </span>
+    );
+  }
+
+  if (status === "pending") {
+    return (
+      <span className={cn(baseClass, "bg-status-pending-bg")}>
+        <ShieldRounded
+          fontSize="small"
+          className="text-status-pending"
+          aria-hidden="true"
+        />
+      </span>
+    );
+  }
+
+  if (status === "archived") {
+    return (
+      <span className={cn(baseClass, "bg-white/5")}>
+        <CheckCircleOutlineRounded
+          fontSize="small"
+          className="text-text-muted"
           aria-hidden="true"
         />
       </span>
