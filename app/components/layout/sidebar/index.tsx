@@ -1,6 +1,5 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { MenuRounded, MenuOpenRounded } from "@mui/icons-material";
@@ -9,15 +8,7 @@ import { SidebarNav } from "./sidebar-nav";
 import { cn } from "@/lib/utils";
 import type { SidebarProps } from "./sidebar.types";
 
-export function Sidebar({ className }: SidebarProps) {
-  const [isOpen, setIsOpen] = useState(true);
-
-  useEffect(() => {
-    document.documentElement.style.setProperty(
-      "--sidebar-current-width",
-      isOpen ? "var(--sidebar-width)" : "var(--sidebar-collapsed-width)",
-    );
-  }, [isOpen]);
+export function Sidebar({ isOpen, onToggle, className }: SidebarProps) {
 
   return (
     <aside
@@ -57,7 +48,7 @@ export function Sidebar({ className }: SidebarProps) {
 
         <button
           type="button"
-          onClick={() => setIsOpen((prev) => !prev)}
+          onClick={onToggle}
           aria-label={isOpen ? "Recolher menu lateral" : "Expandir menu lateral"}
           className={cn(
             "flex h-9 w-9 shrink-0 items-center justify-center rounded-xl",
