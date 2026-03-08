@@ -14,7 +14,7 @@ export const selectStyles = {
     py-3
     bg-zinc-900
     border
-    border-zinc-800
+    border-[#1B2233]
     rounded-lg
     text-sm
     text-white

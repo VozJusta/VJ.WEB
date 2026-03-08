@@ -7,7 +7,7 @@ export const otpInputStyles = {
     "md:h-16 md:w-14",
     "lg:h-16 lg:w-14",
     "rounded-lg sm:rounded-xl",
-    "border border-white/10",
+    "border border-[#1B2233]",
     "bg-[#05112A]",
     "text-center text-lg sm:text-xl md:text-2xl font-semibold text-white",
     "transition-all duration-200",
