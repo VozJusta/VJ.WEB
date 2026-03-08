@@ -29,12 +29,12 @@ export function CasesSection() {
         <div className="flex items-center gap-2.5">
           <ListAltRounded
             fontSize="small"
-            className="text-[var(--primary)]"
+            className="text-primary"
             aria-hidden="true"
           />
           <h2
             id="my-cases-heading"
-            className="text-lg font-bold text-[var(--foreground)]"
+            className="text-lg font-bold text-foreground"
           >
             Meus Casos
           </h2>
@@ -42,7 +42,7 @@ export function CasesSection() {
 
         <Link
           href="/dashboard/casos"
-          className="flex items-center gap-1 text-sm font-medium text-[var(--primary)] transition-opacity hover:opacity-80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--primary)] rounded"
+          className="flex items-center gap-1 text-sm font-medium text-primary transition-opacity hover:opacity-80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded"
         >
           Ver todos os casos
           <ChevronRightRounded fontSize="small" aria-hidden="true" />

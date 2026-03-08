@@ -27,14 +27,14 @@ function SidebarNavLink({ item, isActive, isDanger = false, isOpen }: SidebarNav
           "group relative flex items-center rounded-xl text-sm font-medium transition-all duration-200",
           isOpen ? "gap-3 px-3 py-2.5" : "justify-center p-2.5",
           isActive && [
-            "bg-[var(--nav-active-bg)]",
-            "text-[var(--primary)]",
-            "border border-[var(--nav-active-border)]",
+            "bg-(--nav-active-bg)",
+            "text-primary",
+            "border border-(--nav-active-border)",
           ],
           !isActive && !isDanger && [
-            "text-[var(--text-secondary)]",
+            "text-text-secondary",
             "hover:bg-white/5",
-            "hover:text-[var(--foreground)]",
+            "hover:text-foreground",
             "border border-transparent",
           ],
           isDanger && [
@@ -49,8 +49,8 @@ function SidebarNavLink({ item, isActive, isDanger = false, isOpen }: SidebarNav
           fontSize="small"
           className={cn(
             "shrink-0 transition-colors duration-200",
-            isActive && "text-[var(--primary)]",
-            !isActive && !isDanger && "text-[var(--text-muted)] group-hover:text-[var(--foreground)]",
+            isActive && "text-primary",
+            !isActive && !isDanger && "text-text-muted group-hover:text-foreground",
             isDanger && "text-red-400 group-hover:text-red-300",
           )}
           aria-hidden="true"
@@ -61,7 +61,7 @@ function SidebarNavLink({ item, isActive, isDanger = false, isOpen }: SidebarNav
         {isActive && isOpen && (
           <span
             aria-hidden="true"
-            className="absolute left-0 top-1/2 h-4 w-0.5 -translate-y-1/2 rounded-r-full bg-[var(--primary)]"
+            className="absolute left-0 top-1/2 h-4 w-0.5 -translate-y-1/2 rounded-r-full bg-primary"
           />
         )}
       </Link>
@@ -89,7 +89,7 @@ export function SidebarNav({ isOpen }: SidebarNavProps) {
         ))}
       </ul>
 
-      <ul role="list" className="flex flex-col gap-1 border-t border-[var(--border-subtle)] pt-4">
+      <ul role="list" className="flex flex-col gap-1 border-t border-(--border-subtle) pt-4">
         {sidebarBottomNav.map((item, index) => (
           <SidebarNavLink
             key={item.href}

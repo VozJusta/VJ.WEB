@@ -27,8 +27,8 @@ export function ActionCard({
           className={cn(
             "flex h-11 w-11 items-center justify-center rounded-xl",
             isPrimary
-              ? "bg-[var(--primary)]/15 text-[var(--primary)]"
-              : "bg-white/8 text-[var(--text-secondary)]",
+              ? "bg-(--primary)/15 text-primary"
+              : "bg-white/8 text-text-secondary",
           )}
         >
           {icon}
@@ -37,7 +37,7 @@ export function ActionCard({
         {decorativeIcon && (
           <span
             aria-hidden="true"
-            className="flex h-8 w-8 items-center justify-center rounded-lg bg-white/5 text-[var(--text-muted)]"
+            className="flex h-8 w-8 items-center justify-center rounded-lg bg-white/5 text-text-muted"
           >
             {decorativeIcon}
           </span>
@@ -45,10 +45,10 @@ export function ActionCard({
       </header>
 
       <div className="flex flex-col gap-2">
-        <h2 className="text-xl font-bold leading-tight text-[var(--foreground)]">
+        <h2 className="text-xl font-bold leading-tight text-foreground">
           {title}
         </h2>
-        <p className="text-sm leading-relaxed text-[var(--text-secondary)]">
+        <p className="text-sm leading-relaxed text-text-secondary">
           {description}
         </p>
       </div>

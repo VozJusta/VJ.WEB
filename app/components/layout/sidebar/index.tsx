@@ -16,16 +16,16 @@ export function Sidebar({ isOpen, onToggle, className }: SidebarProps) {
       aria-expanded={isOpen}
       className={cn(
         "fixed inset-y-0 left-0 z-40 flex flex-col",
-        "bg-[var(--surface)]",
-        "border-r border-[var(--border-subtle)]",
+        "bg-surface",
+        "border-r border-(--border-subtle)",
         "transition-all duration-300 ease-in-out",
-        isOpen ? "w-60" : "w-[4.5rem]",
+        isOpen ? "w-60" : "w-18",
         className,
       )}
     >
       <div
         className={cn(
-          "flex h-16 shrink-0 items-center border-b border-[var(--border-subtle)]",
+          "flex h-16 shrink-0 items-center border-b border-(--border-subtle)",
           isOpen ? "justify-between px-5" : "justify-center px-3",
         )}
       >
@@ -33,7 +33,7 @@ export function Sidebar({ isOpen, onToggle, className }: SidebarProps) {
           <Link
             href="/dashboard"
             aria-label="Ir para o início do dashboard"
-            className="inline-flex items-center transition-opacity hover:opacity-80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--primary)] rounded-md"
+            className="inline-flex items-center transition-opacity hover:opacity-80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded-md"
           >
             <Image
               src={logoFull}
@@ -52,11 +52,11 @@ export function Sidebar({ isOpen, onToggle, className }: SidebarProps) {
           aria-label={isOpen ? "Recolher menu lateral" : "Expandir menu lateral"}
           className={cn(
             "flex h-9 w-9 shrink-0 items-center justify-center rounded-xl",
-            "text-[var(--text-secondary)]",
-            "border border-[var(--border-subtle)]",
+            "text-text-secondary",
+            "border border-(--border-subtle)",
             "transition-all duration-200",
-            "hover:bg-white/5 hover:text-[var(--foreground)]",
-            "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--primary)]",
+            "hover:bg-white/5 hover:text-foreground",
+            "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary",
           )}
         >
           {isOpen ? (

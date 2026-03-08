@@ -16,10 +16,10 @@ const CaseIcon = ({ status }: { status: CaseStatus }) => {
 
   if (status === "concluded") {
     return (
-      <span className={cn(baseClass, "bg-[var(--status-concluded-bg)]")}>
+      <span className={cn(baseClass, "bg-status-concluded-bg")}>
         <CheckCircleOutlineRounded
           fontSize="small"
-          className="text-[var(--status-concluded)]"
+          className="text-status-concluded"
           aria-hidden="true"
         />
       </span>
@@ -27,10 +27,10 @@ const CaseIcon = ({ status }: { status: CaseStatus }) => {
   }
 
   return (
-    <span className={cn(baseClass, "bg-[var(--status-analysis-bg)]")}>
+    <span className={cn(baseClass, "bg-status-analysis-bg")}>
       <DescriptionRounded
         fontSize="small"
-        className="text-[var(--status-analysis)]"
+        className="text-status-analysis"
         aria-hidden="true"
       />
     </span>
@@ -51,16 +51,16 @@ export function CaseCard({
         href={href}
         aria-label={`Ver detalhes do caso: ${title} — Protocolo ${protocol}`}
         className={cn(
-          "flex items-center gap-4 rounded-2xl border border-[var(--border-subtle)] bg-[var(--surface-elevated)] px-5 py-4",
+          "flex items-center gap-4 rounded-2xl border border-(--border-subtle) bg-surface-elevated px-5 py-4",
           "transition-all duration-200",
-          "hover:border-[var(--border-subtle-hover)] hover:bg-[var(--surface-hover)]",
-          "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--primary)]",
+          "hover:border-(--border-subtle-hover) hover:bg-surface-hover",
+          "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary",
         )}
       >
         <CaseIcon status={status} />
 
         <div className="flex flex-1 flex-col gap-1 min-w-0">
-          <h3 className="truncate text-sm font-semibold text-[var(--foreground)]">
+          <h3 className="truncate text-sm font-semibold text-foreground">
             {title}
           </h3>
 
@@ -72,27 +72,27 @@ export function CaseCard({
 
             <span
               aria-hidden="true"
-              className="h-1 w-1 rounded-full bg-[var(--text-muted)]"
+              className="h-1 w-1 rounded-full bg-text-muted"
             />
 
-            <time className="text-xs text-[var(--text-secondary)]">
+            <time className="text-xs text-text-secondary">
               {updatedLabel}
             </time>
           </div>
         </div>
 
         <div className="flex shrink-0 flex-col items-end gap-1">
-          <span className="text-xs font-medium uppercase tracking-widest text-[var(--text-muted)]">
+          <span className="text-xs font-medium uppercase tracking-widest text-text-muted">
             Protocolo
           </span>
-          <span className="text-sm font-semibold text-[var(--text-secondary)]">
+          <span className="text-sm font-semibold text-text-secondary">
             {protocol}
           </span>
         </div>
 
         <ChevronRightRounded
           fontSize="small"
-          className="shrink-0 text-[var(--text-muted)] transition-transform duration-200 group-hover:translate-x-0.5 group-hover:text-[var(--text-secondary)]"
+          className="shrink-0 text-text-muted transition-transform duration-200 group-hover:translate-x-0.5 group-hover:text-text-secondary"
           aria-hidden="true"
         />
       </Link>
