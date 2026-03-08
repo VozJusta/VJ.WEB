@@ -9,10 +9,10 @@ export function DashboardFeature({ userName }: DashboardFeatureProps) {
   return (
     <>
       <div className="flex flex-col gap-1">
-        <h1 className="text-3xl font-bold text-[var(--dashboard-text-primary)]">
+        <h1 className="text-3xl font-bold text-[var(--foreground)]">
           Olá, {userName}!
         </h1>
-        <p className="text-sm text-[var(--dashboard-text-secondary)]">
+        <p className="text-sm text-[var(--text-secondary)]">
           Bem-vindo ao seu painel jurídico. Como podemos ajudar hoje?
         </p>
       </div>

@@ -34,7 +34,7 @@ export function CasesSection() {
           />
           <h2
             id="my-cases-heading"
-            className="text-lg font-bold text-[var(--dashboard-text-primary)]"
+            className="text-lg font-bold text-[var(--foreground)]"
           >
             Meus Casos
           </h2>
