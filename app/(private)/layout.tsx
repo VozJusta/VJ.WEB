@@ -28,7 +28,7 @@ export default function PrivateLayout({
       <div
         className={cn(
           "flex min-h-screen flex-col transition-[padding-left] duration-300 ease-in-out",
-          isSidebarOpen ? "pl-60" : "pl-[4.5rem]",
+          isSidebarOpen ? "pl-60" : "pl-18",
         )}
       >
         <DashboardHeader user={DEMO_USER} />

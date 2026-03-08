@@ -34,7 +34,7 @@ export function QuickActionsSection() {
           action={{
             label: "Começar treinamento",
             href: "/dashboard/simulador",
-            variant: "secondary",
+            variant: "primary",
           }}
         />
       </div>

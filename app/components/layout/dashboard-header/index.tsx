@@ -20,11 +20,11 @@ export function DashboardHeader({ user }: DashboardHeaderProps) {
         <form
           role="search"
           action="/dashboard/busca"
-          className="hidden md:flex items-center gap-2 rounded-xl border border-[var(--border-subtle)] bg-white/5 px-3 py-2 text-sm transition-colors hover:border-[var(--border-subtle-hover)] focus-within:border-[var(--primary)]/40 focus-within:bg-white/8 w-56"
+          className="hidden md:flex items-center gap-2 rounded-xl border border-(--border-subtle) bg-white/5 px-3 py-2 text-sm transition-colors hover:border-(--border-subtle-hover) focus-within:border-(--primary)/40 focus-within:bg-white/8 w-56"
         >
           <SearchRounded
             fontSize="small"
-            className="shrink-0 text-[var(--text-muted)]"
+            className="shrink-0 text-text-muted"
             aria-hidden="true"
           />
           <label htmlFor="dashboard-search" className="sr-only">
@@ -36,23 +36,23 @@ export function DashboardHeader({ user }: DashboardHeaderProps) {
             name="q"
             placeholder="Pesquisar..."
             autoComplete="off"
-            className="flex-1 bg-transparent text-[var(--foreground)] placeholder:text-[var(--text-muted)] outline-none min-w-0"
+            className="flex-1 bg-transparent text-foreground placeholder:text-text-muted outline-none min-w-0"
           />
         </form>
 
         <button
           type="button"
           aria-label="Notificações"
-          className="relative flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-[var(--border-subtle)] bg-white/5 text-[var(--text-secondary)] transition-all hover:bg-white/10 hover:text-[var(--foreground)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--primary)]"
+          className="relative flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-(--border-subtle) bg-white/5 text-text-secondary transition-all hover:bg-white/10 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
         >
           <NotificationsNoneRounded fontSize="small" aria-hidden="true" />
           <span
             aria-label="Você tem notificações não lidas"
-            className="absolute right-2 top-2 h-2 w-2 rounded-full bg-[var(--primary)]"
+            className="absolute right-2 top-2 h-2 w-2 rounded-full bg-primary"
           />
         </button>
 
-        <div className="flex items-center gap-2.5 rounded-xl border border-[var(--border-subtle)] bg-white/5 px-3 py-2 transition-colors hover:border-[var(--border-subtle-hover)]">
+        <div className="flex items-center gap-2.5 rounded-xl border border-(--border-subtle) bg-white/5 px-3 py-2 transition-colors hover:border-(--border-subtle-hover)">
           <figure className="m-0">
             {user.avatarUrl ? (
               <Image
@@ -65,7 +65,7 @@ export function DashboardHeader({ user }: DashboardHeaderProps) {
             ) : (
               <span
                 aria-label={`Avatar de ${user.name}`}
-                className="flex h-8 w-8 items-center justify-center rounded-full bg-[var(--primary)] text-xs font-semibold text-white ring-1 ring-[var(--primary)]/40"
+                className="flex h-8 w-8 items-center justify-center rounded-full bg-primary text-xs font-semibold text-white ring-1 ring-(--primary)/40"
               >
                 {user.name
                   .split(" ")
@@ -78,10 +78,10 @@ export function DashboardHeader({ user }: DashboardHeaderProps) {
           </figure>
 
           <div className="hidden md:flex flex-col">
-            <span className="text-sm font-semibold leading-none text-[var(--foreground)]">
+            <span className="text-sm font-semibold leading-none text-foreground">
               {user.name}
             </span>
-            <span className="mt-0.5 text-xs font-medium uppercase tracking-widest text-[var(--primary)]">
+            <span className="mt-0.5 text-xs font-medium uppercase tracking-widest text-primary">
               {user.role}
             </span>
           </div>
