@@ -24,6 +24,7 @@
       "@/app/*": ["./app/*"],
       "@/components/*": ["./app/components/*"],
       "@/lib/*": ["./app/lib/*"],
+      "@/features/*": ["./app/features/*"],
       "@/services/*": ["./services/*"]
     }
   },
