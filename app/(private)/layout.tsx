@@ -1,3 +1,6 @@
+"use client";
+
+import { useState } from "react";
 import { Sidebar } from "@/app/components/layout/sidebar";
 import { DashboardHeader } from "@/app/components/layout/dashboard-header";
 
@@ -12,11 +15,19 @@ export default function PrivateLayout({
 }: {
   children: React.ReactNode;
 }) {
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+
   return (
     <div className="layout-bg min-h-screen">
-      <Sidebar />
+      <Sidebar
+        isOpen={isSidebarOpen}
+        onToggle={() => setIsSidebarOpen((prev) => !prev)}
+      />
 
-      <div className="flex min-h-screen flex-col pl-[var(--sidebar-current-width)] transition-[padding-left] duration-300 ease-in-out">
+      <div
+        className="flex min-h-screen flex-col transition-[padding-left] duration-300 ease-in-out"
+        style={{ paddingLeft: isSidebarOpen ? "var(--sidebar-width)" : "var(--sidebar-collapsed-width)" }}
+      >
         <DashboardHeader user={DEMO_USER} />
 
         <main
