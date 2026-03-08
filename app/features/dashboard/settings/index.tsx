@@ -111,7 +111,7 @@ export function SettingsFeature() {
       </h1>
 
       <section
-        className="w-full rounded-2xl bg-[#111c30] border border-[#1B2233] overflow-hidden"
+        className="w-full rounded-2xl bg-[#111c30] border-2 border-[#1B2233] overflow-hidden"
         aria-label="Configurações do sistema"
       >
         <GroupHeader label="Preferências do App" id="prefs-heading" />
