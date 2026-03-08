@@ -18,8 +18,8 @@ export function AllDocumentsFeature() {
     >
       <header className="flex items-center gap-3">
         <Link
-          href="/dashboard"
-          aria-label="Voltar para o dashboard"
+          href="/documentos"
+          aria-label="Voltar para documentos"
           className="flex items-center justify-center w-9 h-9 rounded-lg text-white/50 hover:text-white hover:bg-white/08 transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2585F4]"
         >
           <ArrowBackRounded fontSize="small" aria-hidden />
