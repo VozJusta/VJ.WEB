@@ -1,9 +1,10 @@
 "use client";
 
+import { Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { VerificationForm, type VerificationConfig } from "@/app/features/auth/verification";
 
-export default function EmailVerificationPage() {
+function EmailVerificationContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   
@@ -35,12 +36,20 @@ export default function EmailVerificationPage() {
   };
 
   return (
+    <VerificationForm 
+      config={config} 
+      onVerified={handleVerified}
+      onBack={handleBack}
+    />
+  );
+}
+
+export default function EmailVerificationPage() {
+  return (
     <main className="min-h-screen bg-[radial-gradient(circle_at_15%_20%,rgba(37,133,244,0.22)_0%,rgba(4,10,27,1)_55%)]">
-      <VerificationForm 
-        config={config} 
-        onVerified={handleVerified}
-        onBack={handleBack}
-      />
+      <Suspense fallback={null}>
+        <EmailVerificationContent />
+      </Suspense>
     </main>
   );
 }
