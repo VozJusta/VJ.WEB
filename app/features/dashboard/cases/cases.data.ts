@@ -1,18 +1,13 @@
 import type { CaseStatus } from "@/components/ui/case-card/case-card.types";
+import type { TimelineItemProps } from "@/components/ui/timeline-item/timeline-item.types";
+import type { CaseDocCardProps } from "@/components/ui/case-doc-card/case-doc-card.types";
 
-export type TimelineStepStatus = "done" | "active" | "pending";
+export type TimelineStep = Omit<TimelineItemProps, "isLast">;
 
-export type TimelineStep = {
-  title: string;
-  subtitle: string;
-  status: TimelineStepStatus;
-};
-
-export type CaseDocument = {
+export type CaseDocument = Pick<CaseDocCardProps, "mimeType"> & {
   id: string;
   filename: string;
-  meta: string; // e.g. "PDF • 2.4 MB"
-  mimeType: "application/pdf" | "image/jpeg" | "image/png";
+  meta: string;
 };
 
 export type CaseDetail = {

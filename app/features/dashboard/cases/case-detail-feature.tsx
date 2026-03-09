@@ -1,21 +1,15 @@
 import Link from "next/link";
 import {
   ArrowBackRounded,
-  CheckCircleRounded,
-  RadioButtonCheckedRounded,
-  RadioButtonUncheckedRounded,
-  PictureAsPdfRounded,
-  ImageRounded,
-  FileDownloadRounded,
-  VisibilityRounded,
   SummarizeRounded,
 } from "@mui/icons-material";
 import { Button } from "@/components/ui/button";
+import { TimelineItem } from "@/components/ui/timeline-item";
+import { CaseDocCard } from "@/components/ui/case-doc-card";
 import { cn } from "@/lib/utils";
-import type { CaseDetail, TimelineStep } from "./cases.data";
+import type { CaseDetail } from "./cases.data";
 import type { CaseStatus } from "@/components/ui/case-card/case-card.types";
 
-// ─── Status banner config ────────────────────────────────────────────────────
 
 const bannerConfig: Record<
   CaseStatus,
@@ -47,131 +41,13 @@ const bannerConfig: Record<
   },
 };
 
-// ─── Timeline ────────────────────────────────────────────────────────────────
 
-function TimelineItem({ step, isLast }: { step: TimelineStep; isLast: boolean }) {
-  return (
-    <li className="flex gap-4">
-      {/* connector */}
-      <div className="flex flex-col items-center">
-        <span className="mt-0.5 shrink-0">
-          {step.status === "done" && (
-            <CheckCircleRounded
-              fontSize="small"
-              className="text-green-400"
-              aria-hidden
-            />
-          )}
-          {step.status === "active" && (
-            <RadioButtonCheckedRounded
-              fontSize="small"
-              className="text-[#2585F4]"
-              aria-hidden
-            />
-          )}
-          {step.status === "pending" && (
-            <RadioButtonUncheckedRounded
-              fontSize="small"
-              className="text-white/25"
-              aria-hidden
-            />
-          )}
-        </span>
-        {!isLast && (
-          <span
-            className={cn(
-              "w-px flex-1 mt-1",
-              step.status === "done" ? "bg-green-400/30" : "bg-white/10",
-            )}
-            aria-hidden
-          />
-        )}
-      </div>
-
-      {/* content */}
-      <div className="pb-5 min-w-0">
-        <p
-          className={cn(
-            "text-sm font-semibold leading-tight",
-            step.status === "pending" ? "text-white/35" : "text-white",
-          )}
-        >
-          {step.title}
-        </p>
-        <p
-          className={cn(
-            "text-xs mt-0.5",
-            step.status === "active"
-              ? "text-[#2585F4]"
-              : step.status === "pending"
-                ? "text-white/25"
-                : "text-white/45",
-          )}
-        >
-          {step.subtitle}
-        </p>
-      </div>
-    </li>
-  );
-}
-
-// ─── Document card ────────────────────────────────────────────────────────────
-
-function CaseDocCard({
-  filename,
-  meta,
-  mimeType,
-}: {
-  filename: string;
-  meta: string;
-  mimeType: "application/pdf" | "image/jpeg" | "image/png";
-}) {
-  const isPdf = mimeType === "application/pdf";
-
-  return (
-    <div className="flex items-center gap-3 rounded-xl border border-[#1B2233] bg-[#111c30] px-4 py-3 hover:bg-[#152036] transition-colors duration-150">
-      <span
-        className={cn(
-          "flex shrink-0 items-center justify-center w-9 h-9 rounded-lg",
-          isPdf ? "bg-orange-500/15 text-orange-400" : "bg-blue-500/15 text-blue-400",
-        )}
-        aria-hidden
-      >
-        {isPdf ? (
-          <PictureAsPdfRounded fontSize="small" />
-        ) : (
-          <ImageRounded fontSize="small" />
-        )}
-      </span>
-
-      <div className="flex-1 min-w-0">
-        <p className="text-sm font-medium text-white truncate">{filename}</p>
-        <p className="text-xs text-white/40">{meta}</p>
-      </div>
-
-      <button
-        type="button"
-        aria-label={isPdf ? `Baixar ${filename}` : `Visualizar ${filename}`}
-        className="flex shrink-0 items-center justify-center w-8 h-8 rounded-lg text-white/35 hover:text-white hover:bg-white/08 transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2585F4]"
-      >
-        {isPdf ? (
-          <FileDownloadRounded fontSize="small" aria-hidden />
-        ) : (
-          <VisibilityRounded fontSize="small" aria-hidden />
-        )}
-      </button>
-    </div>
-  );
-}
-
-// ─── Main feature ─────────────────────────────────────────────────────────────
 
 export function CaseDetailFeature({ caseData }: { caseData: CaseDetail }) {
   const banner = bannerConfig[caseData.status];
 
   return (
-    <div className="relative flex flex-col gap-6 w-full max-w-3xl mx-auto px-4 py-6 md:px-6 md:py-8 pb-24">
-      {/* Back + title */}
+    <div className="relative flex flex-col gap-6 w-full  mx-auto px-4 py-6 md:px-6 md:py-8 pb-24">
       <header className="flex items-center gap-3">
         <Link
           href="/dashboard/casos"
@@ -190,7 +66,6 @@ export function CaseDetailFeature({ caseData }: { caseData: CaseDetail }) {
         </div>
       </header>
 
-      {/* Status banner */}
       <section
         aria-labelledby="status-heading"
         className={cn(
@@ -214,7 +89,6 @@ export function CaseDetailFeature({ caseData }: { caseData: CaseDetail }) {
         <p className="text-sm text-white/55">{caseData.statusBanner.description}</p>
       </section>
 
-      {/* Timeline */}
       <section aria-labelledby="timeline-heading">
         <h2
           id="timeline-heading"
@@ -228,7 +102,7 @@ export function CaseDetailFeature({ caseData }: { caseData: CaseDetail }) {
             {caseData.timeline.map((step, i) => (
               <TimelineItem
                 key={step.title}
-                step={step}
+                {...step}
                 isLast={i === caseData.timeline.length - 1}
               />
             ))}
@@ -236,7 +110,6 @@ export function CaseDetailFeature({ caseData }: { caseData: CaseDetail }) {
         </div>
       </section>
 
-      {/* Report */}
       <section aria-labelledby="report-heading">
         <h2
           id="report-heading"
@@ -250,7 +123,6 @@ export function CaseDetailFeature({ caseData }: { caseData: CaseDetail }) {
         </blockquote>
       </section>
 
-      {/* Documents */}
       <section aria-labelledby="docs-heading">
         <header className="flex items-center justify-between mb-4">
           <h2
@@ -267,13 +139,16 @@ export function CaseDetailFeature({ caseData }: { caseData: CaseDetail }) {
         <ul className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           {caseData.documents.map((doc) => (
             <li key={doc.id}>
-              <CaseDocCard {...doc} />
+              <CaseDocCard
+                filename={doc.filename}
+                meta={doc.meta}
+                mimeType={doc.mimeType}
+              />
             </li>
           ))}
         </ul>
       </section>
 
-      {/* Sticky download report button */}
       <div className="fixed bottom-6 right-6 z-10">
         <Button
           variant="primary"
