@@ -17,11 +17,11 @@ const routeLabelMap: Record<string, string> = {
 const pageNameMap: Record<string, string> = {
   "/dashboard": "Resumo Geral",
   "/dashboard/documentos": "Documentos",
-  "/dashboard/chat": "Chat",
   "/dashboard/simulador": "Simulador de Audiência",
   "/dashboard/perfil": "Meu Perfil",
   "/dashboard/configuracoes": "Configurações",
   "/dashboard/casos": "Meus Casos",
+  "/dashboard/casos/novo": "Novo Caso",
 };
 
 function buildBreadcrumbs(pathname: string): BreadcrumbItem[] {
