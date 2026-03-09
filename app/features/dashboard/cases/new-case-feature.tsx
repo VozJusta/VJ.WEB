@@ -7,14 +7,13 @@ import {
   ShoppingCartRounded,
   WorkRounded,
   MoreHorizRounded,
-  CheckCircleRounded,
-  ChevronRightRounded,
   HourglassEmptyRounded,
   AutoAwesomeRounded,
 } from "@mui/icons-material";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { VoiceRecorder } from "@/components/ui/voice-recorder";
+import { Checkbox } from "@/components/ui/checkbox";
 
 type CategoryId = "trabalhista" | "consumidor" | "outros";
 
@@ -134,19 +133,12 @@ export function NewCaseFeature() {
                     <p className="text-xs text-white/45">{cat.description}</p>
                   </div>
 
-                  {isSelected ? (
-                    <CheckCircleRounded
-                      fontSize="small"
-                      className="shrink-0 text-[#2585F4]"
-                      aria-hidden
-                    />
-                  ) : (
-                    <ChevronRightRounded
-                      fontSize="small"
-                      className="shrink-0 text-white/25"
-                      aria-hidden
-                    />
-                  )}
+                  <Checkbox
+                    checked={isSelected}
+                    onChange={() => setSelectedCategory(cat.id)}
+                    aria-label={`Selecionar categoria ${cat.label}`}
+                    className="shrink-0"
+                  />
                 </button>
               </li>
             );
