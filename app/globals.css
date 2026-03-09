@@ -98,6 +98,11 @@ body {
 }
 
 
+@keyframes wave-bar {
+  0%, 100% { transform: scaleY(0.2); }
+  50% { transform: scaleY(1); }
+}
+
 @keyframes logo-reveal {
   from {
     opacity: 0;
