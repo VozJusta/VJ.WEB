@@ -1,5 +1,6 @@
 import { SearchRounded, NotificationsNoneRounded } from "@mui/icons-material";
 import Image from "next/image";
+import Link from "next/link";
 import { DynamicBreadcrumb } from "./dynamic-breadcrumb";
 import { cn } from "@/lib/utils";
 import type { DashboardHeaderProps } from "./dashboard-header.types";
@@ -40,8 +41,8 @@ export function DashboardHeader({ user }: DashboardHeaderProps) {
           />
         </form>
 
-        <button
-          type="button"
+        <Link
+          href="/dashboard/notificacoes"
           aria-label="Notificações"
           className="relative flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-(--border-subtle) bg-white/5 text-text-secondary transition-all hover:bg-white/10 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
         >
@@ -50,7 +51,7 @@ export function DashboardHeader({ user }: DashboardHeaderProps) {
             aria-label="Você tem notificações não lidas"
             className="absolute right-2 top-2 h-2 w-2 rounded-full bg-primary"
           />
-        </button>
+        </Link>
 
         <div className="flex items-center gap-2.5 rounded-xl border border-(--border-subtle) bg-white/5 px-3 py-2 transition-colors hover:border-(--border-subtle-hover)">
           <figure className="m-0">
