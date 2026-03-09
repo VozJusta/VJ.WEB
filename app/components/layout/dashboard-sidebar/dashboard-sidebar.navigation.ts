@@ -7,7 +7,7 @@ export interface SidebarNavItem {
 export const mainNavItems: SidebarNavItem[] = [
   { label: "Início", href: "/dashboard", icon: "home" },
   { label: "Documentos", href: "/documentos", icon: "documents" },
-  { label: "Chat", href: "/chat", icon: "chat" },
+  { label: "Chat", href: "dashboard/casos/novo", icon: "chat" },
   { label: "Simulador", href: "/simulador", icon: "simulator" },
   { label: "Perfil", href: "/perfil", icon: "profile" },
 ];
