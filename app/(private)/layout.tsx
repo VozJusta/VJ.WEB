@@ -16,27 +16,31 @@ export default function PrivateLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   return (
     <div className="layout-bg min-h-screen">
       <Sidebar
         isOpen={isSidebarOpen}
         onToggle={() => setIsSidebarOpen((prev) => !prev)}
+        onClose={() => setIsSidebarOpen(false)}
       />
 
       <div
         className={cn(
           "flex min-h-screen flex-col transition-[padding-left] duration-300 ease-in-out",
-          isSidebarOpen ? "pl-60" : "pl-18",
+          "lg:pl-60",
         )}
       >
-        <DashboardHeader user={DEMO_USER} />
+        <DashboardHeader 
+          user={DEMO_USER}
+          onMenuToggle={() => setIsSidebarOpen((prev) => !prev)}
+        />
 
         <main
           id="main-content"
           tabIndex={-1}
-          className="flex flex-1 flex-col gap-8 px-6 py-8 focus-visible:outline-none"
+          className="flex flex-1 flex-col gap-8 px-4 py-6 md:px-6 md:py-8 focus-visible:outline-none"
         >
           {children}
         </main>
