@@ -82,7 +82,6 @@ export function ManageDocumentsFeature() {
         </p>
       </div>
 
-      {/* Summary Card */}
       <div className="w-full rounded-xl bg-[#111c30] border-2 border-[#1B2233] p-5">
         <div className="flex items-center justify-between">
           <div>
@@ -99,7 +98,6 @@ export function ManageDocumentsFeature() {
         </div>
       </div>
 
-      {/* Documents List */}
       <div className="w-full flex flex-col gap-3">
         {documents.map((document) => (
           <DocumentCard
