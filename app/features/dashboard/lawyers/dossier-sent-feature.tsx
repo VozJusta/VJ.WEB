@@ -1,6 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 import { 
   CheckRounded, 
   DescriptionRounded, 
@@ -26,34 +27,22 @@ export function DossierSentFeature({ lawyerName, lawyerId }: DossierSentFeatureP
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen w-full bg-[#0a0f1a] px-4 py-12">
+    <div className="flex flex-col items-center justify-center min-h-screen w-full px-4 py-12">
       <article 
         className="w-full max-w-2xl"
         aria-labelledby="dossier-sent-title"
       >
         <header className="flex flex-col items-center text-center mb-8">
-          <div className="relative mb-6">
-            <div 
-              className="flex items-center justify-center w-28 h-28 rounded-full bg-[#2585F4]"
-              aria-hidden="true"
-            >
-              <CheckRounded sx={{ fontSize: 64 }} className="text-white" />
-            </div>
-            
-            <span 
-              className="absolute top-0 right-0 flex items-center justify-center w-10 h-10 bg-[#0d1526] border-2 border-[#2585F4] rounded-full"
-              aria-hidden="true"
-            >
-              <DescriptionRounded fontSize="small" className="text-white" />
-            </span>
-
-            <span 
-              className="absolute bottom-2 left-0 flex items-center justify-center w-8 h-8 bg-green-500 border-2 border-[#0a0f1a] rounded-full"
-              aria-label="Enviado com sucesso"
-            >
-              <CheckRounded sx={{ fontSize: 16 }} className="text-white" />
-            </span>
-          </div>
+          <figure className="mb-8">
+            <Image
+              src="/illustrations/report-sent-illustration.png"
+              alt="Dossiê enviado com sucesso"
+              width={200}
+              height={200}
+              className="h-48 w-48 object-contain"
+              priority
+            />
+          </figure>
 
           <h1 
             id="dossier-sent-title"
