@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 import {
   ArrowBackRounded,
@@ -54,6 +55,7 @@ const CATEGORIES: Category[] = [
 ];
 
 export function NewCaseFeature() {
+  const router = useRouter();
   const [selectedCategory, setSelectedCategory] = useState<CategoryId | null>(null);
   const [story, setStory] = useState("");
   const [isRecording, setIsRecording] = useState(false);
@@ -77,6 +79,20 @@ export function NewCaseFeature() {
   const handleStopRecording = () => setIsRecording(false);
 
   const canSubmit = !!selectedCategory && (story.trim().length > 0 || isRecording);
+
+  const handleSubmit = () => {
+    if (!canSubmit) return;
+    
+    const newCaseId = Math.floor(Math.random() * 90000) + 10000;
+    router.push(`/dashboard/casos/${newCaseId}/analise`);
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) {
+      e.preventDefault();
+      handleSubmit();
+    }
+  };
 
   return (
     <div className="flex flex-col gap-6 w-full max-w-3xl mx-auto px-4 py-6 md:px-6 md:py-8">
@@ -176,9 +192,11 @@ export function NewCaseFeature() {
                 id="story"
                 value={story}
                 onChange={(e) => setStory(e.target.value)}
+                onKeyDown={handleKeyDown}
                 placeholder="Descreva o que aconteceu com suas próprias palavras..."
                 rows={7}
                 aria-labelledby="story-heading"
+                aria-describedby="story-hint"
                 className="w-full px-4 py-3 pr-16 bg-[#0d1526] border border-[#1B2233] rounded-xl text-sm text-white placeholder:text-white/25 resize-none focus:outline-none focus:ring-2 focus:ring-[#2585F4] focus:border-transparent transition-all duration-200"
               />
               <VoiceRecorder
@@ -191,8 +209,10 @@ export function NewCaseFeature() {
           )}
         </div>
 
-        <p className="mt-2 text-center text-xs text-white/25">
-          Sua descrição será processada com criptografia de ponta a ponta.
+        <p id="story-hint" className="mt-2 text-center text-xs text-white/25">
+          Sua descrição será processada com criptografia de ponta a ponta. 
+          <span className="mx-1">•</span>
+          Pressione <kbd className="px-1.5 py-0.5 bg-white/10 rounded text-[10px] font-mono">Ctrl+Enter</kbd> para enviar
         </p>
       </section>
 
@@ -201,6 +221,7 @@ export function NewCaseFeature() {
         size="lg"
         fullWidth
         disabled={!canSubmit}
+        onClick={handleSubmit}
         leftIcon={
           isRecording ? (
             <HourglassEmptyRounded fontSize="small" aria-hidden />
