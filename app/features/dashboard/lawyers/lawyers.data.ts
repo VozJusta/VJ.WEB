@@ -1,4 +1,4 @@
-import type { Lawyer } from "@/app/types/lawyer.types";
+import type { Lawyer } from "@/types/lawyer.types";
 
 export type LawyerWithDetails = Lawyer & {
   bio: string;
