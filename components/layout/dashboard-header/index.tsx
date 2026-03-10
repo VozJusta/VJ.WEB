@@ -1,21 +1,39 @@
-import { SearchRounded, NotificationsNoneRounded } from "@mui/icons-material";
+import { SearchRounded, NotificationsNoneRounded, MenuRounded } from "@mui/icons-material";
 import Image from "next/image";
 import Link from "next/link";
 import { DynamicBreadcrumb } from "./dynamic-breadcrumb";
 import { cn } from "@/lib/utils";
 import type { DashboardHeaderProps } from "./dashboard-header.types";
 
-export function DashboardHeader({ user }: DashboardHeaderProps) {
+export function DashboardHeader({ user, onMenuToggle }: DashboardHeaderProps) {
   return (
     <header
       aria-label="Cabeçalho do dashboard"
       className={cn(
-        "sticky top-0 z-30 flex h-16 shrink-0 items-center gap-4 px-6",
+        "sticky top-0 z-30 flex h-16 shrink-0 items-center gap-4 px-4 md:px-6",
         "bg-surface",
         "border-b border-(--border-subtle)",
       )}
     >
-      <DynamicBreadcrumb />
+      <button
+        type="button"
+        onClick={onMenuToggle}
+        aria-label="Abrir menu"
+        className={cn(
+          "flex h-9 w-9 shrink-0 items-center justify-center rounded-xl lg:hidden",
+          "text-text-secondary",
+          "border border-(--border-subtle)",
+          "transition-all duration-200",
+          "hover:bg-white/5 hover:text-foreground",
+          "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary",
+        )}
+      >
+        <MenuRounded fontSize="small" aria-hidden="true" />
+      </button>
+
+      <div className="hidden lg:block flex-1">
+        <DynamicBreadcrumb />
+      </div>
 
       <div className="flex flex-1 items-center justify-end gap-3">
         <form
