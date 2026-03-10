@@ -4,13 +4,14 @@ import { LawyerProfileFeature } from "@/features/dashboard/lawyers/lawyer-profil
 import { getLawyerById } from "@/features/dashboard/lawyers/lawyers.data";
 
 interface LawyerProfilePageProps {
-  params: {
+  params: Promise<{
     id: string;
-  };
+  }>;
 }
 
 export async function generateMetadata({ params }: LawyerProfilePageProps): Promise<Metadata> {
-  const lawyer = getLawyerById(params.id);
+  const { id } = await params;
+  const lawyer = getLawyerById(id);
 
   if (!lawyer) {
     return {
@@ -24,8 +25,9 @@ export async function generateMetadata({ params }: LawyerProfilePageProps): Prom
   };
 }
 
-export default function LawyerProfilePage({ params }: LawyerProfilePageProps) {
-  const lawyer = getLawyerById(params.id);
+export default async function LawyerProfilePage({ params }: LawyerProfilePageProps) {
+  const { id } = await params;
+  const lawyer = getLawyerById(id);
 
   if (!lawyer) {
     notFound();

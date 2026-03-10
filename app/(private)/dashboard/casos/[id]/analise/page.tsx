@@ -7,17 +7,18 @@ export const metadata: Metadata = {
 };
 
 interface AnalisePageProps {
-  params: {
+  params: Promise<{
     id: string;
-  };
+  }>;
 }
 
-export default function AnalisePage({ params }: AnalisePageProps) {
-  const referenceId = `AZ-${params.id}-2024`;
+export default async function AnalisePage({ params }: AnalisePageProps) {
+  const { id } = await params;
+  const referenceId = `AZ-${id}-2024`;
 
   return (
     <CaseAnalysisCompleteFeature
-      caseId={params.id}
+      caseId={id}
       category="Direito do Consumidor"
       viability="Alta Probabilidade"
       viabilityLevel="high"
