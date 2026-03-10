@@ -11,43 +11,8 @@ import {
 } from "@mui/icons-material";
 import { LawyerCard } from "@/components/ui/lawyer-card";
 import { cn } from "@/lib/utils";
-import type { Lawyer, LawyerSortOption } from "@/app/types/lawyer.types";
-
-const MOCK_LAWYERS: Lawyer[] = [
-  {
-    id: "1",
-    name: "Dra. Beatriz Mendes",
-    avatar: "/avatars/beatriz.jpg",
-    isOnline: true,
-    rating: { score: 4.0, totalReviews: 215 },
-    yearsOfExperience: 5,
-    specialization: "Direito do Consumidor",
-    description: "Especialista em Direito do Consumidor e Crimes Virtuais.",
-    tags: ["Fraude", "Crimes Digitais"],
-  },
-  {
-    id: "2",
-    name: "Dr. Marcos Oliveira",
-    avatar: "/avatars/marcos.jpg",
-    isOnline: false,
-    rating: { score: 4.1, totalReviews: 42 },
-    yearsOfExperience: 15,
-    specialization: "Direito Civil",
-    description: "Especialista em casos de saúde e responsabilidade civil.",
-    tags: ["Saúde", "Medicina"],
-  },
-  {
-    id: "3",
-    name: "Dra. Aline Santos",
-    avatar: "/avatars/aline.jpg",
-    isOnline: true,
-    rating: { score: 5.0, totalReviews: 88 },
-    yearsOfExperience: 8,
-    specialization: "Direito do Consumidor",
-    description: "Focada em danos morais e proteção ao consumidor.",
-    tags: ["Danos Morais", "E-commerce"],
-  },
-];
+import { LAWYERS_DATA } from "./lawyers.data";
+import type { LawyerSortOption } from "@/app/types/lawyer.types";
 
 type SortButton = {
   id: LawyerSortOption;
@@ -87,12 +52,12 @@ export function LawyersListFeature() {
   };
 
   const handleViewLawyerDetails = (lawyerId: string) => {
-    console.log("View lawyer details:", lawyerId);
+    router.push(`/dashboard/advogados/${lawyerId}`);
   };
 
   const filteredLawyers = selectedCategory
-    ? MOCK_LAWYERS.filter((lawyer) => lawyer.specialization === selectedCategory)
-    : MOCK_LAWYERS;
+    ? LAWYERS_DATA.filter((lawyer) => lawyer.specialization === selectedCategory)
+    : LAWYERS_DATA;
 
   const sortedLawyers = [...filteredLawyers].sort((a, b) => {
     if (sortBy === "availability") {
