@@ -48,7 +48,6 @@ export function ProfileFeature() {
 
   return (
     <div className="flex flex-col items-center gap-6 w-full max-w-2xl mx-auto px-4 py-6 md:px-0 md:py-8">
-      {/* Avatar */}
       <div className="flex flex-col items-center gap-3">
         <div className="relative">
           <div className="w-24 h-24 rounded-full p-0.5 bg-linear-to-br from-[#2585F4] to-[#1565C0] shadow-[0_0_24px_rgba(37,133,244,0.35)]">

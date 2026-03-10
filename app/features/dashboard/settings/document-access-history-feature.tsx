@@ -49,7 +49,6 @@ type DocumentAccessHistoryFeatureProps = {
 export function DocumentAccessHistoryFeature({
   documentId,
 }: DocumentAccessHistoryFeatureProps) {
-  // In a real app, fetch document and access log based on documentId
   const documentName = "RG - Frente e Verso.pdf";
   const accessLog = mockAccessLog;
 
@@ -64,7 +63,6 @@ export function DocumentAccessHistoryFeature({
         </p>
       </div>
 
-      {/* Document Info Card */}
       <div className="w-full rounded-xl bg-[#111c30] border-2 border-[#1B2233] p-5">
         <div className="flex items-center gap-3">
           <span className="flex items-center justify-center w-12 h-12 rounded-xl bg-[#2585F4]/15 text-[#2585F4]">
@@ -82,7 +80,6 @@ export function DocumentAccessHistoryFeature({
         </div>
       </div>
 
-      {/* Access Log */}
       <div className="w-full flex flex-col gap-3">
         {accessLog.map((entry) => (
           <AccessLogCard key={entry.id} entry={entry} />
