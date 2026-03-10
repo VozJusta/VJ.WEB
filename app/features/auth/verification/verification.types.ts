@@ -3,7 +3,7 @@ export type VerificationType = "email" | "phone";
 export interface VerificationConfig {
   type: VerificationType;
   contact: string;
-  expirationTime?: number; // em segundos, padrão 5 minutos
+  expirationTime?: number;
 }
 
 export const verificationMessages = {
