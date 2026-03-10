@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { ListAltRounded, ChevronRightRounded } from "@mui/icons-material";
-import { CaseCard } from "@/app/components/ui/case-card";
-import type { CaseCardProps } from "@/app/components/ui/case-card/case-card.types";
+import { CaseCard } from "@/components/ui/case-card";
+import type { CaseCardProps } from "@/components/ui/case-card/case-card.types";
 
 const RECENT_CASES: Omit<CaseCardProps, "className">[] = [
   {

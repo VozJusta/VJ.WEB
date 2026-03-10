@@ -1,4 +1,4 @@
-import type { MessageRole, QuickAction } from "@/app/types/chat.types";
+import type { MessageRole, QuickAction } from "@/types/chat.types";
 
 export interface MessageBubbleProps {
   role: MessageRole;

@@ -1,4 +1,4 @@
-import type { Message } from "@/app/types/chat.types";
+import type { Message } from "@/types/chat.types";
 
 export const MOCK_CHAT_MESSAGES: Message[] = [
   {
