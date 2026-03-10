@@ -1,0 +1,193 @@
+"use client";
+
+import { useRouter } from "next/navigation";
+import { 
+  AssignmentTurnedInRounded, 
+  BarChartRounded, 
+  GroupsRounded, 
+  HomeRounded 
+} from "@mui/icons-material";
+import { Button } from "@/components/ui/button";
+
+interface CaseAnalysisCompleteFeatureProps {
+  caseId: string;
+  category: string;
+  categoryIcon?: React.ReactNode;
+  viability: string;
+  viabilityLevel: "high" | "medium" | "low";
+  referenceId: string;
+}
+
+export function CaseAnalysisCompleteFeature({
+  caseId,
+  category = "Direito do Consumidor",
+  viability = "Alta Probabilidade",
+  viabilityLevel = "high",
+  referenceId,
+}: CaseAnalysisCompleteFeatureProps) {
+  const router = useRouter();
+
+  const handleDownloadReport = () => {
+    console.log("Download relatório");
+  };
+
+  const handleViewLawyers = () => {
+    router.push("/dashboard/advogados");
+  };
+
+  const handleGoHome = () => {
+    router.push("/dashboard");
+  };
+
+  return (
+    <div className="flex flex-col min-h-screen w-full px-4 py-6 md:px-6 md:py-8">
+      <header className="w-full max-w-3xl mx-auto mb-8" aria-label="Progresso da análise">
+        <div className="flex items-center justify-between mb-2">
+          <span className="text-xs font-semibold uppercase tracking-wider text-[#2585F4]">
+            Processamento IA
+          </span>
+          <span className="text-xs font-semibold text-[#2585F4]">
+            100% Concluído
+          </span>
+        </div>
+        <div 
+          className="h-1.5 w-full bg-[#1B2233] rounded-full overflow-hidden"
+          role="progressbar"
+          aria-valuenow={100}
+          aria-valuemin={0}
+          aria-valuemax={100}
+          aria-label="Progresso da análise"
+        >
+          <div 
+            className="h-full bg-linear-to-r from-[#2585F4] to-[#4da3ff] rounded-full transition-all duration-500"
+            style={{ width: "100%" }}
+          />
+        </div>
+      </header>
+
+      <main className="flex-1 flex items-center justify-center py-8">
+        <article 
+          className="w-full max-w-2xl bg-[#0d1526] border border-[#1B2233] rounded-3xl p-8 md:p-12"
+          aria-labelledby="analysis-complete-title"
+        >
+          <header className="flex flex-col items-center text-center mb-8">
+            <div 
+              className="flex items-center justify-center w-16 h-16 rounded-2xl bg-[#2585F4] mb-6"
+              aria-hidden="true"
+            >
+              <AssignmentTurnedInRounded 
+                sx={{ fontSize: 32 }} 
+                className="text-white"
+              />
+            </div>
+
+            <h1 
+              id="analysis-complete-title"
+              className="text-2xl md:text-3xl font-bold text-white mb-3"
+            >
+              Análise da IA finalizada
+            </h1>
+
+            <p className="text-sm text-white/60 max-w-md leading-relaxed">
+              Nossa IA processou seu relato e documentos com sucesso.
+              Seu diagnóstico jurídico está pronto para visualização.
+            </p>
+          </header>
+
+          <section 
+            className="flex flex-col sm:flex-row gap-4 mb-8"
+            aria-label="Resultados da análise"
+          >
+            <div className="flex-1 flex items-center gap-3 px-4 py-3 bg-[#111c30] border border-[#1B2233] rounded-xl">
+              <div 
+                className="flex items-center justify-center w-10 h-10 rounded-lg bg-blue-500/15"
+                aria-hidden="true"
+              >
+                <BarChartRounded fontSize="small" className="text-blue-400" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <h2 className="text-xs font-medium text-white/40 uppercase tracking-wide mb-0.5">
+                  Categoria
+                </h2>
+                <p className="text-sm font-semibold text-white truncate">
+                  {category}
+                </p>
+              </div>
+            </div>
+
+            <div className="flex-1 flex items-center gap-3 px-4 py-3 bg-[#111c30] border border-[#1B2233] rounded-xl">
+              <div 
+                className={`flex items-center justify-center w-10 h-10 rounded-lg ${
+                  viabilityLevel === "high" 
+                    ? "bg-green-500/15" 
+                    : viabilityLevel === "medium" 
+                    ? "bg-yellow-500/15" 
+                    : "bg-red-500/15"
+                }`}
+                aria-hidden="true"
+              >
+                <BarChartRounded 
+                  fontSize="small" 
+                  className={
+                    viabilityLevel === "high" 
+                      ? "text-green-400" 
+                      : viabilityLevel === "medium" 
+                      ? "text-yellow-400" 
+                      : "text-red-400"
+                  }
+                />
+              </div>
+              <div className="flex-1 min-w-0">
+                <h2 className="text-xs font-medium text-white/40 uppercase tracking-wide mb-0.5">
+                  Viabilidade
+                </h2>
+                <p className="text-sm font-semibold text-white truncate">
+                  {viability}
+                </p>
+              </div>
+            </div>
+          </section>
+
+          <section className="flex flex-col gap-3" aria-label="Ações disponíveis">
+            <Button
+              variant="primary"
+              size="lg"
+              fullWidth
+              onClick={handleDownloadReport}
+              leftIcon={<BarChartRounded fontSize="small" aria-hidden />}
+            >
+              Baixar Relatório Completo
+            </Button>
+
+            <Button
+              variant="secondary"
+              size="lg"
+              fullWidth
+              onClick={handleViewLawyers}
+              leftIcon={<GroupsRounded fontSize="small" aria-hidden />}
+            >
+              Lista de advogados parceiros
+            </Button>
+
+            <Button
+              variant="ghost"
+              size="lg"
+              fullWidth
+              onClick={handleGoHome}
+              leftIcon={<HomeRounded fontSize="small" aria-hidden />}
+              className="border border-[#1B2233] text-white/70 hover:text-white hover:bg-white/05"
+            >
+              Ir para página inicial
+            </Button>
+          </section>
+        </article>
+      </main>
+
+      <footer className="w-full max-w-3xl mx-auto mt-4">
+        <p className="text-center text-xs text-white/25">
+          Ref. ID: {referenceId} • A análise automatizada não substitui o acompanhamento legal humano.
+        </p>
+      </footer>
+    </div>
+  );
+}
