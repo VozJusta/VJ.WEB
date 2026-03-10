@@ -14,7 +14,7 @@ import {
   CalendarTodayRounded,
 } from "@mui/icons-material";
 import { Button } from "@/components/ui/button";
-import type { Lawyer } from "@/app/types/lawyer.types";
+import type { Lawyer } from "@/types/lawyer.types";
 
 interface LawyerProfileFeatureProps {
   lawyer: Lawyer & {

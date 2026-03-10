@@ -12,7 +12,7 @@ import {
 import { LawyerCard } from "@/components/ui/lawyer-card";
 import { cn } from "@/lib/utils";
 import { LAWYERS_DATA } from "./lawyers.data";
-import type { LawyerSortOption } from "@/app/types/lawyer.types";
+import type { LawyerSortOption } from "@/types/lawyer.types";
 
 type SortButton = {
   id: LawyerSortOption;
