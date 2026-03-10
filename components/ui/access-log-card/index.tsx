@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { InfoOutlined } from "@mui/icons-material";
 import { Badge } from "@/components/ui/badge";
 
 export type AccessLogEntry = {
@@ -13,29 +14,19 @@ export type AccessLogEntry = {
 
 function formatDateTime(dateString: string): string {
   const date = new Date(dateString);
-  const today = new Date();
-  const yesterday = new Date(today);
-  yesterday.setDate(yesterday.getDate() - 1);
 
-  const isToday = date.toDateString() === today.toDateString();
-  const isYesterday = date.toDateString() === yesterday.toDateString();
+  const dateFormatted = date.toLocaleDateString("pt-BR", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+  });
 
   const time = date.toLocaleTimeString("pt-BR", {
     hour: "2-digit",
     minute: "2-digit",
   });
 
-  if (isToday) {
-    return `Hoje às ${time}`;
-  } else if (isYesterday) {
-    return `Ontem às ${time}`;
-  } else {
-    const dateStr = date.toLocaleDateString("pt-BR", {
-      day: "2-digit",
-      month: "short",
-    });
-    return `${dateStr} às ${time}`;
-  }
+  return `${dateFormatted} • ${time}`;
 }
 
 function getUserTypeBadge(userType: AccessLogEntry["userType"]) {
@@ -63,39 +54,74 @@ type AccessLogCardProps = {
 
 export function AccessLogCard({ entry }: AccessLogCardProps) {
   return (
-    <div className="flex items-start gap-4 p-4 rounded-xl bg-[#111c30] border border-[#1B2233]">
-      <div className="relative w-12 h-12 rounded-full overflow-hidden shrink-0 ring-2 ring-[#1B2233]">
+    <article className="flex items-start gap-4 p-5 rounded-2xl bg-[#0D1B2E] border border-[#1B2233]">
+      <figure className="relative w-14 h-14 rounded-full overflow-hidden shrink-0">
         <Image
           src={entry.userAvatar}
-          alt={entry.userName}
+          alt={`Foto de ${entry.userName}`}
           fill
           className="object-cover"
-          sizes="48px"
+          sizes="56px"
         />
-      </div>
+        <span
+          className="absolute bottom-0 right-0 w-3 h-3 rounded-full bg-green-500 border-2 border-[#0D1B2E]"
+          aria-label="Online"
+        />
+      </figure>
 
       <div className="flex-1 min-w-0">
-        <div className="flex items-start justify-between gap-2 mb-2">
-          <div className="flex items-center gap-2 flex-wrap">
-            <h3 className="text-sm font-semibold text-white">
-              {entry.userName}
-            </h3>
-            {getUserTypeBadge(entry.userType)}
-          </div>
-        </div>
+        <header className="flex items-start justify-between gap-3 mb-2">
+          <h3 className="text-base font-semibold text-white">
+            {entry.userName}
+          </h3>
+          {getUserTypeBadge(entry.userType)}
+        </header>
 
-        <p className="text-sm text-white/70 mb-2">{entry.reason}</p>
+        <time
+          className="block text-xs text-white/40 mb-3"
+          dateTime={entry.accessedAt}
+        >
+          <span className="inline-flex items-center gap-1">
+            <svg
+              width="14"
+              height="14"
+              viewBox="0 0 24 24"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+              className="text-white/40"
+              aria-hidden
+            >
+              <path
+                d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+              <path
+                d="M12 6V12L16 14"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+            {formatDateTime(entry.accessedAt)}
+          </span>
+        </time>
 
-        <div className="flex items-center gap-2 text-xs text-white/40">
-          <span>{formatDateTime(entry.accessedAt)}</span>
-          {entry.ipAddress && (
-            <>
-              <span>•</span>
-              <span>IP: {entry.ipAddress}</span>
-            </>
-          )}
+        <div className="flex items-start gap-2 p-3 rounded-lg bg-white/5">
+          <InfoOutlined
+            fontSize="small"
+            className="text-white/40 shrink-0 mt-0.5"
+            aria-hidden
+          />
+          <p className="text-sm text-white/70 leading-relaxed">
+            <strong className="font-semibold text-white">Motivo:</strong>{" "}
+            {entry.reason}
+          </p>
         </div>
       </div>
-    </div>
+    </article>
   );
 }
