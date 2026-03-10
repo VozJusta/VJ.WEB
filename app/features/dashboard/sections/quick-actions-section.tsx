@@ -4,7 +4,7 @@ import {
   GavelRounded,
   TrackChangesRounded,
 } from "@mui/icons-material";
-import { ActionCard } from "@/app/components/ui/action-card";
+import { ActionCard } from "@/components/ui/action-card";
 
 export function QuickActionsSection() {
   return (

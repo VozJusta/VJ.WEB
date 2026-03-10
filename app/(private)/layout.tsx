@@ -2,8 +2,8 @@
 
 import { useState } from "react";
 import { cn } from "@/lib/utils";
-import { Sidebar } from "@/app/components/layout/sidebar";
-import { DashboardHeader } from "@/app/components/layout/dashboard-header";
+import { Sidebar } from "@/components/layout/sidebar";
+import { DashboardHeader } from "@/components/layout/dashboard-header";
 
 const DEMO_USER = {
   name: "Ricardo Silva",

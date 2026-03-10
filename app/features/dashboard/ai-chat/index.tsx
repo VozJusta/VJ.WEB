@@ -1,9 +1,9 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { MessageBubble } from "@/app/components/ui/message-bubble";
-import { ChatInput } from "@/app/components/ui/chat-input";
-import type { Message, QuickAction } from "@/app/types/chat.types";
+import { MessageBubble } from "@/components/ui/message-bubble";
+import { ChatInput } from "@/components/ui/chat-input";
+import type { Message, QuickAction } from "@/types/chat.types";
 
 interface AIChatFeatureProps {
   initialMessages?: Message[];

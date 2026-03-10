@@ -10,7 +10,7 @@ import {
   GavelOutlined,
 } from "@mui/icons-material";
 import { cn } from "@/lib/utils";
-import type { Notification } from "@/app/types/notification.types";
+import type { Notification } from "@/types/notification.types";
 
 interface NotificationCardProps {
   notification: Notification;
