@@ -40,7 +40,7 @@ export function CaseAnalysisCompleteFeature({
   };
 
   return (
-    <div className="flex flex-col min-h-screen w-full bg-[#0a0f1a] px-4 py-6 md:px-6 md:py-8">
+    <div className="flex flex-col min-h-screen w-full px-4 py-6 md:px-6 md:py-8">
       <header className="w-full max-w-3xl mx-auto mb-8" aria-label="Progresso da análise">
         <div className="flex items-center justify-between mb-2">
           <span className="text-xs font-semibold uppercase tracking-wider text-[#2585F4]">
