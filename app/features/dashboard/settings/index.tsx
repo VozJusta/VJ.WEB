@@ -176,7 +176,7 @@ export function SettingsFeature() {
             icon={PolicyRounded}
             label="Privacidade"
             type="link"
-            href="/privacidade"
+            href="/dashboard/configuracoes/privacidade"
           />
         </ul>
 
