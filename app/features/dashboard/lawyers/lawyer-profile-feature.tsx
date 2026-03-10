@@ -36,7 +36,7 @@ export function LawyerProfileFeature({ lawyer }: LawyerProfileFeatureProps) {
   };
 
   const handleContact = () => {
-    console.log("Contact lawyer:", lawyer.id);
+    router.push(`/dashboard/advogados/${lawyer.id}/enviar`);
   };
 
   const renderStars = () => {
