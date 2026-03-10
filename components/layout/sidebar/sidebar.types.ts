@@ -7,5 +7,6 @@ export type SidebarNavItem = {
 export type SidebarProps = {
   isOpen: boolean;
   onToggle: () => void;
+  onClose?: () => void;
   className?: string;
 };
