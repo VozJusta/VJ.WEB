@@ -52,7 +52,7 @@ export function SimulatorSession() {
   };
 
   return (
-    <main className="flex min-h-screen flex-col bg-gray-950">
+    <main className="flex min-h-screen flex-col ">
       <section className="flex flex-1 flex-col gap-6 p-6">
         <article className="relative overflow-hidden rounded-2xl bg-linear-to-br from-teal-600 to-teal-800 shadow-2xl">
           <div className="aspect-video w-full">

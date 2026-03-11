@@ -20,7 +20,7 @@ export function SimulatorFeedback() {
   };
 
   return (
-    <main className="flex min-h-screen flex-col bg-gray-950 px-6 py-8">
+    <main className="flex min-h-screen flex-col px-6 py-8">
       <div className="mx-auto w-full max-w-3xl">
         <header className="mb-8">
           <div className="mb-2 flex items-center justify-between text-xs font-medium uppercase tracking-wide">
