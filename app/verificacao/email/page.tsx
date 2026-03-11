@@ -36,24 +36,20 @@ function EmailVerificationContent() {
   };
 
   return (
-    <main className="min-h-screen bg-[radial-gradient(circle_at_15%_20%,rgba(37,133,244,0.22)_0%,rgba(4,10,27,1)_55%)]">
-      <VerificationForm 
-        config={config} 
-        onVerified={handleVerified}
-        onBack={handleBack}
-      />
-    </main>
+    <VerificationForm 
+      config={config} 
+      onVerified={handleVerified}
+      onBack={handleBack}
+    />
   );
 }
 
 export default function EmailVerificationPage() {
   return (
-    <Suspense fallback={
-      <main className="min-h-screen bg-[radial-gradient(circle_at_15%_20%,rgba(37,133,244,0.22)_0%,rgba(4,10,27,1)_55%)] flex items-center justify-center">
-        <div className="animate-pulse text-white">Carregando...</div>
-      </main>
-    }>
-      <EmailVerificationContent />
-    </Suspense>
+    <main className="min-h-screen bg-[radial-gradient(circle_at_15%_20%,rgba(37,133,244,0.22)_0%,rgba(4,10,27,1)_55%)]">
+      <Suspense fallback={null}>
+        <EmailVerificationContent />
+      </Suspense>
+    </main>
   );
 }
