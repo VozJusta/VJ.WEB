@@ -1,7 +1,9 @@
 'use client';
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { PersonalityOption } from '@/components/ui/personality-option';
+import { Button } from '@/components/ui/button';
 import type { PersonalityType } from '@/types/simulator.types';
 import AnchorIcon from '@mui/icons-material/Anchor';
 import BoltIcon from '@mui/icons-material/Bolt';
@@ -73,6 +75,7 @@ const personalities: PersonalityConfig[] = [
 ];
 
 export function SimulatorConfig() {
+  const router = useRouter();
   const [judgeName, setJudgeName] = useState('');
   const [selectedPersonality, setSelectedPersonality] =
     useState<PersonalityType>('impartial');
@@ -83,7 +86,7 @@ export function SimulatorConfig() {
   };
 
   const handleStartSimulation = () => {
-    console.log({ judgeName, personality: selectedPersonality });
+    router.push('/dashboard/simulador/sessao');
   };
 
   return (
@@ -140,14 +143,15 @@ export function SimulatorConfig() {
                 ))}
               </div>
 
-              <button
-                type="button"
+              <Button
+                variant="ghost"
+                size="sm"
                 onClick={handleResetToDefault}
-                className="mt-4 flex items-center gap-2 text-sm text-gray-400 transition-colors hover:text-white"
+                leftIcon={<RefreshIcon className="h-4 w-4" />}
+                className="mt-4 text-gray-400 hover:text-white"
               >
-                <RefreshIcon className="h-4 w-4" />
                 Restaurar Padrão
-              </button>
+              </Button>
             </div>
           </div>
 
@@ -168,14 +172,14 @@ export function SimulatorConfig() {
           </aside>
 
           <div className="flex justify-end">
-            <button
-              type="button"
+            <Button
+              variant="primary"
+              size="lg"
               onClick={handleStartSimulation}
-              className="flex items-center gap-2 rounded-lg bg-blue-600 px-6 py-3 font-semibold text-white transition-all hover:bg-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-gray-950"
+              rightIcon={<PlayArrowIcon />}
             >
               Iniciar Simulação
-              <PlayArrowIcon className="h-4 w-4" />
-            </button>
+            </Button>
           </div>
         </section>
       </div>
