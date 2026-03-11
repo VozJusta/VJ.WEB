@@ -3,17 +3,15 @@
 import { useState } from 'react';
 import { PersonalityOption } from '@/components/ui/personality-option';
 import type { PersonalityType } from '@/types/simulator.types';
-import {
-  Anchor,
-  Zap,
-  Scale,
-  Heart,
-  Target,
-  FileText,
-  RotateCcw,
-  Play,
-  Info,
-} from 'lucide-react';
+import AnchorIcon from '@mui/icons-material/Anchor';
+import BoltIcon from '@mui/icons-material/Bolt';
+import BalanceIcon from '@mui/icons-material/Balance';
+import FavoriteIcon from '@mui/icons-material/Favorite';
+import GpsFixedIcon from '@mui/icons-material/GpsFixed';
+import DescriptionIcon from '@mui/icons-material/Description';
+import RefreshIcon from '@mui/icons-material/Refresh';
+import PlayArrowIcon from '@mui/icons-material/PlayArrow';
+import InfoIcon from '@mui/icons-material/Info';
 
 interface PersonalityConfig {
   id: PersonalityType;
@@ -29,7 +27,7 @@ const personalities: PersonalityConfig[] = [
     label: 'Calmo',
     description:
       'Mantém um ritmo constante e encoraja diálogo paciente durante a audiência.',
-    icon: <Anchor className="h-5 w-5 text-blue-400" />,
+    icon: <AnchorIcon className="h-5 w-5 text-blue-400" />,
     color: 'bg-blue-500/20',
   },
   {
@@ -37,7 +35,7 @@ const personalities: PersonalityConfig[] = [
     label: 'Agressivo',
     description:
       'Contesta argumentos rapidamente e exige precisão rápida nas respostas.',
-    icon: <Zap className="h-5 w-5 text-red-400" />,
+    icon: <BoltIcon className="h-5 w-5 text-red-400" />,
     color: 'bg-red-500/20',
   },
   {
@@ -45,7 +43,7 @@ const personalities: PersonalityConfig[] = [
     label: 'Imparcial',
     description:
       'Segue estritamente as regras processuais sem demonstrar qualquer viés.',
-    icon: <Scale className="h-5 w-5 text-blue-400" />,
+    icon: <BalanceIcon className="h-5 w-5 text-blue-400" />,
     color: 'bg-blue-500/20',
   },
   {
@@ -53,7 +51,7 @@ const personalities: PersonalityConfig[] = [
     label: 'Empático',
     description:
       'Foca no elemento humano do caso e demonstra sensibilidade aos depoimentos.',
-    icon: <Heart className="h-5 w-5 text-green-400" />,
+    icon: <FavoriteIcon className="h-5 w-5 text-green-400" />,
     color: 'bg-green-500/20',
   },
   {
@@ -61,7 +59,7 @@ const personalities: PersonalityConfig[] = [
     label: 'Pragmático',
     description:
       'Valoriza a eficiência, respostas diretas e evita delongas processuais.',
-    icon: <Target className="h-5 w-5 text-yellow-400" />,
+    icon: <GpsFixedIcon className="h-5 w-5 text-yellow-400" />,
     color: 'bg-yellow-500/20',
   },
   {
@@ -69,7 +67,7 @@ const personalities: PersonalityConfig[] = [
     label: 'Pesquisador',
     description:
       'Aprofunda-se em precedentes legais e detalhes técnicos complexos.',
-    icon: <FileText className="h-5 w-5 text-purple-400" />,
+    icon: <DescriptionIcon className="h-5 w-5 text-purple-400" />,
     color: 'bg-purple-500/20',
   },
 ];
@@ -121,7 +119,7 @@ export function SimulatorConfig() {
 
             <div>
               <div className="mb-3 flex items-center gap-2">
-                <Info className="h-4 w-4 text-blue-400" />
+                <InfoIcon className="h-4 w-4 text-blue-400" />
                 <h2 className="text-sm font-semibold text-white">
                   Personalidade do Juiz
                 </h2>
@@ -147,7 +145,7 @@ export function SimulatorConfig() {
                 onClick={handleResetToDefault}
                 className="mt-4 flex items-center gap-2 text-sm text-gray-400 transition-colors hover:text-white"
               >
-                <RotateCcw className="h-4 w-4" />
+                <RefreshIcon className="h-4 w-4" />
                 Restaurar Padrão
               </button>
             </div>
@@ -155,7 +153,7 @@ export function SimulatorConfig() {
 
           <aside className="rounded-lg border border-blue-500/30 bg-blue-500/10 p-4">
             <div className="flex gap-3">
-              <Info className="h-5 w-5 shrink-0 text-blue-400" />
+              <InfoIcon className="h-5 w-5 shrink-0 text-blue-400" />
               <div>
                 <h3 className="mb-1 text-sm font-semibold text-blue-300">
                   Dica de Treinamento
@@ -176,7 +174,7 @@ export function SimulatorConfig() {
               className="flex items-center gap-2 rounded-lg bg-blue-600 px-6 py-3 font-semibold text-white transition-all hover:bg-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-gray-950"
             >
               Iniciar Simulação
-              <Play className="h-4 w-4" />
+              <PlayArrowIcon className="h-4 w-4" />
             </button>
           </div>
         </section>
