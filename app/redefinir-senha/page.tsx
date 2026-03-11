@@ -1,6 +1,5 @@
 import { Suspense } from "react";
 import type { Metadata } from "next";
-import { Suspense } from "react";
 import { ResetPasswordForm } from "@/app/features/auth/reset-password";
 
 export const metadata: Metadata = {
