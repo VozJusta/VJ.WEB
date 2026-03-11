@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import PauseIcon from '@mui/icons-material/Pause';
+import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import VideocamIcon from '@mui/icons-material/Videocam';
 import ExitToAppIcon from '@mui/icons-material/ExitToApp';
 
@@ -86,7 +87,7 @@ export function SimulatorSession() {
             </p>
           </div>
 
-          <div className="mt-6 flex items-center justify-center">
+          <div className="mt-6 flex items-center justify-center gap-4">
             <button
               type="button"
               onClick={handleStartRecording}
@@ -98,9 +99,7 @@ export function SimulatorSession() {
                 <path d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"/>
               </svg>
             </button>
-          </div>
 
-          <div className="mt-6 flex items-center justify-center gap-4">
             <button
               type="button"
               onClick={handleTogglePause}
@@ -108,7 +107,11 @@ export function SimulatorSession() {
               aria-label={isPaused ? 'Retomar' : 'Pausar'}
               aria-pressed={isPaused}
             >
-              <PauseIcon fontSize="large" />
+              {isPaused ? (
+                <PlayArrowIcon fontSize="large" />
+              ) : (
+                <PauseIcon fontSize="large" />
+              )}
             </button>
 
             <button
