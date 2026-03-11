@@ -2,7 +2,6 @@
 
 import { useState, useRef, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
-import { VoiceRecorder } from '@/components/ui/voice-recorder';
 import PauseIcon from '@mui/icons-material/Pause';
 import VideocamIcon from '@mui/icons-material/Videocam';
 import ExitToAppIcon from '@mui/icons-material/ExitToApp';
@@ -87,16 +86,58 @@ export function SimulatorSession() {
             </p>
           </div>
 
-          <div className="mt-6 flex items-center justify-center gap-4">
-            <div className="relative flex h-14 w-14 items-center justify-center">
-              <VoiceRecorder
-                isRecording={isRecording}
-                elapsedSeconds={elapsedSeconds}
-                onStart={handleStartRecording}
-                onStop={handleStopRecording}
-              />
-            </div>
+          <div className="mt-6 flex items-center justify-center">
+            {!isRecording ? (
+              <button
+                type="button"
+                onClick={handleStartRecording}
+                className="flex h-14 w-14 items-center justify-center rounded-full bg-[#2585F4] text-white shadow-[0_4px_16px_rgba(37,133,244,0.45)] transition-all hover:bg-[#1978E5] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2585F4]"
+                aria-label="Gravar áudio"
+              >
+                <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"/>
+                  <path d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"/>
+                </svg>
+              </button>
+            ) : (
+              <div className="w-full">
+                <div className="relative flex flex-col items-center justify-center gap-4 w-full min-h-55 rounded-xl border border-[#1B2233] bg-[#0d1526]">
+                  <div className="flex items-end justify-center gap-1 h-16" aria-hidden>
+                    {[32, 48, 56, 40, 64, 52, 44, 60, 36, 56, 48, 40].map((h, i) => (
+                      <span
+                        key={i}
+                        style={{
+                          height: h,
+                          animationDelay: `${[0, 0.1, 0.2, 0.35, 0.15, 0.3, 0.05, 0.25, 0.1, 0.2, 0.3, 0.15][i]}s`,
+                          animationDuration: '0.8s',
+                        }}
+                        className="w-1.5 rounded-full bg-[#2585F4] origin-bottom animate-[wave-bar_0.8s_ease-in-out_infinite]"
+                      />
+                    ))}
+                  </div>
+                  <div className="flex flex-col items-center gap-1">
+                    <p className="text-base font-semibold text-[#2585F4]">Gravando áudio...</p>
+                    <time className="text-sm tabular-nums text-white/50">
+                      {String(Math.floor(elapsedSeconds / 60)).padStart(2, '0')}:
+                      {String(elapsedSeconds % 60).padStart(2, '0')}
+                    </time>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={handleStopRecording}
+                    aria-label="Parar gravação"
+                    className="absolute bottom-4 right-4 flex items-center justify-center w-11 h-11 rounded-full bg-red-500 hover:bg-red-600 text-white shadow-[0_4px_16px_rgba(239,68,68,0.45)] transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-400"
+                  >
+                    <svg className="h-4 w-4" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M6 6h12v12H6z"/>
+                    </svg>
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
 
+          <div className="mt-6 flex items-center justify-center gap-4">
             <button
               type="button"
               onClick={handleTogglePause}
