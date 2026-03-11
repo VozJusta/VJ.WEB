@@ -90,7 +90,7 @@ export function SimulatorConfig() {
   };
 
   return (
-    <main className="min-h-screen bg-gray-950 px-6 py-8">
+    <main className="min-h-screen px-6 py-8">
       <div className="mx-auto max-w-4xl">
         <header className="mb-8">
           <h1 className="mb-2 text-2xl font-bold text-white">
