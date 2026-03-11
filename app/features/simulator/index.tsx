@@ -1,0 +1,186 @@
+'use client';
+
+import { useState } from 'react';
+import { PersonalityOption } from '@/components/ui/personality-option';
+import type { PersonalityType } from '@/types/simulator.types';
+import {
+  Anchor,
+  Zap,
+  Scale,
+  Heart,
+  Target,
+  FileText,
+  RotateCcw,
+  Play,
+  Info,
+} from 'lucide-react';
+
+interface PersonalityConfig {
+  id: PersonalityType;
+  label: string;
+  description: string;
+  icon: React.ReactNode;
+  color: string;
+}
+
+const personalities: PersonalityConfig[] = [
+  {
+    id: 'calm',
+    label: 'Calmo',
+    description:
+      'Mantém um ritmo constante e encoraja diálogo paciente durante a audiência.',
+    icon: <Anchor className="h-5 w-5 text-blue-400" />,
+    color: 'bg-blue-500/20',
+  },
+  {
+    id: 'aggressive',
+    label: 'Agressivo',
+    description:
+      'Contesta argumentos rapidamente e exige precisão rápida nas respostas.',
+    icon: <Zap className="h-5 w-5 text-red-400" />,
+    color: 'bg-red-500/20',
+  },
+  {
+    id: 'impartial',
+    label: 'Imparcial',
+    description:
+      'Segue estritamente as regras processuais sem demonstrar qualquer viés.',
+    icon: <Scale className="h-5 w-5 text-blue-400" />,
+    color: 'bg-blue-500/20',
+  },
+  {
+    id: 'empathetic',
+    label: 'Empático',
+    description:
+      'Foca no elemento humano do caso e demonstra sensibilidade aos depoimentos.',
+    icon: <Heart className="h-5 w-5 text-green-400" />,
+    color: 'bg-green-500/20',
+  },
+  {
+    id: 'pragmatic',
+    label: 'Pragmático',
+    description:
+      'Valoriza a eficiência, respostas diretas e evita delongas processuais.',
+    icon: <Target className="h-5 w-5 text-yellow-400" />,
+    color: 'bg-yellow-500/20',
+  },
+  {
+    id: 'researcher',
+    label: 'Pesquisador',
+    description:
+      'Aprofunda-se em precedentes legais e detalhes técnicos complexos.',
+    icon: <FileText className="h-5 w-5 text-purple-400" />,
+    color: 'bg-purple-500/20',
+  },
+];
+
+export function SimulatorConfig() {
+  const [judgeName, setJudgeName] = useState('');
+  const [selectedPersonality, setSelectedPersonality] =
+    useState<PersonalityType>('impartial');
+
+  const handleResetToDefault = () => {
+    setJudgeName('');
+    setSelectedPersonality('impartial');
+  };
+
+  const handleStartSimulation = () => {
+    console.log({ judgeName, personality: selectedPersonality });
+  };
+
+  return (
+    <main className="min-h-screen bg-gray-950 px-6 py-8">
+      <div className="mx-auto max-w-4xl">
+        <header className="mb-8">
+          <h1 className="mb-2 text-2xl font-bold text-white">
+            Configuração da Audiência Simulada
+          </h1>
+          <p className="text-sm text-gray-400">
+            Personalize o seu treinamento escolhendo o perfil do Juiz IA
+          </p>
+        </header>
+
+        <section className="space-y-6">
+          <div className="rounded-xl bg-gray-900 p-6">
+            <div className="mb-6">
+              <label htmlFor="judge-name" className="mb-2 block text-sm font-medium text-white">
+                Nome do Juiz
+              </label>
+              <p className="mb-3 text-xs text-gray-400">
+                Como você deseja chamar a autoridade na simulação?
+              </p>
+              <input
+                id="judge-name"
+                type="text"
+                value={judgeName}
+                onChange={(e) => setJudgeName(e.target.value)}
+                placeholder="Ex: Dr. Silva ou Juiz Instrutor"
+                className="w-full rounded-lg border border-gray-700 bg-gray-800 px-4 py-3 text-sm text-white placeholder:text-gray-500 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+              />
+            </div>
+
+            <div>
+              <div className="mb-3 flex items-center gap-2">
+                <Info className="h-4 w-4 text-blue-400" />
+                <h2 className="text-sm font-semibold text-white">
+                  Personalidade do Juiz
+                </h2>
+              </div>
+
+              <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
+                {personalities.map((personality) => (
+                  <PersonalityOption
+                    key={personality.id}
+                    id={personality.id}
+                    label={personality.label}
+                    description={personality.description}
+                    icon={personality.icon}
+                    color={personality.color}
+                    selected={selectedPersonality === personality.id}
+                    onSelect={setSelectedPersonality}
+                  />
+                ))}
+              </div>
+
+              <button
+                type="button"
+                onClick={handleResetToDefault}
+                className="mt-4 flex items-center gap-2 text-sm text-gray-400 transition-colors hover:text-white"
+              >
+                <RotateCcw className="h-4 w-4" />
+                Restaurar Padrão
+              </button>
+            </div>
+          </div>
+
+          <aside className="rounded-lg border border-blue-500/30 bg-blue-500/10 p-4">
+            <div className="flex gap-3">
+              <Info className="h-5 w-5 shrink-0 text-blue-400" />
+              <div>
+                <h3 className="mb-1 text-sm font-semibold text-blue-300">
+                  Dica de Treinamento
+                </h3>
+                <p className="text-xs leading-relaxed text-blue-200/80">
+                  Recomendamos iniciar com o perfil Imparcial para dominar o
+                  procedimento básico. Para desafios avançados de sustentação
+                  oral, experimente o perfil Agressivo.
+                </p>
+              </div>
+            </div>
+          </aside>
+
+          <div className="flex justify-end">
+            <button
+              type="button"
+              onClick={handleStartSimulation}
+              className="flex items-center gap-2 rounded-lg bg-blue-600 px-6 py-3 font-semibold text-white transition-all hover:bg-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-gray-950"
+            >
+              Iniciar Simulação
+              <Play className="h-4 w-4" />
+            </button>
+          </div>
+        </section>
+      </div>
+    </main>
+  );
+}
