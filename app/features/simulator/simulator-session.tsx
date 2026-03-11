@@ -1,8 +1,8 @@
 'use client';
 
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
-import MicIcon from '@mui/icons-material/Mic';
+import { VoiceRecorder } from '@/components/ui/voice-recorder';
 import PauseIcon from '@mui/icons-material/Pause';
 import VideocamIcon from '@mui/icons-material/Videocam';
 import ExitToAppIcon from '@mui/icons-material/ExitToApp';
@@ -10,14 +10,35 @@ import ExitToAppIcon from '@mui/icons-material/ExitToApp';
 export function SimulatorSession() {
   const [isRecording, setIsRecording] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
+  const [elapsedSeconds, setElapsedSeconds] = useState(0);
   const [transcription, setTranscription] = useState(
     '"No dia 15 de março, eu recebi uma notificação no meu aplicativo bancário sobre uma transação que eu não reconheci... tentei contato..."'
   );
   const [confidence, setConfidence] = useState(75);
   const videoRef = useRef<HTMLVideoElement>(null);
 
-  const handleToggleRecording = () => {
-    setIsRecording(!isRecording);
+  useEffect(() => {
+    let interval: NodeJS.Timeout | null = null;
+
+    if (isRecording && !isPaused) {
+      interval = setInterval(() => {
+        setElapsedSeconds((prev) => prev + 1);
+      }, 1000);
+    }
+
+    return () => {
+      if (interval) clearInterval(interval);
+    };
+  }, [isRecording, isPaused]);
+
+  const handleStartRecording = () => {
+    setIsRecording(true);
+    setElapsedSeconds(0);
+  };
+
+  const handleStopRecording = () => {
+    setIsRecording(false);
+    setElapsedSeconds(0);
   };
 
   const handleTogglePause = () => {
@@ -67,19 +88,14 @@ export function SimulatorSession() {
           </div>
 
           <div className="mt-6 flex items-center justify-center gap-4">
-            <button
-              type="button"
-              onClick={handleToggleRecording}
-              className={`flex h-14 w-14 items-center justify-center rounded-full transition-all ${
-                isRecording
-                  ? 'bg-red-500 text-white hover:bg-red-600'
-                  : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
-              }`}
-              aria-label={isRecording ? 'Parar gravação' : 'Iniciar gravação'}
-              aria-pressed={isRecording}
-            >
-              <MicIcon />
-            </button>
+            <div className="relative flex h-14 w-14 items-center justify-center">
+              <VoiceRecorder
+                isRecording={isRecording}
+                elapsedSeconds={elapsedSeconds}
+                onStart={handleStartRecording}
+                onStop={handleStopRecording}
+              />
+            </div>
 
             <button
               type="button"
