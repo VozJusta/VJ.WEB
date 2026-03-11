@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import PauseIcon from '@mui/icons-material/Pause';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
@@ -8,6 +9,7 @@ import VideocamIcon from '@mui/icons-material/Videocam';
 import ExitToAppIcon from '@mui/icons-material/ExitToApp';
 
 export function SimulatorSession() {
+  const router = useRouter();
   const [isRecording, setIsRecording] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
   const [elapsedSeconds, setElapsedSeconds] = useState(0);
@@ -46,7 +48,7 @@ export function SimulatorSession() {
   };
 
   const handleEndSession = () => {
-    console.log('Ending session and showing feedback');
+    router.push('/dashboard/simulador/feedback');
   };
 
   return (
