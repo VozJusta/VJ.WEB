@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { contactSchema } from "../../contato/contact.schema";
-import { EmailService } from "../../../services/email.service";
+import { contactSchema } from "../../app/contato/contact.schema";
+import { EmailService } from "../../services/email.service";
 
 export async function POST(request: NextRequest) {
   try {
