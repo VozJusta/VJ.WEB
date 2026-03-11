@@ -27,12 +27,20 @@ function PhoneVerificationContent() {
   };
 
   return (
+    <VerificationForm 
+      config={config} 
+      onVerified={handleVerified}
+      onBack={handleBack}
+    />
+  );
+}
+
+export default function PhoneVerificationPage() {
+  return (
     <main className="min-h-screen bg-[radial-gradient(circle_at_15%_20%,rgba(37,133,244,0.22)_0%,rgba(4,10,27,1)_55%)]">
-      <VerificationForm 
-        config={config} 
-        onVerified={handleVerified}
-        onBack={handleBack}
-      />
+      <Suspense fallback={null}>
+        <PhoneVerificationContent />
+      </Suspense>
     </main>
   );
 }
@@ -47,4 +55,5 @@ export default function PhoneVerificationPage() {
       <PhoneVerificationContent />
     </Suspense>
   );
+}
 }
