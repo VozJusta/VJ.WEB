@@ -12,7 +12,7 @@ export default function RoleSwitcherPage() {
     setRole(role);
 
     if (role === "lawyer") {
-      router.push("/(lawyer)/dashboard");
+      router.push("/advogado/dashboard");
     } else {
       router.push("/dashboard");
     }
