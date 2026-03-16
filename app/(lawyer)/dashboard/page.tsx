@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import { StatCard } from "@/components/ui/stat-card";
 import { ProductivityChart } from "@/components/ui/productivity-chart";
-import type { StatCardData, ChartDataPoint } from "@/types/dashboard.types";
+import { OperationalStatus } from "@/components/ui/operational-status";
+import type { StatCardData, ChartDataPoint, OperationalStatus as OperationalStatusType } from "@/types/dashboard.types";
 
 export const metadata: Metadata = {
   title: "Dashboard - Advogado | Voz Justa",
@@ -47,6 +48,12 @@ const generateChartData = (): ChartDataPoint[] => {
 
 const chartData = generateChartData();
 
+const operationalStatuses: OperationalStatusType[] = [
+  { label: "EM ANÁLISE", value: 24, color: "rgb(59, 130, 246)" },
+  { label: "CONCLUÍDOS", value: 12, color: "rgb(34, 197, 94)" },
+  { label: "NOVOS PEDIDOS", value: 5, color: "rgb(251, 146, 60)" },
+];
+
 export default function LawyerDashboardPage() {
   return (
     <div className="space-y-8">
@@ -77,24 +84,28 @@ export default function LawyerDashboardPage() {
         </div>
       </section>
 
-      <section
-        aria-labelledby="productivity-heading"
-        className="rounded-2xl border border-(--border-subtle) bg-surface-elevated p-6"
-      >
-        <header className="mb-6">
-          <h2
-            id="productivity-heading"
-            className="text-lg font-semibold tracking-tight text-foreground"
-          >
-            Análise de Produtividade
-          </h2>
-          <p className="mt-1 text-sm text-text-secondary">
-            Volume de casos processados nos últimos 30 dias
-          </p>
-        </header>
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+        <section
+          aria-labelledby="productivity-heading"
+          className="lg:col-span-2 rounded-2xl border border-(--border-subtle) bg-surface-elevated p-6"
+        >
+          <header className="mb-6">
+            <h2
+              id="productivity-heading"
+              className="text-lg font-semibold tracking-tight text-foreground"
+            >
+              Análise de Produtividade
+            </h2>
+            <p className="mt-1 text-sm text-text-secondary">
+              Volume de casos processados nos últimos 30 dias
+            </p>
+          </header>
 
-        <ProductivityChart data={chartData} className="h-80" />
-      </section>
+          <ProductivityChart data={chartData} className="h-80" />
+        </section>
+
+        <OperationalStatus statuses={operationalStatuses} progressPercent={60} />
+      </div>
     </div>
   );
 }
