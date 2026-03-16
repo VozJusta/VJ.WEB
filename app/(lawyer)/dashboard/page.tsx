@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { StatCard } from "@/components/ui/stat-card";
-import type { StatCardData } from "@/types/dashboard.types";
+import { ProductivityChart } from "@/components/ui/productivity-chart";
+import type { StatCardData, ChartDataPoint } from "@/types/dashboard.types";
 
 export const metadata: Metadata = {
   title: "Dashboard - Advogado | Voz Justa",
@@ -28,6 +29,23 @@ const statsData: StatCardData[] = [
     unit: "dias",
   },
 ];
+
+const generateChartData = (): ChartDataPoint[] => {
+  const data: ChartDataPoint[] = [];
+  const baseValue = 40;
+
+  for (let i = 1; i <= 30; i++) {
+    const variation = Math.sin(i / 5) * 20 + Math.random() * 15;
+    data.push({
+      date: i.toString(),
+      value: Math.round(baseValue + variation),
+    });
+  }
+
+  return data;
+};
+
+const chartData = generateChartData();
 
 export default function LawyerDashboardPage() {
   return (
@@ -57,6 +75,25 @@ export default function LawyerDashboardPage() {
             />
           ))}
         </div>
+      </section>
+
+      <section
+        aria-labelledby="productivity-heading"
+        className="rounded-2xl border border-(--border-subtle) bg-surface-elevated p-6"
+      >
+        <header className="mb-6">
+          <h2
+            id="productivity-heading"
+            className="text-lg font-semibold tracking-tight text-foreground"
+          >
+            Análise de Produtividade
+          </h2>
+          <p className="mt-1 text-sm text-text-secondary">
+            Volume de casos processados nos últimos 30 dias
+          </p>
+        </header>
+
+        <ProductivityChart data={chartData} className="h-80" />
       </section>
     </div>
   );
