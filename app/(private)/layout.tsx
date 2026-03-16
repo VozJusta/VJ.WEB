@@ -4,12 +4,7 @@ import { useState } from "react";
 import { cn } from "@/lib/utils";
 import { Sidebar } from "@/components/layout/sidebar";
 import { DashboardHeader } from "@/components/layout/dashboard-header";
-
-const DEMO_USER = {
-  name: "Ricardo Silva",
-  role: "Cidadão",
-  avatarUrl: undefined,
-};
+import { useAuth } from "@/contexts/auth-context";
 
 export default function PrivateLayout({
   children,
@@ -17,6 +12,13 @@ export default function PrivateLayout({
   children: React.ReactNode;
 }) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const { user } = useAuth();
+
+  const displayUser = {
+    name: user.name,
+    role: "Cidadão",
+    avatarUrl: user.avatarUrl,
+  };
 
   return (
     <div className="layout-bg min-h-screen">
@@ -32,8 +34,8 @@ export default function PrivateLayout({
           "lg:pl-60",
         )}
       >
-        <DashboardHeader 
-          user={DEMO_USER}
+        <DashboardHeader
+          user={displayUser}
           onMenuToggle={() => setIsSidebarOpen((prev) => !prev)}
         />
 

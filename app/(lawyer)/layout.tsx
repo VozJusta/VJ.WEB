@@ -5,12 +5,7 @@ import { cn } from "@/lib/utils";
 import { Sidebar } from "@/components/layout/sidebar";
 import { DashboardHeader } from "@/components/layout/dashboard-header";
 import { lawyerSidebarMainNav, lawyerSidebarBottomNav } from "./sidebar.navigation";
-
-const DEMO_LAWYER = {
-  name: "Dra. Ana Carolina Silva",
-  role: "Advogada",
-  avatarUrl: undefined,
-};
+import { useAuth } from "@/contexts/auth-context";
 
 export default function LawyerLayout({
   children,
@@ -18,6 +13,13 @@ export default function LawyerLayout({
   children: React.ReactNode;
 }) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const { user } = useAuth();
+
+  const displayUser = {
+    name: user.name,
+    role: "Advogada",
+    avatarUrl: user.avatarUrl,
+  };
 
   return (
     <div className="layout-bg min-h-screen">
@@ -36,7 +38,7 @@ export default function LawyerLayout({
         )}
       >
         <DashboardHeader
-          user={DEMO_LAWYER}
+          user={displayUser}
           onMenuToggle={() => setIsSidebarOpen((prev) => !prev)}
         />
 
