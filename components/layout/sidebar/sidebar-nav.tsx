@@ -71,15 +71,19 @@ function SidebarNavLink({ item, isActive, isDanger = false, isOpen }: SidebarNav
 
 type SidebarNavProps = {
   isOpen: boolean;
+  mainNav?: SidebarNavItem[];
+  bottomNav?: SidebarNavItem[];
 };
 
-export function SidebarNav({ isOpen }: SidebarNavProps) {
+export function SidebarNav({ isOpen, mainNav, bottomNav }: SidebarNavProps) {
   const pathname = usePathname();
+  const mainNavItems = mainNav || sidebarMainNav;
+  const bottomNavItems = bottomNav || sidebarBottomNav;
 
   return (
     <nav aria-label="Navegação principal" className="flex flex-1 flex-col justify-between overflow-y-auto px-3 py-4">
       <ul role="list" className="flex flex-col gap-1">
-        {sidebarMainNav.map((item) => (
+        {mainNavItems.map((item) => (
           <SidebarNavLink
             key={item.href}
             item={item}
@@ -90,13 +94,13 @@ export function SidebarNav({ isOpen }: SidebarNavProps) {
       </ul>
 
       <ul role="list" className="flex flex-col gap-1 border-t border-(--border-subtle) pt-4">
-        {sidebarBottomNav.map((item, index) => (
+        {bottomNavItems.map((item, index) => (
           <SidebarNavLink
             key={item.href}
             item={item}
             isOpen={isOpen}
             isActive={pathname === item.href}
-            isDanger={index === sidebarBottomNav.length - 1}
+            isDanger={index === bottomNavItems.length - 1}
           />
         ))}
       </ul>

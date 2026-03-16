@@ -8,7 +8,7 @@ import { SidebarNav } from "./sidebar-nav";
 import { cn } from "@/lib/utils";
 import type { SidebarProps } from "./sidebar.types";
 
-export function Sidebar({ isOpen, onToggle, onClose, className }: SidebarProps) {
+export function Sidebar({ isOpen, onToggle, onClose, className, mainNav, bottomNav }: SidebarProps) {
 
   return (
     <>
@@ -70,7 +70,7 @@ export function Sidebar({ isOpen, onToggle, onClose, className }: SidebarProps) 
           </button>
         </div>
 
-        <SidebarNav isOpen={true} />
+        <SidebarNav isOpen={true} mainNav={mainNav} bottomNav={bottomNav} />
       </aside>
     </>
   );
