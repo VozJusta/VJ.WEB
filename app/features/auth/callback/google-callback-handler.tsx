@@ -38,8 +38,8 @@ export function GoogleAuthCallbackHandler() {
           full_name: fullName,
           role: localStorage.getItem('auth-store')
             ? JSON.parse(localStorage.getItem('auth-store') as string).state
-              ?.userRole || 'user'
-            : 'user',
+              ?.userRole || 'citizen'
+            : 'citizen',
           loggedWithGoogle: true,
         };
 
