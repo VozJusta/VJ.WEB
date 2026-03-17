@@ -55,7 +55,14 @@ VJ.WEB/
    ↓
 6. Backend retorna dados do usuário
    ↓
-7. Redireciona para dashboard apropriado
+7. Route handler redireciona direto para Dashboard
+   URL: /dashboard/citizen?authData=base64encodeddata
+   ↓
+8. GoogleAuthHandler processa dados automaticamente
+   - Decodifica authData
+   - Armazena no Zustand
+   ↓
+9. User já autenticado no Dashboard
 ```
 
 ## UserRole Type
@@ -75,10 +82,15 @@ export type UserRole = 'citizen' | 'lawyer';
 
 ## Status
 
-✅ Alteração aplicada em:
-- types/auth.types.ts
-- components/modals/role-selection-modal.tsx
-- app/features/auth/callback/google-callback-handler.tsx
-- Documentação
+✅ Fluxo completamente refatorado:
+- Sem página de callback separada (`/auth/callback`)
+- Redirecionamento direto para Dashboard após Google OAuth
+- GoogleAuthHandler processa dados automaticamente
+- User vê Dashboard imediatamente após login
 
-Todos os arquivos foram atualizados com `citizen` em vez de `user`.
+✅ Alteração aplicada em:
+- api/auth/google/callback/route.ts - Redireciona direto para dashboard
+- app/features/auth/google-auth-handler.tsx - Processa dados no dashboard
+- app/(private)/layout.tsx - Integra GoogleAuthHandler
+- Páginas de callback deletadas (não necessárias)
+- Documentação atualizada
