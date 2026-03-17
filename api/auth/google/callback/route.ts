@@ -1,4 +1,4 @@
-import { redirect } from 'next/navigation';
+import { NextResponse } from 'next/server';
 
 export async function GET(request: Request) {
   const url = new URL(request.url);
@@ -6,7 +6,7 @@ export async function GET(request: Request) {
   const state = url.searchParams.get('state');
 
   if (!code) {
-    redirect('/login?error=no_code');
+    return NextResponse.redirect(new URL('/login?error=no_code', request.url));
   }
 
   try {
@@ -31,14 +31,28 @@ export async function GET(request: Request) {
 
     const authData = await response.json();
 
+    const encodedData = Buffer.from(JSON.stringify(authData)).toString('base64');
+
     const dashboardUrl =
       authData.role === 'lawyer' ? '/dashboard/lawyer' : '/dashboard/citizen';
 
-    redirect(
-      `${dashboardUrl}?user=${authData.sub}&email=${authData.email}&name=${authData.full_name}`
-    );
+    const redirectUrl = new URL(dashboardUrl, request.url);
+    redirectUrl.searchParams.set('authData', encodedData);
+
+    const response2 = NextResponse.redirect(redirectUrl.toString());
+
+    response2.cookies.set('google_auth_data', encodedData, {
+      httpOnly: true,
+      sameSite: 'lax',
+      maxAge: 300,
+      path: '/',
+    });
+
+    return response2;
   } catch (error) {
     console.error('Google callback error:', error);
-    redirect('/login?error=authentication_failed');
+    return NextResponse.redirect(
+      new URL('/login?error=authentication_failed', request.url)
+    );
   }
 }
