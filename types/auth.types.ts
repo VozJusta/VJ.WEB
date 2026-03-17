@@ -1,4 +1,4 @@
-export type UserRole = 'user' | 'lawyer';
+export type UserRole = 'citizen' | 'lawyer';
 
 export interface GoogleAuthResponse {
   validated: boolean;
