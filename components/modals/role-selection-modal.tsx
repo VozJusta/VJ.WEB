@@ -41,7 +41,7 @@ export function RoleSelectionModal({
           <div className="grid grid-cols-1 gap-3">
             <button
               type="button"
-              onClick={() => handleSelect('user')}
+              onClick={() => handleSelect('citizen')}
               disabled={isLoading}
               className="group relative overflow-hidden rounded-xl border border-white/10 bg-white/5 p-4 transition-all duration-300 hover:border-white/20 hover:bg-white/10 disabled:opacity-50 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
             >
