@@ -4,6 +4,7 @@ import { useState } from "react";
 import { cn } from "@/lib/utils";
 import { Sidebar } from "@/components/layout/sidebar";
 import { DashboardHeader } from "@/components/layout/dashboard-header";
+import { GoogleAuthHandler } from "@/app/features/auth/google-auth-handler";
 
 const DEMO_USER = {
   name: "Ricardo Silva",
@@ -19,7 +20,9 @@ export default function PrivateLayout({
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   return (
-    <div className="layout-bg min-h-screen">
+    <>
+      <GoogleAuthHandler />
+      <div className="layout-bg min-h-screen">
       <Sidebar
         isOpen={isSidebarOpen}
         onToggle={() => setIsSidebarOpen((prev) => !prev)}
@@ -45,6 +48,6 @@ export default function PrivateLayout({
           {children}
         </main>
       </div>
-    </div>
+    </>
   );
 }
