@@ -11,6 +11,10 @@ export const API = {
       GOOGLE: '/auth/google',
       GOOGLE_CALLBACK: '/auth/google/callback',
     },
+    SIGNUP: {
+      CITIZEN: '/citizen',
+      LAWYER: '/lawyer',
+    },
   },
 } as const;
 

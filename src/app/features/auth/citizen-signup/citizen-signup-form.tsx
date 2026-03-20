@@ -2,6 +2,7 @@
 
 import { FormEvent, useMemo, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { ZodError } from "zod";
 import {
     AlternateEmail,
@@ -19,6 +20,7 @@ import { useToast } from "@/components/ui/toast/toast-provider";
 import { cn } from "@/lib/utils";
 import { passwordChecks } from "./constants";
 import { citizenSignupSchema } from "./citizen-signup.schema";
+import { authService, AuthServiceError } from "@/services/auth.service";
 
 type CitizenSignupFormState = {
     fullName: string;
@@ -66,6 +68,7 @@ const formatPhone = (value: string) => {
 };
 
 export function CitizenSignupForm() {
+    const router = useRouter();
     const [showPassword, setShowPassword] = useState(false);
     const [formState, setFormState] = useState(initialFormState);
     const [errors, setErrors] = useState<Record<string, string>>({});
@@ -97,13 +100,25 @@ export function CitizenSignupForm() {
         try {
             const validatedData = citizenSignupSchema.parse(formState);
 
+            const signupData = {
+                fullName: validatedData.fullName,
+                cpf: validatedData.cpf,
+                phone: validatedData.phone,
+                email: validatedData.email,
+                password: validatedData.password,
+            };
+
+            await authService.signupCitizen(signupData);
+
             toast({
                 title: "Cadastro realizado com sucesso!",
-                description: "Sua conta foi criada. Você será redirecionado em instantes.",
+                description: "Você será redirecionado para fazer login.",
                 variant: "success",
             });
 
-            console.log("Formulário válido:", validatedData);
+            setTimeout(() => {
+                router.push('/login');
+            }, 1500);
 
         } catch (error) {
             if (error instanceof ZodError) {
@@ -118,6 +133,18 @@ export function CitizenSignupForm() {
                 toast({
                     title: "Erro no cadastro",
                     description: "Verifique os campos destacados e tente novamente.",
+                    variant: "error",
+                });
+            } else if (error instanceof AuthServiceError) {
+                toast({
+                    title: "Erro no cadastro",
+                    description: error.message,
+                    variant: "error",
+                });
+            } else {
+                toast({
+                    title: "Erro no cadastro",
+                    description: "Ocorreu um erro inesperado. Tente novamente.",
                     variant: "error",
                 });
             }
