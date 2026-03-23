@@ -21,6 +21,7 @@ import { cn } from "@/lib/utils";
 import { passwordChecks } from "./constants";
 import { citizenSignupSchema } from "./citizen-signup.schema";
 import { authService, AuthServiceError } from "@/services/auth.service";
+import { saveVerificationSecurityToken } from "@/features/auth/verification/verification-session";
 
 type CitizenSignupFormState = {
     fullName: string;
@@ -113,14 +114,17 @@ export function CitizenSignupForm() {
 
             await authService.signupCitizen(signupData);
 
+            const sendCodeResponse = await authService.sendEmailVerificationCode(validatedData.email);
+            saveVerificationSecurityToken(validatedData.email, "signup", sendCodeResponse.securityToken);
+
             toast({
                 title: "Cadastro realizado com sucesso!",
-                description: "Você será redirecionado para fazer login.",
+                description: "Enviamos um código para seu e-mail para concluir o acesso.",
                 variant: "success",
             });
 
             setTimeout(() => {
-                router.push('/login');
+                router.push(`/verificacao/email?email=${encodeURIComponent(validatedData.email)}&type=signup`);
             }, 1500);
 
         } catch (error) {
