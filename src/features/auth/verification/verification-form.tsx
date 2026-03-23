@@ -86,20 +86,18 @@ export function VerificationForm({ config, onVerified, onBack }: VerificationFor
     try {
       const validatedData = verificationSchema.parse({ code });
 
-      if (!securityToken) {
-        throw new AuthServiceError("Sessão de verificação inválida. Reenvie o código para continuar.");
-      }
-
       const tokens = await authService.validateEmailVerificationCode(
         {
           email: config.contact,
           code: validatedData.code,
-        },
-        securityToken,
+        }
       );
 
       localStorage.setItem("access_token", tokens.access_token);
       localStorage.setItem("refresh_token", tokens.refresh_token);
+      if (tokens.securityToken) {
+        localStorage.setItem("x-security-token", tokens.securityToken);
+      }
       
       toast({
         title: messages.successTitle,

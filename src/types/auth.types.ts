@@ -62,4 +62,5 @@ export interface ValidateEmailVerificationRequest {
 export interface ValidateEmailVerificationResponse {
   access_token: string;
   refresh_token: string;
+  securityToken?: string;
 }
