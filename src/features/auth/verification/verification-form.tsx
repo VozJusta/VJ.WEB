@@ -38,7 +38,8 @@ export function VerificationForm({ config, onVerified, onBack }: VerificationFor
     setIsSendingCode(true);
 
     try {
-      const response = await authService.sendEmailVerificationCode(config.contact);
+      const currentToken = securityToken || getVerificationSecurityToken(config.contact, flowType) || "";
+      const response = await authService.sendEmailVerificationCode(config.contact, currentToken);
 
       if (!response.securityToken) {
         throw new AuthServiceError("Não foi possível iniciar a validação. Tente reenviar o código.");
@@ -47,7 +48,7 @@ export function VerificationForm({ config, onVerified, onBack }: VerificationFor
       saveVerificationSecurityToken(config.contact, flowType, response.securityToken);
       setSecurityToken(response.securityToken);
       setCanResend(false);
-      setTimeLeft(config.expirationTime || 300);
+      setTimeLeft(config.expirationTime || 900);
       return true;
     } catch (sendError) {
       const description = sendError instanceof AuthServiceError

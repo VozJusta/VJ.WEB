@@ -159,30 +159,30 @@ export const authService = {
     }
   },
 
-  async sendEmailVerificationCode(email: string): Promise<SendEmailVerificationResponse> {
+  async sendEmailVerificationCode(email: string, currentSecurityToken?: string): Promise<SendEmailVerificationResponse> {
     try {
       const response = await fetch(`${API.BASE_URL}${API.ENDPOINTS.SIGNUP.EMAIL_SEND}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          ...(currentSecurityToken ? { 'x-security-token': currentSecurityToken } : {}),
         },
         body: JSON.stringify({ email }),
       });
 
+      const data = await parseResponseBody(response);
+
+      const securityToken = (response.headers.get('x-security-token') || currentSecurityToken || '').trim();
+
       if (!response.ok) {
+        if (response.status === 409 && securityToken) {
+          return {
+            message: getResponseMessage(data, 'Código já existe para este e-mail. Use o código já enviado.'),
+            securityToken,
+          };
+        }
         await handleAPIError(response);
       }
-
-      const data = await parseResponseBody(response);
-      const mappedData = data && typeof data === 'object' ? (data as Record<string, unknown>) : null;
-
-      const securityToken =
-        response.headers.get('x-security-token') ||
-        response.headers.get('X-Security-Token') ||
-        (typeof mappedData?.securityToken === 'string' ? mappedData.securityToken : '') ||
-        (typeof mappedData?.xSecurityToken === 'string' ? mappedData.xSecurityToken : '') ||
-        (typeof mappedData?.token === 'string' ? mappedData.token : '') ||
-        '';
 
       return {
         message: getResponseMessage(data, 'Código enviado para o e-mail informado.'),
