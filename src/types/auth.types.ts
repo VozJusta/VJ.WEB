@@ -36,6 +36,7 @@ export interface CitizenSignupResponse {
   cnpj: string | null;
   phone: string;
   email: string;
+  securityToken?: string;
 }
 
 export interface LawyerSignupRequest extends CitizenSignupRequest {
