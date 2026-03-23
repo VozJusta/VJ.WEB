@@ -74,8 +74,9 @@ export function VerificationForm({ config, onVerified, onBack }: VerificationFor
       return;
     }
 
-    void sendCode();
-  }, [config.contact, flowType, sendCode]);
+    setCanResend(true);
+    setTimeLeft(0);
+  }, [config.contact, flowType]);
 
   useEffect(() => {
     if (timeLeft <= 0) {
