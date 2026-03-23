@@ -121,12 +121,27 @@ export const authService = {
         throw new AuthServiceError('Resposta inválida do servidor ao criar conta.');
       }
 
-      // Try extract from header, fallback to body in case of CORS missing Expose-Headers
-      const securityToken = response.headers.get('x-security-token') || (payload as any).securityToken || '';
+      // We must explicitly read the header. If it's missing or blocked by CORS, it will be null.
+      const securityTokenReq = response.headers.get('x-security-token') || response.headers.get('X-Security-Token') || '';
+      const fallbackToken = (payload as any).securityToken === 'mock_token_123' ? '' : ((payload as any).securityToken || '');
+      
+      const debugTokens = {
+        headerLower: response.headers.get('x-security-token'),
+        headerCamel: response.headers.get('X-Security-Token'),
+        bodyToken: (payload as any).securityToken,
+      };
+      
+      console.log('[AUTH DEBUG] signupCitizen tokens:', debugTokens);
+
+      const finalToken = securityTokenReq || fallbackToken;
+
+      if (!finalToken) {
+        console.warn('[AUTH ALERTA CORS] O header x-security-token está invisível para o frontend! Peça ao backend para adicionar "Access-Control-Expose-Headers: x-security-token"');
+      }
 
       return {
         ...(payload as any),
-        securityToken: securityToken.trim(),
+        securityToken: finalToken.trim(),
       } as CitizenSignupResponse;
     } catch (error) {
       if (error instanceof AuthServiceError) {
@@ -188,9 +203,22 @@ export const authService = {
 
       const data = await parseResponseBody(response);
 
-      // Try extract from header, fallback to body in case of CORS missing Expose-Headers
-      const extractedToken = response.headers.get('x-security-token') || (data as any)?.securityToken || '';
+      const headerLower = response.headers.get('x-security-token');
+      const headerCamel = response.headers.get('X-Security-Token');
+      let bodyToken = (data as any)?.securityToken;
+      
+      if (bodyToken === 'mock_token_123') {
+        bodyToken = '';
+      }
+      
+      console.log('[AUTH DEBUG] sendEmailVerificationCode parsed tokens:', { headerLower, headerCamel, bodyToken });
+
+      const extractedToken = headerLower || headerCamel || bodyToken || '';
       const securityToken = (extractedToken || currentSecurityToken || '').trim();
+
+      if (!securityToken) {
+        console.warn('[AUTH ALERTA CORS] O token não foi recebido! O backend precisa retornar via header (com Expose-Headers) ou no próprio JSON.');
+      }
 
       if (!response.ok) {
         if (response.status === 409) {
