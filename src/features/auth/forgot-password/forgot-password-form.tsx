@@ -9,6 +9,8 @@ import { Email, ArrowBack } from "@mui/icons-material";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/components/ui/toast/toast-provider";
+import { authService, AuthServiceError } from "@/services/auth.service";
+import { saveVerificationSecurityToken } from "@/features/auth/verification/verification-session";
 import { forgotPasswordSchema } from "./forgot-password.schema";
 import logo from "@/assets/logo/logo+name.svg";
 
@@ -26,17 +28,15 @@ export function ForgotPasswordForm() {
 
     try {
       const validatedData = forgotPasswordSchema.parse({ email });
-      
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      const sendCodeResponse = await authService.sendEmailVerificationCode(validatedData.email);
+      saveVerificationSecurityToken(validatedData.email, "reset", sendCodeResponse.securityToken);
       
       toast({
         title: "Código enviado!",
         description: "Verifique seu e-mail para continuar.",
         variant: "success",
       });
-      
-      console.log("E-mail válido:", validatedData);
-      
+
       router.push(`/verificacao/email?email=${encodeURIComponent(email)}&type=reset`);
       
     } catch (err) {
@@ -46,6 +46,15 @@ export function ForgotPasswordForm() {
         toast({
           title: "Erro no formulário",
           description: "Verifique o e-mail informado.",
+          variant: "error",
+        });
+        return;
+      }
+
+      if (err instanceof AuthServiceError) {
+        toast({
+          title: "Falha ao enviar código",
+          description: err.message,
           variant: "error",
         });
       }

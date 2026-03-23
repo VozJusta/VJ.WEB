@@ -7,6 +7,11 @@ import { VerifiedUserOutlined, ArrowBack } from "@mui/icons-material";
 import { Button } from "@/components/ui/button";
 import { OtpInput } from "@/components/ui/otp-input";
 import { useToast } from "@/components/ui/toast/toast-provider";
+import { authService, AuthServiceError } from "@/services/auth.service";
+import {
+  getVerificationSecurityToken,
+  saveVerificationSecurityToken,
+} from "./verification-session";
 import { verificationSchema } from "./verification.schema";
 import { verificationMessages, type VerificationConfig } from "./verification.types";
 
@@ -19,12 +24,57 @@ interface VerificationFormProps {
 export function VerificationForm({ config, onVerified, onBack }: VerificationFormProps) {
   const [code, setCode] = useState("");
   const [error, setError] = useState("");
+  const [securityToken, setSecurityToken] = useState("");
+  const [isSendingCode, setIsSendingCode] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [timeLeft, setTimeLeft] = useState(config.expirationTime || 300); 
   const [canResend, setCanResend] = useState(false);
   const { toast } = useToast();
 
   const messages = verificationMessages[config.type];
+  const flowType = config.flowType || "signup";
+
+  const sendCode = useCallback(async () => {
+    setIsSendingCode(true);
+
+    try {
+      const response = await authService.sendEmailVerificationCode(config.contact);
+
+      if (!response.securityToken) {
+        throw new AuthServiceError("Não foi possível iniciar a validação. Tente reenviar o código.");
+      }
+
+      saveVerificationSecurityToken(config.contact, flowType, response.securityToken);
+      setSecurityToken(response.securityToken);
+      setCanResend(false);
+      setTimeLeft(config.expirationTime || 300);
+      return true;
+    } catch (sendError) {
+      const description = sendError instanceof AuthServiceError
+        ? sendError.message
+        : "Não foi possível enviar o código. Tente novamente.";
+
+      toast({
+        title: "Erro no envio",
+        description,
+        variant: "error",
+      });
+      setCanResend(true);
+      return false;
+    } finally {
+      setIsSendingCode(false);
+    }
+  }, [config.contact, config.expirationTime, flowType, toast]);
+
+  useEffect(() => {
+    const storedToken = getVerificationSecurityToken(config.contact, flowType);
+    if (storedToken) {
+      setSecurityToken(storedToken);
+      return;
+    }
+
+    void sendCode();
+  }, [config.contact, flowType, sendCode]);
 
   useEffect(() => {
     if (timeLeft <= 0) {
@@ -52,21 +102,32 @@ export function VerificationForm({ config, onVerified, onBack }: VerificationFor
 
     try {
       const validatedData = verificationSchema.parse({ code });
-      
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+
+      if (!securityToken) {
+        throw new AuthServiceError("Sessão de verificação inválida. Reenvie o código para continuar.");
+      }
+
+      const tokens = await authService.validateEmailVerificationCode(
+        {
+          email: config.contact,
+          code: validatedData.code,
+        },
+        securityToken,
+      );
+
+      localStorage.setItem("access_token", tokens.access_token);
+      localStorage.setItem("refresh_token", tokens.refresh_token);
       
       toast({
         title: messages.successTitle,
         description: messages.successDescription,
         variant: "success",
       });
-      
-      console.log("Código verificado:", validatedData);
-      
+
       if (onVerified) {
         onVerified();
       }
-      
+
     } catch (err) {
       if (err instanceof ZodError) {
         setError(err.issues[0].message);
@@ -76,33 +137,36 @@ export function VerificationForm({ config, onVerified, onBack }: VerificationFor
           description: messages.errorDescription,
           variant: "error",
         });
+        return;
       }
+
+      const description = err instanceof AuthServiceError
+        ? err.message
+        : "Não foi possível validar o código. Tente novamente.";
+
+      setError("Código inválido ou expirado");
+      toast({
+        title: messages.errorTitle,
+        description,
+        variant: "error",
+      });
     } finally {
       setIsSubmitting(false);
     }
   };
 
   const handleResend = async () => {
-    setCanResend(false);
-    setTimeLeft(config.expirationTime || 300);
     setCode("");
     setError("");
     
-    try {
-      await new Promise((resolve) => setTimeout(resolve, 500));
-      
+    const sent = await sendCode();
+
+    if (sent) {
       toast({
         title: "Código reenviado",
         description: `Um novo código foi enviado para ${config.contact}`,
         variant: "success",
       });
-    } catch {
-      toast({
-        title: "Erro ao reenviar",
-        description: "Não foi possível reenviar o código. Tente novamente.",
-        variant: "error",
-      });
-      setCanResend(true);
     }
   };
 
@@ -166,7 +230,7 @@ export function VerificationForm({ config, onVerified, onBack }: VerificationFor
               size="lg"
               fullWidth
               loading={isSubmitting}
-              disabled={code.length !== 6 || timeLeft <= 0}
+              disabled={code.length !== 6 || timeLeft <= 0 || isSendingCode || !securityToken}
               className="rounded-xl text-sm sm:text-base"
             >
               {messages.buttonText}
@@ -179,9 +243,10 @@ export function VerificationForm({ config, onVerified, onBack }: VerificationFor
                   <button
                     type="button"
                     onClick={handleResend}
-                    className="font-semibold text-primary hover:text-primary/80 transition-colors"
+                    disabled={isSendingCode}
+                    className="font-semibold text-primary hover:text-primary/80 transition-colors disabled:cursor-not-allowed disabled:opacity-60"
                   >
-                    Reenviar
+                    {isSendingCode ? "Enviando..." : "Reenviar"}
                   </button>
                 ) : (
                   <span className="font-semibold text-white/30">
