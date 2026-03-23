@@ -1,6 +1,6 @@
 "use client";
 
-import { FormEvent, useMemo, useState } from "react";
+import { FormEvent, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { ZodError } from "zod";
@@ -70,6 +70,7 @@ const formatPhone = (value: string) => {
 
 export function CitizenSignupForm() {
     const router = useRouter();
+    const isSubmittingRef = useRef(false);
     const [showPassword, setShowPassword] = useState(false);
     const [formState, setFormState] = useState(initialFormState);
     const [errors, setErrors] = useState<Record<string, string>>({});
@@ -95,6 +96,13 @@ export function CitizenSignupForm() {
 
     const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
         event.preventDefault();
+
+        // Prevent duplicate submissions
+        if (isSubmittingRef.current) {
+            return;
+        }
+
+        isSubmittingRef.current = true;
         setErrors({});
         setIsSubmitting(true);
 
@@ -161,6 +169,7 @@ export function CitizenSignupForm() {
                 });
             }
         } finally {
+            isSubmittingRef.current = false;
             setIsSubmitting(false);
         }
     };

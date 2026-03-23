@@ -1,6 +1,6 @@
 "use client";
 
-import { FormEvent, useMemo, useState } from "react";
+import { FormEvent, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { ZodError } from "zod";
 import {
@@ -65,6 +65,7 @@ const formatOabNumber = (value: string) => {
 };
 
 export function LawyerSignupForm() {
+  const isSubmittingRef = useRef(false);
   const [showPassword, setShowPassword] = useState(false);
   const [formState, setFormState] = useState(initialFormState);
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -90,6 +91,13 @@ export function LawyerSignupForm() {
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+
+    // Prevent duplicate submissions
+    if (isSubmittingRef.current) {
+      return;
+    }
+
+    isSubmittingRef.current = true;
     setErrors({});
     setIsSubmitting(true);
 
@@ -121,6 +129,7 @@ export function LawyerSignupForm() {
         });
       }
     } finally {
+      isSubmittingRef.current = false;
       setIsSubmitting(false);
     }
   };
