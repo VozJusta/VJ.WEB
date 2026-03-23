@@ -10,7 +10,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/components/ui/toast/toast-provider";
 import { authService, AuthServiceError } from "@/services/auth.service";
-import { saveVerificationSecurityToken } from "@/features/auth/verification/verification-session";
 import { forgotPasswordSchema } from "./forgot-password.schema";
 import logo from "@/assets/logo/logo+name.svg";
 
@@ -29,7 +28,10 @@ export function ForgotPasswordForm() {
     try {
       const validatedData = forgotPasswordSchema.parse({ email });
       const sendCodeResponse = await authService.sendEmailVerificationCode(validatedData.email);
-      saveVerificationSecurityToken(validatedData.email, "reset", sendCodeResponse.securityToken);
+
+      if (sendCodeResponse.securityToken) {
+        sessionStorage.setItem("pending_verification_token", sendCodeResponse.securityToken);
+      }
       
       toast({
         title: "Código enviado!",

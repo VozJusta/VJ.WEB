@@ -48,6 +48,7 @@ export default function PrivateLayout({
           {children}
         </main>
       </div>
+      </div>
     </>
   );
 }

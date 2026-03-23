@@ -53,6 +53,7 @@ export interface LawyerSignupResponse extends CitizenSignupResponse {
 
 export interface SendEmailVerificationResponse {
   message: string;
+  securityToken?: string;
 }
 
 export interface ValidateEmailVerificationRequest {

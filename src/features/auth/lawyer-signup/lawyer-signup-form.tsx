@@ -26,6 +26,8 @@ import { useRouter } from "next/navigation";
 type LawyerSignupFormState = {
   fullName: string;
   cpf: string;
+  email: string;
+  phone: string;
   oabNumber: string;
   oabState: string;
   specialty: string;
@@ -36,11 +38,27 @@ type LawyerSignupFormState = {
 const initialFormState: LawyerSignupFormState = {
   fullName: "",
   cpf: "",
+  email: "",
+  phone: "",
   oabNumber: "",
   oabState: "",
   specialty: "",
   password: "",
   acceptedTerms: false,
+};
+
+const formatPhone = (value: string) => {
+  const digits = value.replace(/\D/g, "");
+  if (digits.length <= 10) {
+    return digits
+      .replace(/(\d{2})(\d)/, "($1) $2")
+      .replace(/(\d{4})(\d)/, "$1-$2")
+      .slice(0, 14);
+  }
+  return digits
+    .replace(/(\d{2})(\d)/, "($1) $2")
+    .replace(/(\d{5})(\d)/, "$1-$2")
+    .slice(0, 15);
 };
 
 const formatCpfCnpj = (value: string) => {
@@ -205,6 +223,44 @@ export function LawyerSignupForm() {
             placeholder="000.000.000-00"
             leftIcon={<Badge fontSize="small" aria-hidden="true" />}
             error={errors.cpf}
+            containerClassName="space-y-2"
+            className="h-12 rounded-xl border-white/10 bg-[#05112A] text-sm text-white placeholder:text-white/35 focus:ring-primary"
+          />
+
+          <Input
+            id="email"
+            name="email"
+            type="email"
+            autoComplete="email"
+            value={formState.email}
+            onChange={(event) =>
+              setFormState((current) => ({
+                ...current,
+                email: event.target.value,
+              }))
+            }
+            label="E-MAIL"
+            placeholder="roberto@advocacia.com.br"
+            error={errors.email}
+            containerClassName="space-y-2"
+            className="h-12 rounded-xl border-white/10 bg-[#05112A] text-sm text-white placeholder:text-white/35 focus:ring-primary"
+          />
+
+          <Input
+            id="phone"
+            name="phone"
+            autoComplete="tel"
+            inputMode="numeric"
+            value={formState.phone}
+            onChange={(event) =>
+              setFormState((current) => ({
+                ...current,
+                phone: formatPhone(event.target.value),
+              }))
+            }
+            label="TELEFONE/CELULAR"
+            placeholder="(11) 99999-9999"
+            error={errors.phone}
             containerClassName="space-y-2"
             className="h-12 rounded-xl border-white/10 bg-[#05112A] text-sm text-white placeholder:text-white/35 focus:ring-primary"
           />
