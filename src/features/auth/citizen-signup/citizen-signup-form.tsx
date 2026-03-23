@@ -127,11 +127,12 @@ export function CitizenSignupForm() {
 
             if (signupToken) {
               saveVerificationSecurityToken(validatedData.email, "signup", signupToken);
+              console.log('[SIGNUP DEBUG] Email code already sent by signup, redirecting directly');
+            } else {
+              console.log('[SIGNUP DEBUG] About to send email verification code explicitly', { email: validatedData.email, hasToken: !!signupToken });
+              const sendCodeResponse = await authService.sendEmailVerificationCode(validatedData.email, signupToken);
+              saveVerificationSecurityToken(validatedData.email, "signup", sendCodeResponse.securityToken);
             }
-
-            console.log('[SIGNUP DEBUG] About to send email verification code', { email: validatedData.email, hasToken: !!signupToken });
-            const sendCodeResponse = await authService.sendEmailVerificationCode(validatedData.email, signupToken);
-            saveVerificationSecurityToken(validatedData.email, "signup", sendCodeResponse.securityToken);
 
             console.log('[SIGNUP DEBUG] Email code sent, redirecting to verification');
 

@@ -189,7 +189,7 @@ export const authService = {
       const securityToken = (response.headers.get('x-security-token') || currentSecurityToken || '').trim();
 
       if (!response.ok) {
-        if (response.status === 409 && securityToken) {
+        if (response.status === 409) {
           return {
             message: getResponseMessage(data, 'Código já existe para este e-mail. Use o código já enviado.'),
             securityToken,
