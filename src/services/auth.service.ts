@@ -243,15 +243,13 @@ export const authService = {
   },
 
   async validateEmailVerificationCode(
-    payload: ValidateEmailVerificationRequest,
-    securityToken: string,
+    payload: ValidateEmailVerificationRequest
   ): Promise<ValidateEmailVerificationResponse> {
     try {
       const response = await fetch(`${API.BASE_URL}${API.ENDPOINTS.SIGNUP.EMAIL_VALIDATE}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'x-security-token': securityToken,
         },
         body: JSON.stringify(payload),
       });
@@ -272,9 +270,12 @@ export const authService = {
         throw new AuthServiceError('Resposta inválida do servidor na validação do código.');
       }
 
+      const securityToken = response.headers.get('x-security-token') || response.headers.get('X-Security-Token') || '';
+
       return {
         access_token: data.access_token,
         refresh_token: data.refresh_token,
+        securityToken: securityToken.trim(),
       };
     } catch (error) {
       if (error instanceof AuthServiceError) {

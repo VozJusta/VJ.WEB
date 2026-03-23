@@ -41,12 +41,11 @@ export function VerificationForm({ config, onVerified, onBack }: VerificationFor
       const currentToken = securityToken || getVerificationSecurityToken(config.contact, flowType) || "";
       const response = await authService.sendEmailVerificationCode(config.contact, currentToken);
 
-      if (!response.securityToken) {
-        throw new AuthServiceError("Não foi possível iniciar a validação. Tente reenviar o código.");
+      if (response.securityToken) {
+        saveVerificationSecurityToken(config.contact, flowType, response.securityToken);
+        setSecurityToken(response.securityToken);
       }
-
-      saveVerificationSecurityToken(config.contact, flowType, response.securityToken);
-      setSecurityToken(response.securityToken);
+      
       setCanResend(false);
       setTimeLeft(config.expirationTime || 900);
       return true;
@@ -105,20 +104,18 @@ export function VerificationForm({ config, onVerified, onBack }: VerificationFor
     try {
       const validatedData = verificationSchema.parse({ code });
 
-      if (!securityToken) {
-        throw new AuthServiceError("Sessão de verificação inválida. Reenvie o código para continuar.");
-      }
-
       const tokens = await authService.validateEmailVerificationCode(
         {
           email: config.contact,
           code: validatedData.code,
-        },
-        securityToken,
+        }
       );
 
       localStorage.setItem("access_token", tokens.access_token);
       localStorage.setItem("refresh_token", tokens.refresh_token);
+      if (tokens.securityToken) {
+        localStorage.setItem("x-security-token", tokens.securityToken);
+      }
       
       toast({
         title: messages.successTitle,
