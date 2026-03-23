@@ -10,7 +10,10 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/components/ui/toast/toast-provider";
 import { authService, AuthServiceError } from "@/services/auth.service";
-import { saveVerificationSecurityToken } from "@/features/auth/verification/verification-session";
+import {
+  getVerificationSecurityToken,
+  saveVerificationSecurityToken,
+} from "@/features/auth/verification/verification-session";
 import { forgotPasswordSchema } from "./forgot-password.schema";
 import logo from "@/assets/logo/logo+name.svg";
 
@@ -28,7 +31,8 @@ export function ForgotPasswordForm() {
 
     try {
       const validatedData = forgotPasswordSchema.parse({ email });
-      const sendCodeResponse = await authService.sendEmailVerificationCode(validatedData.email);
+      const existingToken = getVerificationSecurityToken(validatedData.email, "reset") || undefined;
+      const sendCodeResponse = await authService.sendEmailVerificationCode(validatedData.email, existingToken);
       saveVerificationSecurityToken(validatedData.email, "reset", sendCodeResponse.securityToken);
       
       toast({
@@ -52,6 +56,16 @@ export function ForgotPasswordForm() {
       }
 
       if (err instanceof AuthServiceError) {
+        if (err.statusCode === 409) {
+          toast({
+            title: "Código já enviado",
+            description: "Já existe um código ativo para este e-mail. Verifique sua caixa de entrada.",
+            variant: "warning",
+          });
+          router.push(`/verificacao/email?email=${encodeURIComponent(email)}&type=reset`);
+          return;
+        }
+
         toast({
           title: "Falha ao enviar código",
           description: err.message,
