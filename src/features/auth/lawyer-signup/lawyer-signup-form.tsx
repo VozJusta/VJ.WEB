@@ -92,7 +92,6 @@ export function LawyerSignupForm() {
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    // Prevent duplicate submissions
     if (isSubmittingRef.current) {
       return;
     }

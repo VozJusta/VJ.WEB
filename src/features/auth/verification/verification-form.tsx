@@ -232,7 +232,7 @@ export function VerificationForm({ config, onVerified, onBack }: VerificationFor
               size="lg"
               fullWidth
               loading={isSubmitting}
-              disabled={code.length !== 6 || timeLeft <= 0 || isSendingCode || !securityToken}
+              disabled={code.length !== 6 || isSendingCode || !securityToken}
               className="rounded-xl text-sm sm:text-base"
             >
               {messages.buttonText}

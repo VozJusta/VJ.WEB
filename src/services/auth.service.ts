@@ -121,7 +121,12 @@ export const authService = {
         throw new AuthServiceError('Resposta inválida do servidor ao criar conta.');
       }
 
-      return payload as CitizenSignupResponse;
+      const securityToken = response.headers.get('x-security-token') || '';
+
+      return {
+        ...(payload as any),
+        securityToken: securityToken.trim(),
+      } as CitizenSignupResponse;
     } catch (error) {
       if (error instanceof AuthServiceError) {
         throw error;
@@ -150,7 +155,12 @@ export const authService = {
         throw new AuthServiceError('Resposta inválida do servidor ao criar conta profissional.');
       }
 
-      return payload as LawyerSignupResponse;
+      const securityToken = response.headers.get('x-security-token') || '';
+
+      return {
+        ...(payload as any),
+        securityToken: securityToken.trim(),
+      } as LawyerSignupResponse;
     } catch (error) {
       if (error instanceof AuthServiceError) {
         throw error;

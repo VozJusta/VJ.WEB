@@ -7,9 +7,11 @@ export function saveVerificationSecurityToken(email: string, flowType: string, t
     return;
   }
 
-  sessionStorage.setItem(getVerificationSessionKey(email, flowType), token);
+  localStorage.setItem(getVerificationSessionKey(email, flowType), token);
+  localStorage.setItem("x-security-token", token);
 }
 
 export function getVerificationSecurityToken(email: string, flowType: string) {
-  return sessionStorage.getItem(getVerificationSessionKey(email, flowType));
+  // Try to get from specific key first, fallback to generic x-security-token
+  return localStorage.getItem(getVerificationSessionKey(email, flowType)) || localStorage.getItem("x-security-token");
 }
