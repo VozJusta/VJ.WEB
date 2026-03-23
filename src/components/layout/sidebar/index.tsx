@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { MenuRounded, MenuOpenRounded } from "@mui/icons-material";
-import logoFull from "@/public/logo/logo+name.svg";
+import logoFull from "@/assets/logo/logo+name.svg";
 import { SidebarNav } from "./sidebar-nav";
 import { cn } from "@/lib/utils";
 import type { SidebarProps } from "./sidebar.types";

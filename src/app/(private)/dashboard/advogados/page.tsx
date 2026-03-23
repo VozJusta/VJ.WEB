@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { LawyersListFeature } from "@/app/features/dashboard/lawyers";
+import { LawyersListFeature } from "@/features/dashboard/lawyers";
 
 export const metadata: Metadata = {
   title: "Especialistas | Voz Justa",

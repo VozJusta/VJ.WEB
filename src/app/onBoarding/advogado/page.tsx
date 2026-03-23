@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { LawyerSignupFeature } from "@/app/features/auth/lawyer-signup";
+import { LawyerSignupFeature } from "@/features/auth/lawyer-signup";
 
 export const metadata: Metadata = {
   title: "Cadastro Profissional | VozJusta",

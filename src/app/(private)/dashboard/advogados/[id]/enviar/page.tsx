@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { DossierSentFeature } from "@/app/features/dashboard/lawyers/dossier-sent-feature";
-import { getLawyerById } from "@/app/features/dashboard/lawyers/lawyers.data";
+import { DossierSentFeature } from "@/features/dashboard/lawyers/dossier-sent-feature";
+import { getLawyerById } from "@/features/dashboard/lawyers/lawyers.data";
 
 export const metadata: Metadata = {
   title: "Dossiê Enviado | Voz Justa",

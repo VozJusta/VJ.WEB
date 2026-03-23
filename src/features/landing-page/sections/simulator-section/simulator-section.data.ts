@@ -1,5 +1,5 @@
 import { SimulatorFeature } from "./simulator-section.types";
-import SimulatorIllustration from '@/public/illustrations/simulator-illustration.png';
+import SimulatorIllustration from '@/assets/illustrations/simulator-illustration.png';
 
 export const simulatorFeatures: Omit<SimulatorFeature, "icon">[] = [
   {

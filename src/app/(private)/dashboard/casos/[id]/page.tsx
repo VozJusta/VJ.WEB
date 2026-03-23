@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
-import { getCaseById } from "@/app/features/dashboard/cases/cases.data";
-import { CaseDetailFeature } from "@/app/features/dashboard/cases/case-detail-feature";
+import { getCaseById } from "@/features/dashboard/cases/cases.data";
+import { CaseDetailFeature } from "@/features/dashboard/cases/case-detail-feature";
 
 type Props = {
   params: Promise<{ id: string }>;

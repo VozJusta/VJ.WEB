@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { CitizenSignupFeature } from "@/app/features/auth/citizen-signup";
+import { CitizenSignupFeature } from "@/features/auth/citizen-signup";
 
 export const metadata: Metadata = {
   title: "Cadastro do Cidadão | VozJusta",

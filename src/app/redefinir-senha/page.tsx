@@ -1,6 +1,6 @@
 import { Suspense } from "react";
 import type { Metadata } from "next";
-import { ResetPasswordForm } from "@/app/features/auth/reset-password";
+import { ResetPasswordForm } from "@/features/auth/reset-password";
 
 export const metadata: Metadata = {
   title: "Redefinir Senha | VozJusta",

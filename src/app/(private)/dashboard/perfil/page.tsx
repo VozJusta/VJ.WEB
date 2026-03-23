@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { ProfileFeature } from "@/app/features/dashboard/profile";
+import { ProfileFeature } from "@/features/dashboard/profile";
 
 export const metadata: Metadata = {
   title: "Perfil | Voz Justa",

@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { CaseAnalysisCompleteFeature } from "@/app/features/dashboard/cases/case-analysis-complete-feature";
+import { CaseAnalysisCompleteFeature } from "@/features/dashboard/cases/case-analysis-complete-feature";
 
 export const metadata: Metadata = {
   title: "Análise Finalizada | Voz Justa",

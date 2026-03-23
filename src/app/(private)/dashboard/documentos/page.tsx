@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { DocumentsFeature } from "@/app/features/dashboard/documents";
+import { DocumentsFeature } from "@/features/dashboard/documents";
 
 export const metadata: Metadata = {
   title: "Documentos | Voz Justa",

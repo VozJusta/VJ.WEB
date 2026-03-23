@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { ManageDocumentsFeature } from "@/app/features/dashboard/settings/manage-documents-feature";
+import { ManageDocumentsFeature } from "@/features/dashboard/settings/manage-documents-feature";
 
 export const metadata: Metadata = {
   title: "Gerenciar Documentos | Voz Justa",
