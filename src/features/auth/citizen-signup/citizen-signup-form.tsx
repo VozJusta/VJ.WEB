@@ -99,9 +99,11 @@ export function CitizenSignupForm() {
 
         // Prevent duplicate submissions
         if (isSubmittingRef.current) {
+            console.log('[SIGNUP DEBUG] Ignoring duplicate submit attempt');
             return;
         }
 
+        console.log('[SIGNUP DEBUG] handleSubmit called');
         isSubmittingRef.current = true;
         setErrors({});
         setIsSubmitting(true);
@@ -127,8 +129,11 @@ export function CitizenSignupForm() {
               saveVerificationSecurityToken(validatedData.email, "signup", signupToken);
             }
 
+            console.log('[SIGNUP DEBUG] About to send email verification code', { email: validatedData.email, hasToken: !!signupToken });
             const sendCodeResponse = await authService.sendEmailVerificationCode(validatedData.email, signupToken);
             saveVerificationSecurityToken(validatedData.email, "signup", sendCodeResponse.securityToken);
+
+            console.log('[SIGNUP DEBUG] Email code sent, redirecting to verification');
 
             toast({
                 title: "Cadastro realizado com sucesso!",

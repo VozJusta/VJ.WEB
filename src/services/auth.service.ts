@@ -161,6 +161,8 @@ export const authService = {
 
   async sendEmailVerificationCode(email: string, currentSecurityToken?: string): Promise<SendEmailVerificationResponse> {
     try {
+      console.log('[AUTH DEBUG] sendEmailVerificationCode called', { email, hasToken: !!currentSecurityToken });
+      
       const response = await fetch(`${API.BASE_URL}${API.ENDPOINTS.SIGNUP.EMAIL_SEND}`, {
         method: 'POST',
         headers: {
@@ -169,6 +171,8 @@ export const authService = {
         },
         body: JSON.stringify({ email }),
       });
+
+      console.log('[AUTH DEBUG] sendEmailVerificationCode response status:', response.status);
 
       const data = await parseResponseBody(response);
 
