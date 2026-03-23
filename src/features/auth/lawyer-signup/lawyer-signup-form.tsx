@@ -120,7 +120,11 @@ export function LawyerSignupForm() {
         specialty: validatedData.specialty,
       };
 
-      await authService.signupLawyer(signupData);
+      const signupResponse = await authService.signupLawyer(signupData);
+
+      if (signupResponse.securityToken) {
+        sessionStorage.setItem("pending_verification_token", signupResponse.securityToken);
+      }
       
       toast({
         title: "Cadastro realizado com sucesso!",

@@ -85,19 +85,25 @@ export function VerificationForm({ config, onVerified, onBack }: VerificationFor
 
     try {
       const validatedData = verificationSchema.parse({ code });
+      
+      const sessionToken = sessionStorage.getItem("pending_verification_token") || "";
+
+      if (!sessionToken) {
+        throw new AuthServiceError("Sessão de verificação inválida. Refaça o processo de cadastro.");
+      }
 
       const tokens = await authService.validateEmailVerificationCode(
         {
           email: config.contact,
           code: validatedData.code,
-        }
+        },
+        sessionToken
       );
 
       localStorage.setItem("access_token", tokens.access_token);
       localStorage.setItem("refresh_token", tokens.refresh_token);
-      if (tokens.securityToken) {
-        localStorage.setItem("x-security-token", tokens.securityToken);
-      }
+      
+      sessionStorage.removeItem("pending_verification_token");
       
       toast({
         title: messages.successTitle,

@@ -123,6 +123,10 @@ export function CitizenSignupForm() {
 
             const signupResponse = await authService.signupCitizen(signupData);
 
+            if (signupResponse.securityToken) {
+              sessionStorage.setItem("pending_verification_token", signupResponse.securityToken);
+            }
+
             toast({
                 title: "Cadastro realizado com sucesso!",
                 description: "Enviamos um código para seu e-mail para concluir o acesso.",
