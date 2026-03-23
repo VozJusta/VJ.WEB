@@ -121,7 +121,8 @@ export const authService = {
         throw new AuthServiceError('Resposta inválida do servidor ao criar conta.');
       }
 
-      const securityToken = response.headers.get('x-security-token') || '';
+      // Try extract from header, fallback to body in case of CORS missing Expose-Headers
+      const securityToken = response.headers.get('x-security-token') || (payload as any).securityToken || '';
 
       return {
         ...(payload as any),
@@ -155,7 +156,8 @@ export const authService = {
         throw new AuthServiceError('Resposta inválida do servidor ao criar conta profissional.');
       }
 
-      const securityToken = response.headers.get('x-security-token') || '';
+      // Try extract from header, fallback to body in case of CORS missing Expose-Headers
+      const securityToken = response.headers.get('x-security-token') || (payload as any).securityToken || '';
 
       return {
         ...(payload as any),
@@ -186,7 +188,9 @@ export const authService = {
 
       const data = await parseResponseBody(response);
 
-      const securityToken = (response.headers.get('x-security-token') || currentSecurityToken || '').trim();
+      // Try extract from header, fallback to body in case of CORS missing Expose-Headers
+      const extractedToken = response.headers.get('x-security-token') || (data as any)?.securityToken || '';
+      const securityToken = (extractedToken || currentSecurityToken || '').trim();
 
       if (!response.ok) {
         if (response.status === 409) {

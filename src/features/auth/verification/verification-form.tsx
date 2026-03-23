@@ -215,7 +215,7 @@ export function VerificationForm({ config, onVerified, onBack }: VerificationFor
               value={code}
               onChange={setCode}
               error={error}
-              disabled={isSubmitting || timeLeft <= 0}
+              disabled={isSubmitting} // Removido o bloqueio por timeLeft <= 0 para não travar a UI caso o tempo expire antes de reenviar
               autoFocus
             />
 
@@ -232,7 +232,7 @@ export function VerificationForm({ config, onVerified, onBack }: VerificationFor
               size="lg"
               fullWidth
               loading={isSubmitting}
-              disabled={code.length !== 6 || isSendingCode || !securityToken}
+              disabled={code.length !== 6 || isSendingCode} // Removido o check !securityToken para permitir envio e acionar erro apropriado se falhar
               className="rounded-xl text-sm sm:text-base"
             >
               {messages.buttonText}
