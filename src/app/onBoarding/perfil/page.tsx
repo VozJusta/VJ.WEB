@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import { Person, AccountBalance, ArrowForward } from "@mui/icons-material";
 import { RoleCard } from "@/components/ui/role-card";
 import { Button } from "@/components/ui/button";
+import logo from '@/assets/logo/logo+name.svg';
 
 type UserRole = "individual" | "lawyer";
 
@@ -54,7 +55,7 @@ export default function OnboardingPerfilPage() {
       >
           <figure>
             <Image
-              src="/logo/logo+name-col.svg"
+              src={logo}
               alt="VozJusta"
               width={300}
               height={200}

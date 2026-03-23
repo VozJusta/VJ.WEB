@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { LawyerProfileFeature } from "@/app/features/dashboard/lawyers/lawyer-profile-feature";
-import { getLawyerById } from "@/app/features/dashboard/lawyers/lawyers.data";
+import { LawyerProfileFeature } from "@/features/dashboard/lawyers/lawyer-profile-feature";
+import { getLawyerById } from "@/features/dashboard/lawyers/lawyers.data";
 
 interface LawyerProfilePageProps {
   params: Promise<{

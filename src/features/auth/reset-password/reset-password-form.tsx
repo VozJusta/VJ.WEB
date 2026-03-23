@@ -12,6 +12,7 @@ import { useToast } from "@/components/ui/toast/toast-provider";
 import { cn } from "@/lib/utils";
 import { resetPasswordSchema } from "./reset-password.schema";
 import { passwordChecks } from "./constants";
+import logo from "@/assets/logo/logo+name.svg";
 
 type ResetPasswordFormState = {
   password: string;
@@ -101,7 +102,7 @@ export function ResetPasswordForm() {
       <section className="w-full max-w-md">
         <div className="mb-8 flex justify-center">
           <Image
-            src="/logo/logo+name.svg"
+            src={logo}
             alt="VozJusta"
             width={165}
             height={34}

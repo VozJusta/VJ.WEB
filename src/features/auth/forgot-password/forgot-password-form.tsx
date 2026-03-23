@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/components/ui/toast/toast-provider";
 import { forgotPasswordSchema } from "./forgot-password.schema";
+import logo from "@/assets/logo/logo+name.svg";
 
 export function ForgotPasswordForm() {
   const [email, setEmail] = useState("");
@@ -58,7 +59,7 @@ export function ForgotPasswordForm() {
       <section className="w-full max-w-md">
         <div className="mb-8 flex justify-center">
           <Image
-            src="/logo/logo+name.svg"
+            src={logo}
             alt="VozJusta"
             width={165}
             height={34}

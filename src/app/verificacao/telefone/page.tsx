@@ -2,7 +2,7 @@
 
 import { Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { VerificationForm, type VerificationConfig } from "@/app/features/auth/verification";
+import { VerificationForm, type VerificationConfig } from "@/features/auth/verification";
 
 function PhoneVerificationContent() {
   const router = useRouter();

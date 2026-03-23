@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { DocumentAccessHistoryFeature } from "@/app/features/dashboard/settings/document-access-history-feature";
+import { DocumentAccessHistoryFeature } from "@/features/dashboard/settings/document-access-history-feature";
 
 export const metadata: Metadata = {
   title: "Histórico de Acesso | Voz Justa",

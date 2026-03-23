@@ -1,5 +1,5 @@
 import { Metadata } from "next";
-import { DashboardFeature } from "@/app/features/dashboard";
+import { DashboardFeature } from "@/features/dashboard";
 
 export const metadata: Metadata = {
   title: "Dashboard | VozJusta",

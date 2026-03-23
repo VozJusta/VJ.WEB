@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { PrivacySettingsFeature } from "@/app/features/dashboard/settings/privacy-settings-feature";
+import { PrivacySettingsFeature } from "@/features/dashboard/settings/privacy-settings-feature";
 
 export const metadata: Metadata = {
   title: "Privacidade | Voz Justa",

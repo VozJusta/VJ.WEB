@@ -1,15 +1,16 @@
 import Image from "next/image";
-import { Gavel, Security, Bolt } from "@mui/icons-material";
+import { Security, Bolt } from "@mui/icons-material";
 import { heroHighlights } from "./constants";
+import logo from "@/assets/logo/logo+name.svg";
 
 const highlightIcons = [Security, Bolt] as const;
 
-export function CitizenSignupHero() {
+export function LoginHero() {
   return (
     <aside className="mx-auto flex w-full max-w-xl flex-col justify-center gap-10 lg:mx-0 lg:py-8">
       <figure className="w-fit self-center lg:self-start">
         <Image
-          src="/logo/logo+name.svg"
+          src={logo}
           alt="VozJusta"
           width={165}
           height={34}
@@ -19,17 +20,16 @@ export function CitizenSignupHero() {
 
       <article className="space-y-5 hidden lg:block">
         <h1 className="text-4xl font-bold tracking-tight text-white sm:text-5xl">
-          Cadastre-se no <span className="text-primary">VozJusta</span>
+          Bem-vindo de <span className="text-primary">volta</span>
         </h1>
         <p className="max-w-md text-lg leading-relaxed text-white/65">
-          A clareza que o direito exige, a voz que você precisa. Conectamos
-          cidadãos à justiça de forma transparente e tecnológica.
+          Acesse sua conta para continuar sua jornada jurídica com a clareza e tecnologia que você merece.
         </p>
       </article>
 
       <ul className="space-y-5 hidden lg:block" aria-label="Diferenciais da plataforma VozJusta">
         {heroHighlights.map((highlight, index) => {
-          const Icon = highlightIcons[index] ?? Gavel;
+          const Icon = highlightIcons[index];
 
           return (
             <li key={highlight.title}>

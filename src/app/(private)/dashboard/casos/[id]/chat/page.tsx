@@ -1,5 +1,5 @@
-import { AIChatFeature } from "@/app/features/dashboard/ai-chat";
-import { MOCK_CHAT_MESSAGES } from "@/app/features/dashboard/ai-chat/ai-chat.data";
+import { AIChatFeature } from "@/features/dashboard/ai-chat";
+import { MOCK_CHAT_MESSAGES } from "@/features/dashboard/ai-chat/ai-chat.data";
 
 export const metadata = {
   title: "Chat com IA | Voz Justa",

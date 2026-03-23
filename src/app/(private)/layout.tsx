@@ -4,7 +4,7 @@ import { useState } from "react";
 import { cn } from "@/lib/utils";
 import { Sidebar } from "@/components/layout/sidebar";
 import { DashboardHeader } from "@/components/layout/dashboard-header";
-import { GoogleAuthHandler } from "@/app/features/auth/google-auth-handler";
+import { GoogleAuthHandler } from "@/features/auth/google-auth-handler";
 
 const DEMO_USER = {
   name: "Ricardo Silva",

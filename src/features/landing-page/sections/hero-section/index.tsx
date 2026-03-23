@@ -1,6 +1,6 @@
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
-import heroImage from "@/public/illustrations/hero-section-chat.png";
+import heroImage from "@/assets/illustrations/hero-section-chat.png";
 
 export function HeroSection() {
   return (

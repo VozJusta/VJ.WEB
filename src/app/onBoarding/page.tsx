@@ -3,6 +3,8 @@
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
+import logo from '../../assets/logo/logo.svg';
+
 
 export default function OnboardingPage() {
   const router = useRouter();
@@ -26,7 +28,7 @@ export default function OnboardingPage() {
         }}
       >
         <Image
-          src="/logo/logo.svg"
+          src={logo}
           alt="VozJusta"
           width={280}
           height={204}

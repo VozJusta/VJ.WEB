@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/toast/toast-provider";
 import { footerNavigation } from "./footer.navigation";
 import type { FooterProps } from "./footer.types";
-import logo from "@/public/logo/logo+name.svg";
+import logo from "@/assets/logo/logo+name.svg";
 import {
   ShareOutlined,
   MenuOutlined,

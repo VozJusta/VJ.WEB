@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { SettingsFeature } from "@/app/features/dashboard/settings";
+import { SettingsFeature } from "@/features/dashboard/settings";
 
 export const metadata: Metadata = {
   title: "Configurações | Voz Justa",

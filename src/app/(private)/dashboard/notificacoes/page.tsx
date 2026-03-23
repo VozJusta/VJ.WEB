@@ -1,4 +1,4 @@
-import { NotificationsList } from "@/app/features/dashboard/notifications";
+import { NotificationsList } from "@/features/dashboard/notifications";
 
 export const metadata = {
   title: "Notificações | Voz Justa",
