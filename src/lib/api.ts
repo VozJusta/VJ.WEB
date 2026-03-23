@@ -20,6 +20,26 @@ export const API = {
   },
 } as const;
 
+async function parseApiResponse<T>(response: Response): Promise<T> {
+  const contentType = response.headers.get('content-type') || '';
+
+  if (contentType.includes('application/json')) {
+    return response.json() as Promise<T>;
+  }
+
+  const text = await response.text();
+
+  if (!text) {
+    return null as T;
+  }
+
+  try {
+    return JSON.parse(text) as T;
+  } catch {
+    return text as T;
+  }
+}
+
 export async function fetchAPI<T>(
   endpoint: string,
   options?: RequestInit
@@ -38,5 +58,5 @@ export async function fetchAPI<T>(
     throw new Error(`API Error: ${response.status} ${response.statusText}`);
   }
 
-  return response.json();
+  return parseApiResponse<T>(response);
 }

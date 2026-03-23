@@ -20,6 +20,52 @@ export class AuthServiceError extends Error {
   }
 }
 
+async function parseResponseBody(response: Response): Promise<unknown> {
+  const contentType = response.headers.get('content-type') || '';
+
+  if (contentType.includes('application/json')) {
+    try {
+      return await response.json();
+    } catch {
+      return null;
+    }
+  }
+
+  const text = await response.text();
+
+  if (!text) {
+    return null;
+  }
+
+  try {
+    return JSON.parse(text);
+  } catch {
+    return text;
+  }
+}
+
+function getResponseMessage(payload: unknown, fallback: string): string {
+  if (typeof payload === 'string' && payload.trim().length > 0) {
+    return payload;
+  }
+
+  if (payload && typeof payload === 'object') {
+    const data = payload as Record<string, unknown>;
+    const message = data.message;
+    const error = data.error;
+
+    if (typeof message === 'string' && message.trim().length > 0) {
+      return message;
+    }
+
+    if (typeof error === 'string' && error.trim().length > 0) {
+      return error;
+    }
+  }
+
+  return fallback;
+}
+
 async function handleAPIError(error: unknown): Promise<never> {
   if (error instanceof Response) {
     const statusCode = error.status;
@@ -27,8 +73,8 @@ async function handleAPIError(error: unknown): Promise<never> {
     let errorMessage = 'Erro ao processar solicitação';
 
     try {
-      const errorData = await error.json();
-      errorMessage = errorData.message || errorData.error || errorMessage;
+      const errorData = await parseResponseBody(error);
+      errorMessage = getResponseMessage(errorData, errorMessage);
     } catch {
       errorMessage = error.statusText || errorMessage;
     }
@@ -69,7 +115,13 @@ export const authService = {
         await handleAPIError(response);
       }
 
-      return await response.json();
+      const payload = await parseResponseBody(response);
+
+      if (!payload || typeof payload !== 'object') {
+        throw new AuthServiceError('Resposta inválida do servidor ao criar conta.');
+      }
+
+      return payload as CitizenSignupResponse;
     } catch (error) {
       if (error instanceof AuthServiceError) {
         throw error;
@@ -92,7 +144,13 @@ export const authService = {
         await handleAPIError(response);
       }
 
-      return await response.json();
+      const payload = await parseResponseBody(response);
+
+      if (!payload || typeof payload !== 'object') {
+        throw new AuthServiceError('Resposta inválida do servidor ao criar conta profissional.');
+      }
+
+      return payload as LawyerSignupResponse;
     } catch (error) {
       if (error instanceof AuthServiceError) {
         throw error;
@@ -115,18 +173,19 @@ export const authService = {
         await handleAPIError(response);
       }
 
-      const data = await response.json();
+      const data = await parseResponseBody(response);
+      const mappedData = data && typeof data === 'object' ? (data as Record<string, unknown>) : null;
 
       const securityToken =
         response.headers.get('x-security-token') ||
         response.headers.get('X-Security-Token') ||
-        data?.securityToken ||
-        data?.xSecurityToken ||
-        data?.token ||
+        (typeof mappedData?.securityToken === 'string' ? mappedData.securityToken : '') ||
+        (typeof mappedData?.xSecurityToken === 'string' ? mappedData.xSecurityToken : '') ||
+        (typeof mappedData?.token === 'string' ? mappedData.token : '') ||
         '';
 
       return {
-        message: data?.message || 'Código enviado para o e-mail informado.',
+        message: getResponseMessage(data, 'Código enviado para o e-mail informado.'),
         securityToken,
       };
     } catch (error) {
@@ -155,7 +214,22 @@ export const authService = {
         await handleAPIError(response);
       }
 
-      return await response.json();
+      const parsedPayload = await parseResponseBody(response);
+
+      if (!parsedPayload || typeof parsedPayload !== 'object') {
+        throw new AuthServiceError('Resposta inválida do servidor na validação do código.');
+      }
+
+      const data = parsedPayload as Record<string, unknown>;
+
+      if (typeof data.access_token !== 'string' || typeof data.refresh_token !== 'string') {
+        throw new AuthServiceError('Resposta inválida do servidor na validação do código.');
+      }
+
+      return {
+        access_token: data.access_token,
+        refresh_token: data.refresh_token,
+      };
     } catch (error) {
       if (error instanceof AuthServiceError) {
         throw error;
