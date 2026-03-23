@@ -18,8 +18,10 @@ import { Select } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useToast } from "@/components/ui/toast/toast-provider";
 import { cn } from "@/lib/utils";
+import { authService, AuthServiceError } from "@/services/auth.service";
 import { passwordChecks, brazilianStates } from "./constants";
 import { lawyerSignupSchema } from "./lawyer-signup.schema";
+import { useRouter } from "next/navigation";
 
 type LawyerSignupFormState = {
   fullName: string;
@@ -65,6 +67,7 @@ const formatOabNumber = (value: string) => {
 };
 
 export function LawyerSignupForm() {
+  const router = useRouter();
   const isSubmittingRef = useRef(false);
   const [showPassword, setShowPassword] = useState(false);
   const [formState, setFormState] = useState(initialFormState);
@@ -103,13 +106,31 @@ export function LawyerSignupForm() {
     try {
       const validatedData = lawyerSignupSchema.parse(formState);
       
+      const cleanPhone = validatedData.phone?.replace(/\D/g, "") || "";
+      const formattedPhone = cleanPhone.replace(/^(\d{2})(\d{5})(\d{4})$/, "$1 $2-$3");
+
+      const signupData = {
+        fullName: validatedData.fullName,
+        cpf: validatedData.cpf,
+        phone: formattedPhone,
+        email: validatedData.email,
+        password: validatedData.password,
+        oab: validatedData.oabNumber,
+        uf: validatedData.oabState,
+        specialty: validatedData.specialty,
+      };
+
+      await authService.signupLawyer(signupData);
+      
       toast({
         title: "Cadastro realizado com sucesso!",
         description: "Sua conta profissional foi criada. Você será redirecionado em instantes.",
         variant: "success",
       });
       
-      console.log("Formulário válido:", validatedData);
+      setTimeout(() => {
+        router.push(`/verificacao/email?email=${encodeURIComponent(validatedData.email)}&type=signup`);
+      }, 1500);
       
     } catch (error) {
       if (error instanceof ZodError) {

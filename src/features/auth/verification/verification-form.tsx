@@ -8,10 +8,6 @@ import { Button } from "@/components/ui/button";
 import { OtpInput } from "@/components/ui/otp-input";
 import { useToast } from "@/components/ui/toast/toast-provider";
 import { authService, AuthServiceError } from "@/services/auth.service";
-import {
-  getVerificationSecurityToken,
-  saveVerificationSecurityToken,
-} from "./verification-session";
 import { verificationSchema } from "./verification.schema";
 import { verificationMessages, type VerificationConfig } from "./verification.types";
 
@@ -24,7 +20,6 @@ interface VerificationFormProps {
 export function VerificationForm({ config, onVerified, onBack }: VerificationFormProps) {
   const [code, setCode] = useState("");
   const [error, setError] = useState("");
-  const [securityToken, setSecurityToken] = useState("");
   const [isSendingCode, setIsSendingCode] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [timeLeft, setTimeLeft] = useState(config.expirationTime || 300); 
@@ -38,14 +33,7 @@ export function VerificationForm({ config, onVerified, onBack }: VerificationFor
     setIsSendingCode(true);
 
     try {
-      const currentToken = securityToken || getVerificationSecurityToken(config.contact, flowType) || "";
-      const response = await authService.sendEmailVerificationCode(config.contact, currentToken);
-
-      if (response.securityToken) {
-        saveVerificationSecurityToken(config.contact, flowType, response.securityToken);
-        setSecurityToken(response.securityToken);
-      }
-      
+      await authService.sendEmailVerificationCode(config.contact);
       setCanResend(false);
       setTimeLeft(config.expirationTime || 900);
       return true;
@@ -64,18 +52,12 @@ export function VerificationForm({ config, onVerified, onBack }: VerificationFor
     } finally {
       setIsSendingCode(false);
     }
-  }, [config.contact, config.expirationTime, flowType, toast]);
+  }, [config.contact, config.expirationTime, toast]);
 
   useEffect(() => {
-    const storedToken = getVerificationSecurityToken(config.contact, flowType);
-    if (storedToken) {
-      setSecurityToken(storedToken);
-      return;
-    }
-
-    setCanResend(true);
-    setTimeLeft(0);
-  }, [config.contact, flowType]);
+    // Apenas controla o timer, nada de bloquear por token
+    setCanResend(false);
+  }, []);
 
   useEffect(() => {
     if (timeLeft <= 0) {
@@ -104,18 +86,20 @@ export function VerificationForm({ config, onVerified, onBack }: VerificationFor
     try {
       const validatedData = verificationSchema.parse({ code });
 
+      if (!securityToken) {
+        throw new AuthServiceError("Sessão de verificação inválida. Reenvie o código para continuar.");
+      }
+
       const tokens = await authService.validateEmailVerificationCode(
         {
           email: config.contact,
           code: validatedData.code,
-        }
+        },
+        securityToken,
       );
 
       localStorage.setItem("access_token", tokens.access_token);
       localStorage.setItem("refresh_token", tokens.refresh_token);
-      if (tokens.securityToken) {
-        localStorage.setItem("x-security-token", tokens.securityToken);
-      }
       
       toast({
         title: messages.successTitle,

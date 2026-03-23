@@ -21,7 +21,6 @@ import { cn } from "@/lib/utils";
 import { passwordChecks } from "./constants";
 import { citizenSignupSchema } from "./citizen-signup.schema";
 import { authService, AuthServiceError } from "@/services/auth.service";
-import { saveVerificationSecurityToken } from "@/features/auth/verification/verification-session";
 
 type CitizenSignupFormState = {
     fullName: string;
@@ -123,18 +122,6 @@ export function CitizenSignupForm() {
             };
 
             const signupResponse = await authService.signupCitizen(signupData);
-            const signupToken = (signupResponse as any)?.securityToken || '';
-
-            if (signupToken) {
-              saveVerificationSecurityToken(validatedData.email, "signup", signupToken);
-              console.log('[SIGNUP DEBUG] Email code already sent by signup, redirecting directly');
-            } else {
-              console.log('[SIGNUP DEBUG] About to send email verification code explicitly', { email: validatedData.email, hasToken: !!signupToken });
-              const sendCodeResponse = await authService.sendEmailVerificationCode(validatedData.email, signupToken);
-              saveVerificationSecurityToken(validatedData.email, "signup", sendCodeResponse.securityToken);
-            }
-
-            console.log('[SIGNUP DEBUG] Email code sent, redirecting to verification');
 
             toast({
                 title: "Cadastro realizado com sucesso!",

@@ -121,28 +121,15 @@ export const authService = {
         throw new AuthServiceError('Resposta inválida do servidor ao criar conta.');
       }
 
-      // We must explicitly read the header. If it's missing or blocked by CORS, it will be null.
-      const securityTokenReq = response.headers.get('x-security-token') || response.headers.get('X-Security-Token') || '';
-      const fallbackToken = (payload as any).securityToken === 'mock_token_123' ? '' : ((payload as any).securityToken || '');
+      const rawHeader = response.headers.get('x-security-token') || response.headers.get('X-Security-Token') || '';
+      const fallbackToken = (payload as Record<string, unknown>).securityToken as string || '';
       
-      const debugTokens = {
-        headerLower: response.headers.get('x-security-token'),
-        headerCamel: response.headers.get('X-Security-Token'),
-        bodyToken: (payload as any).securityToken,
-      };
-      
-      console.log('[AUTH DEBUG] signupCitizen tokens:', debugTokens);
-
-      const finalToken = securityTokenReq || fallbackToken;
-
-      if (!finalToken) {
-        console.warn('[AUTH ALERTA CORS] O header x-security-token está invisível para o frontend! Peça ao backend para adicionar "Access-Control-Expose-Headers: x-security-token"');
-      }
+      const token = rawHeader || fallbackToken;
 
       return {
-        ...(payload as any),
-        securityToken: finalToken.trim(),
-      } as CitizenSignupResponse;
+        ...(payload as CitizenSignupResponse),
+        securityToken: token.trim(),
+      };
     } catch (error) {
       if (error instanceof AuthServiceError) {
         throw error;
@@ -171,13 +158,15 @@ export const authService = {
         throw new AuthServiceError('Resposta inválida do servidor ao criar conta profissional.');
       }
 
-      // Try extract from header, fallback to body in case of CORS missing Expose-Headers
-      const securityToken = response.headers.get('x-security-token') || (payload as any).securityToken || '';
+      const rawHeader = response.headers.get('x-security-token') || response.headers.get('X-Security-Token') || '';
+      const fallbackToken = (payload as Record<string, unknown>).securityToken as string || '';
+      
+      const token = rawHeader || fallbackToken;
 
       return {
-        ...(payload as any),
-        securityToken: securityToken.trim(),
-      } as LawyerSignupResponse;
+        ...(payload as LawyerSignupResponse),
+        securityToken: token.trim(),
+      };
     } catch (error) {
       if (error instanceof AuthServiceError) {
         throw error;
@@ -186,45 +175,22 @@ export const authService = {
     }
   },
 
-  async sendEmailVerificationCode(email: string, currentSecurityToken?: string): Promise<SendEmailVerificationResponse> {
+  async sendEmailVerificationCode(email: string): Promise<SendEmailVerificationResponse> {
     try {
-      console.log('[AUTH DEBUG] sendEmailVerificationCode called', { email, hasToken: !!currentSecurityToken });
-      
       const response = await fetch(`${API.BASE_URL}${API.ENDPOINTS.SIGNUP.EMAIL_SEND}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          ...(currentSecurityToken ? { 'x-security-token': currentSecurityToken } : {}),
         },
         body: JSON.stringify({ email }),
       });
 
-      console.log('[AUTH DEBUG] sendEmailVerificationCode response status:', response.status);
-
       const data = await parseResponseBody(response);
-
-      const headerLower = response.headers.get('x-security-token');
-      const headerCamel = response.headers.get('X-Security-Token');
-      let bodyToken = (data as any)?.securityToken;
-      
-      if (bodyToken === 'mock_token_123') {
-        bodyToken = '';
-      }
-      
-      console.log('[AUTH DEBUG] sendEmailVerificationCode parsed tokens:', { headerLower, headerCamel, bodyToken });
-
-      const extractedToken = headerLower || headerCamel || bodyToken || '';
-      const securityToken = (extractedToken || currentSecurityToken || '').trim();
-
-      if (!securityToken) {
-        console.warn('[AUTH ALERTA CORS] O token não foi recebido! O backend precisa retornar via header (com Expose-Headers) ou no próprio JSON.');
-      }
 
       if (!response.ok) {
         if (response.status === 409) {
           return {
             message: getResponseMessage(data, 'Código já existe para este e-mail. Use o código já enviado.'),
-            securityToken,
           };
         }
         await handleAPIError(response);
@@ -232,7 +198,6 @@ export const authService = {
 
       return {
         message: getResponseMessage(data, 'Código enviado para o e-mail informado.'),
-        securityToken,
       };
     } catch (error) {
       if (error instanceof AuthServiceError) {
@@ -243,13 +208,15 @@ export const authService = {
   },
 
   async validateEmailVerificationCode(
-    payload: ValidateEmailVerificationRequest
+    payload: ValidateEmailVerificationRequest,
+    securityToken: string,
   ): Promise<ValidateEmailVerificationResponse> {
     try {
       const response = await fetch(`${API.BASE_URL}${API.ENDPOINTS.SIGNUP.EMAIL_VALIDATE}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'x-security-token': securityToken,
         },
         body: JSON.stringify(payload),
       });
@@ -270,12 +237,9 @@ export const authService = {
         throw new AuthServiceError('Resposta inválida do servidor na validação do código.');
       }
 
-      const securityToken = response.headers.get('x-security-token') || response.headers.get('X-Security-Token') || '';
-
       return {
         access_token: data.access_token,
         refresh_token: data.refresh_token,
-        securityToken: securityToken.trim(),
       };
     } catch (error) {
       if (error instanceof AuthServiceError) {
