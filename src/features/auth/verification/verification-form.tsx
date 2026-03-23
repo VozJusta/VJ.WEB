@@ -1,7 +1,6 @@
 "use client";
 
 import { FormEvent, useState, useEffect, useCallback } from "react";
-import Link from "next/link";
 import { ZodError } from "zod";
 import { VerifiedUserOutlined, ArrowBack } from "@mui/icons-material";
 import { Button } from "@/components/ui/button";
@@ -22,12 +21,13 @@ interface VerificationFormProps {
 }
 
 export function VerificationForm({ config, onVerified, onBack }: VerificationFormProps) {
+  const expirationSeconds = config.expirationTime || 900;
   const [code, setCode] = useState("");
   const [error, setError] = useState("");
   const [securityToken, setSecurityToken] = useState("");
   const [isSendingCode, setIsSendingCode] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [timeLeft, setTimeLeft] = useState(config.expirationTime || 300); 
+  const [timeLeft, setTimeLeft] = useState(expirationSeconds);
   const [canResend, setCanResend] = useState(false);
   const { toast } = useToast();
 
@@ -38,7 +38,8 @@ export function VerificationForm({ config, onVerified, onBack }: VerificationFor
     setIsSendingCode(true);
 
     try {
-      const response = await authService.sendEmailVerificationCode(config.contact);
+      const currentToken = securityToken || getVerificationSecurityToken(config.contact, flowType) || "";
+      const response = await authService.sendEmailVerificationCode(config.contact, currentToken);
 
       if (!response.securityToken) {
         throw new AuthServiceError("Não foi possível iniciar a validação. Tente reenviar o código.");
@@ -47,8 +48,8 @@ export function VerificationForm({ config, onVerified, onBack }: VerificationFor
       saveVerificationSecurityToken(config.contact, flowType, response.securityToken);
       setSecurityToken(response.securityToken);
       setCanResend(false);
-      setTimeLeft(config.expirationTime || 300);
-      return true;
+      setTimeLeft(expirationSeconds);
+      return response.message;
     } catch (sendError) {
       const description = sendError instanceof AuthServiceError
         ? sendError.message
@@ -60,11 +61,11 @@ export function VerificationForm({ config, onVerified, onBack }: VerificationFor
         variant: "error",
       });
       setCanResend(true);
-      return false;
+      return "";
     } finally {
       setIsSendingCode(false);
     }
-  }, [config.contact, config.expirationTime, flowType, toast]);
+  }, [config.contact, expirationSeconds, flowType, securityToken, toast]);
 
   useEffect(() => {
     const storedToken = getVerificationSecurityToken(config.contact, flowType);
@@ -73,8 +74,9 @@ export function VerificationForm({ config, onVerified, onBack }: VerificationFor
       return;
     }
 
-    void sendCode();
-  }, [config.contact, flowType, sendCode]);
+    setCanResend(true);
+    setTimeLeft(0);
+  }, [config.contact, flowType]);
 
   useEffect(() => {
     if (timeLeft <= 0) {
@@ -102,9 +104,10 @@ export function VerificationForm({ config, onVerified, onBack }: VerificationFor
 
     try {
       const validatedData = verificationSchema.parse({ code });
+      const activeToken = securityToken || getVerificationSecurityToken(config.contact, flowType) || "";
 
-      if (!securityToken) {
-        throw new AuthServiceError("Sessão de verificação inválida. Reenvie o código para continuar.");
+      if (!activeToken) {
+        throw new AuthServiceError("Sessão de verificação não encontrada. Clique em Reenviar para solicitar um novo código.");
       }
 
       const tokens = await authService.validateEmailVerificationCode(
@@ -112,7 +115,7 @@ export function VerificationForm({ config, onVerified, onBack }: VerificationFor
           email: config.contact,
           code: validatedData.code,
         },
-        securityToken,
+        activeToken,
       );
 
       localStorage.setItem("access_token", tokens.access_token);
@@ -159,12 +162,12 @@ export function VerificationForm({ config, onVerified, onBack }: VerificationFor
     setCode("");
     setError("");
     
-    const sent = await sendCode();
+    const message = await sendCode();
 
-    if (sent) {
+    if (message) {
       toast({
-        title: "Código reenviado",
-        description: `Um novo código foi enviado para ${config.contact}`,
+        title: "Código atualizado",
+        description: message,
         variant: "success",
       });
     }
@@ -213,7 +216,7 @@ export function VerificationForm({ config, onVerified, onBack }: VerificationFor
               value={code}
               onChange={setCode}
               error={error}
-              disabled={isSubmitting || timeLeft <= 0}
+              disabled={isSubmitting || isSendingCode}
               autoFocus
             />
 
@@ -230,7 +233,7 @@ export function VerificationForm({ config, onVerified, onBack }: VerificationFor
               size="lg"
               fullWidth
               loading={isSubmitting}
-              disabled={code.length !== 6 || timeLeft <= 0 || isSendingCode || !securityToken}
+              disabled={code.length !== 6  || isSendingCode}
               className="rounded-xl text-sm sm:text-base"
             >
               {messages.buttonText}

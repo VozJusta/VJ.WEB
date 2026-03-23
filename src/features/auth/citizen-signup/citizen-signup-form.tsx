@@ -112,9 +112,16 @@ export function CitizenSignupForm() {
                 password: validatedData.password,
             };
 
-            await authService.signupCitizen(signupData);
+            const signupResponse = await authService.signupCitizen(signupData);
 
-            const sendCodeResponse = await authService.sendEmailVerificationCode(validatedData.email);
+            if (signupResponse.securityToken) {
+                saveVerificationSecurityToken(validatedData.email, "signup", signupResponse.securityToken);
+            }
+
+            const sendCodeResponse = await authService.sendEmailVerificationCode(
+                validatedData.email,
+                signupResponse.securityToken,
+            );
             saveVerificationSecurityToken(validatedData.email, "signup", sendCodeResponse.securityToken);
 
             toast({

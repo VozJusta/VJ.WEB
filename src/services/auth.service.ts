@@ -100,6 +100,10 @@ async function handleAPIError(error: unknown): Promise<never> {
   throw new AuthServiceError('Erro desconhecido ao processar solicitação', undefined, error);
 }
 
+function extractHeaderSecurityToken(response: Response): string {
+  return (response.headers.get('x-security-token') || '').trim();
+}
+
 export const authService = {
   async signupCitizen(data: CitizenSignupRequest): Promise<CitizenSignupResponse> {
     try {
@@ -116,12 +120,16 @@ export const authService = {
       }
 
       const payload = await parseResponseBody(response);
+      const securityToken = extractHeaderSecurityToken(response);
 
       if (!payload || typeof payload !== 'object') {
         throw new AuthServiceError('Resposta inválida do servidor ao criar conta.');
       }
 
-      return payload as CitizenSignupResponse;
+      return {
+        ...(payload as CitizenSignupResponse),
+        ...(securityToken ? { securityToken } : {}),
+      };
     } catch (error) {
       if (error instanceof AuthServiceError) {
         throw error;
@@ -145,12 +153,16 @@ export const authService = {
       }
 
       const payload = await parseResponseBody(response);
+      const securityToken = extractHeaderSecurityToken(response);
 
       if (!payload || typeof payload !== 'object') {
         throw new AuthServiceError('Resposta inválida do servidor ao criar conta profissional.');
       }
 
-      return payload as LawyerSignupResponse;
+      return {
+        ...(payload as LawyerSignupResponse),
+        ...(securityToken ? { securityToken } : {}),
+      };
     } catch (error) {
       if (error instanceof AuthServiceError) {
         throw error;
@@ -159,30 +171,32 @@ export const authService = {
     }
   },
 
-  async sendEmailVerificationCode(email: string): Promise<SendEmailVerificationResponse> {
+  async sendEmailVerificationCode(email: string, currentSecurityToken?: string): Promise<SendEmailVerificationResponse> {
     try {
       const response = await fetch(`${API.BASE_URL}${API.ENDPOINTS.SIGNUP.EMAIL_SEND}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          ...(currentSecurityToken ? { 'x-security-token': currentSecurityToken } : {}),
         },
         body: JSON.stringify({ email }),
       });
 
+      const data = await parseResponseBody(response);
+      const securityToken =
+        extractHeaderSecurityToken(response) ||
+        (currentSecurityToken || '').trim();
+
       if (!response.ok) {
+        if (response.status === 409 && securityToken) {
+          return {
+            message: getResponseMessage(data, 'Já existe um código ativo para este e-mail.'),
+            securityToken,
+          };
+        }
+
         await handleAPIError(response);
       }
-
-      const data = await parseResponseBody(response);
-      const mappedData = data && typeof data === 'object' ? (data as Record<string, unknown>) : null;
-
-      const securityToken =
-        response.headers.get('x-security-token') ||
-        response.headers.get('X-Security-Token') ||
-        (typeof mappedData?.securityToken === 'string' ? mappedData.securityToken : '') ||
-        (typeof mappedData?.xSecurityToken === 'string' ? mappedData.xSecurityToken : '') ||
-        (typeof mappedData?.token === 'string' ? mappedData.token : '') ||
-        '';
 
       return {
         message: getResponseMessage(data, 'Código enviado para o e-mail informado.'),

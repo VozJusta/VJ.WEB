@@ -15,7 +15,7 @@ function EmailVerificationContent() {
     type: "email",
     contact: email,
     flowType: type === "reset" ? "reset" : "signup",
-    expirationTime: 300,
+    expirationTime: 900,
   };
 
   const handleVerified = () => {
