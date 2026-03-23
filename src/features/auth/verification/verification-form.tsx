@@ -54,10 +54,9 @@ export function VerificationForm({ config, onVerified, onBack }: VerificationFor
     }
   }, [config.contact, config.expirationTime, toast]);
 
-  useEffect(() => {
-    // Apenas controla o timer, nada de bloquear por token
-    setCanResend(false);
-  }, []);
+  const [hasSentInitialCode, setHasSentInitialCode] = useState(false);
+
+  
 
   useEffect(() => {
     if (timeLeft <= 0) {
@@ -86,7 +85,7 @@ export function VerificationForm({ config, onVerified, onBack }: VerificationFor
     try {
       const validatedData = verificationSchema.parse({ code });
       
-      const sessionToken = sessionStorage.getItem("pending_verification_token") || "";
+      const sessionToken = localStorage.getItem("x-security-token") || sessionStorage.getItem("pending_verification_token") || "";
 
       if (!sessionToken) {
         throw new AuthServiceError("Sessão de verificação inválida. Refaça o processo de cadastro.");
@@ -104,6 +103,7 @@ export function VerificationForm({ config, onVerified, onBack }: VerificationFor
       localStorage.setItem("refresh_token", tokens.refresh_token);
       
       sessionStorage.removeItem("pending_verification_token");
+      localStorage.removeItem("x-security-token");
       
       toast({
         title: messages.successTitle,

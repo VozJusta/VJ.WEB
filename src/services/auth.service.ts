@@ -124,11 +124,15 @@ export const authService = {
       const rawHeader = response.headers.get('x-security-token') || response.headers.get('X-Security-Token') || '';
       const fallbackToken = (payload as Record<string, unknown>).securityToken as string || '';
       
-      const token = rawHeader || fallbackToken;
+      const token = (rawHeader || fallbackToken).trim();
+
+      if (token && typeof window !== 'undefined') {
+        localStorage.setItem('x-security-token', token);
+      }
 
       return {
         ...(payload as CitizenSignupResponse),
-        securityToken: token.trim(),
+        securityToken: token,
       };
     } catch (error) {
       if (error instanceof AuthServiceError) {
@@ -161,11 +165,15 @@ export const authService = {
       const rawHeader = response.headers.get('x-security-token') || response.headers.get('X-Security-Token') || '';
       const fallbackToken = (payload as Record<string, unknown>).securityToken as string || '';
       
-      const token = rawHeader || fallbackToken;
+      const token = (rawHeader || fallbackToken).trim();
+
+      if (token && typeof window !== 'undefined') {
+        localStorage.setItem('x-security-token', token);
+      }
 
       return {
         ...(payload as LawyerSignupResponse),
-        securityToken: token.trim(),
+        securityToken: token,
       };
     } catch (error) {
       if (error instanceof AuthServiceError) {
@@ -217,6 +225,7 @@ export const authService = {
         headers: {
           'Content-Type': 'application/json',
           'x-security-token': securityToken,
+          'Authorization': `Bearer ${securityToken}`, // Fallback resiliente para o Passport.js do Nest
         },
         body: JSON.stringify(payload),
       });

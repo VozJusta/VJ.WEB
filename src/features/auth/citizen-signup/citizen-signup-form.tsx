@@ -127,6 +127,9 @@ export function CitizenSignupForm() {
               sessionStorage.setItem("pending_verification_token", signupResponse.securityToken);
             }
 
+            // Dispara imediatamente o e-mail pós-cadastro bem sucedido
+            await authService.sendEmailVerificationCode(validatedData.email);
+
             toast({
                 title: "Cadastro realizado com sucesso!",
                 description: "Enviamos um código para seu e-mail para concluir o acesso.",
