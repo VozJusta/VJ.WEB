@@ -49,3 +49,18 @@ export interface LawyerSignupResponse extends CitizenSignupResponse {
   uf: string;
   specialty: string;
 }
+
+export interface SendEmailVerificationResponse {
+  message: string;
+  securityToken: string;
+}
+
+export interface ValidateEmailVerificationRequest {
+  email: string;
+  code: string;
+}
+
+export interface ValidateEmailVerificationResponse {
+  access_token: string;
+  refresh_token: string;
+}
