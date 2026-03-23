@@ -13,6 +13,8 @@ export const API = {
     },
     SIGNUP: {
       CITIZEN: '/citizen',
+      EMAIL_SEND: '/auth/send/email',
+      EMAIL_VALIDATE: '/auth/validate/email',
       LAWYER: '/lawyer',
     },
   },
