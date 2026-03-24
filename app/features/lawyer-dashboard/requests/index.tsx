@@ -1,8 +1,6 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import Link from "next/link";
-import { ArrowBackRounded } from "@mui/icons-material";
 import { RequestCard } from "@/components/ui/request-card";
 import { FilterTabs } from "@/components/ui/filter-tabs";
 import { EmptyState } from "@/components/ui/empty-state";
@@ -69,56 +67,28 @@ export function RequestsList({ initialRequests = [] }: RequestsListProps) {
 
   if (requests.length === 0) {
     return (
-      <main aria-label="Solicitações">
-        <header className="flex items-center gap-3 mb-6">
-          <Link
-            href="/advogado"
-            aria-label="Voltar para o dashboard"
-            className="flex items-center justify-center w-9 h-9 rounded-lg text-white/50 hover:text-white hover:bg-white/8 transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
-          >
-            <ArrowBackRounded fontSize="small" aria-hidden />
-          </Link>
-          <h1 className="text-2xl font-bold text-white tracking-tight">
-            Solicitações
-          </h1>
-        </header>
-
+      <section className="w-full" aria-label="Solicitações">
         <EmptyState
           illustration="/illustrations/empty-cases-illustration.png"
           illustrationAlt="Nenhuma solicitação encontrada"
           title="Você ainda não tem solicitações"
           description="Quando cidadãos enviarem propostas de casos, elas aparecerão aqui para você revisar."
         />
-      </main>
+      </section>
     );
   }
 
   return (
-    <main aria-label="Solicitações">
-      <header className="flex flex-col gap-4 mb-6">
-        <div className="flex items-center gap-3">
-          <Link
-            href="/advogado"
-            aria-label="Voltar para o dashboard"
-            className="flex items-center justify-center w-9 h-9 rounded-lg text-white/50 hover:text-white hover:bg-white/8 transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
-          >
-            <ArrowBackRounded fontSize="small" aria-hidden />
-          </Link>
-          <h1 className="text-2xl font-bold text-white tracking-tight">
-            Solicitações
-          </h1>
-        </div>
-
-        <FilterTabs
-          tabs={filterTabs}
-          activeTab={activeFilter}
-          onTabChange={handleFilterChange}
-          ariaLabel="Filtrar solicitações por status"
-        />
-      </header>
+    <section className="flex w-full flex-col gap-6" aria-label="Solicitações">
+      <FilterTabs
+        tabs={filterTabs}
+        activeTab={activeFilter}
+        onTabChange={handleFilterChange}
+        ariaLabel="Filtrar solicitações por status"
+      />
 
       {filteredRequests.length === 0 ? (
-        <section
+        <article
           role="tabpanel"
           id={`tabpanel-${activeFilter}`}
           aria-label={`Solicitações ${activeFilter === "all" ? "todas" : activeFilter}`}
@@ -129,14 +99,15 @@ export function RequestsList({ initialRequests = [] }: RequestsListProps) {
             title={`Nenhuma solicitação ${activeFilter === "pending" ? "pendente" : activeFilter === "accepted" ? "aceita" : "recusada"}`}
             description="Não há solicitações nesta categoria no momento."
           />
-        </section>
+        </article>
       ) : (
-        <section
+        <article
           role="tabpanel"
           id={`tabpanel-${activeFilter}`}
           aria-label={`Solicitações ${activeFilter === "all" ? "todas" : activeFilter}`}
+          className="w-full"
         >
-          <ul role="list" className="flex flex-col gap-4">
+          <ul role="list" className="flex w-full flex-col gap-4">
             {shownRequests.map((request) => (
               <li key={request.id}>
                 <RequestCard
@@ -150,7 +121,7 @@ export function RequestsList({ initialRequests = [] }: RequestsListProps) {
           </ul>
 
           {hasMore && (
-            <div className="flex justify-center pt-6">
+            <footer className="flex justify-center pt-6">
               <button
                 type="button"
                 onClick={() => setVisible((v) => v + PAGE_SIZE)}
@@ -158,10 +129,10 @@ export function RequestsList({ initialRequests = [] }: RequestsListProps) {
               >
                 Ver Mais Solicitações
               </button>
-            </div>
+            </footer>
           )}
-        </section>
+        </article>
       )}
-    </main>
+    </section>
   );
 }
