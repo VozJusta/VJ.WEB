@@ -136,7 +136,7 @@ export function RequestsList({ initialRequests = [] }: RequestsListProps) {
           id={`tabpanel-${activeFilter}`}
           aria-label={`Solicitações ${activeFilter === "all" ? "todas" : activeFilter}`}
         >
-          <ul role="list" className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+          <ul role="list" className="flex flex-col gap-4">
             {shownRequests.map((request) => (
               <li key={request.id}>
                 <RequestCard
