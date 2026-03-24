@@ -10,7 +10,7 @@ import type { FilterTabItem } from "@/components/ui/filter-tabs/filter-tabs.type
 type FilterValue = "all" | RequestStatus;
 
 interface RequestsListProps {
-  initialRequests?: Omit<RequestCardProps, "onAccept" | "onReject" | "onViewDossier" | "className">[];
+  initialRequests?: Omit<RequestCardProps, "onClick" | "onAccept" | "onReject" | "onViewDossier" | "className">[];
 }
 
 const PAGE_SIZE = 6;
@@ -57,7 +57,11 @@ export function RequestsList({ initialRequests = [] }: RequestsListProps) {
   };
 
   const handleViewDossier = (id: string) => {
-    window.location.href = `/advogado/solicitacoes/${id}/dossier`;
+    window.location.href = `/advogado/solicitacoes/${id}`;
+  };
+
+  const handleCardClick = (id: string) => {
+    window.location.href = `/advogado/solicitacoes/${id}`;
   };
 
   const handleFilterChange = (value: FilterValue) => {
@@ -112,6 +116,7 @@ export function RequestsList({ initialRequests = [] }: RequestsListProps) {
               <li key={request.id}>
                 <RequestCard
                   {...request}
+                  onClick={handleCardClick}
                   onAccept={handleAccept}
                   onReject={handleReject}
                   onViewDossier={handleViewDossier}
