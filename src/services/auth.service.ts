@@ -1,5 +1,7 @@
 import { API } from '@/lib/api';
 import type {
+  CredentialsLoginRequest,
+  AuthResponse,
   CitizenSignupRequest,
   CitizenSignupResponse,
   LawyerSignupRequest,
@@ -7,6 +9,7 @@ import type {
   SendEmailVerificationResponse,
   ValidateEmailVerificationRequest,
   ValidateEmailVerificationResponse,
+  UserRole,
 } from '@/types/auth.types';
 
 export class AuthServiceError extends Error {
@@ -66,6 +69,35 @@ function getResponseMessage(payload: unknown, fallback: string): string {
   return fallback;
 }
 
+function extractSecurityToken(response: Response, payload: unknown): string {
+  const rawHeader = response.headers.get('x-security-token') || response.headers.get('X-Security-Token') || '';
+  const fallbackToken =
+    payload && typeof payload === 'object'
+      ? (((payload as Record<string, unknown>).securityToken as string) || '')
+      : '';
+
+  return (rawHeader || fallbackToken).trim();
+}
+
+function persistSecurityToken(token: string): void {
+  if (!token || typeof window === 'undefined') return;
+  localStorage.setItem('x-security-token', token);
+}
+
+function normalizeUserRole(role: unknown): UserRole {
+  if (typeof role !== 'string') {
+    throw new AuthServiceError('Perfil de usuário inválido retornado pelo servidor.');
+  }
+
+  const normalized = role.trim().toLowerCase();
+
+  if (normalized === 'citizen' || normalized === 'lawyer') {
+    return normalized;
+  }
+
+  throw new AuthServiceError('Perfil de usuário inválido retornado pelo servidor.');
+}
+
 async function handleAPIError(error: unknown): Promise<never> {
   if (error instanceof Response) {
     const statusCode = error.status;
@@ -82,6 +114,8 @@ async function handleAPIError(error: unknown): Promise<never> {
     switch (statusCode) {
       case 400:
         throw new AuthServiceError('Dados inválidos. Verifique as informações fornecidas.', statusCode, error);
+      case 401:
+        throw new AuthServiceError('Acesso não autorizado. Verifique seu e-mail e senha.', statusCode, error);
       case 409:
         throw new AuthServiceError(errorMessage, statusCode, error);
       case 422:
@@ -101,6 +135,65 @@ async function handleAPIError(error: unknown): Promise<never> {
 }
 
 export const authService = {
+  async loginCitizen(data: CredentialsLoginRequest): Promise<AuthResponse & { securityToken: string }> {
+    try {
+      const response = await fetch(`${API.BASE_URL}${API.ENDPOINTS.AUTH.CITIZEN_LOGIN}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+      });
+
+      if (!response.ok) {
+        await handleAPIError(response);
+      }
+
+      const payload = await parseResponseBody(response);
+
+      if (!payload || typeof payload !== 'object') {
+        throw new AuthServiceError('Resposta inválida do servidor ao autenticar.');
+      }
+
+      const raw = payload as Record<string, unknown>;
+      const validated =
+        typeof raw.validated === 'boolean'
+          ? raw.validated
+          : typeof raw.validate === 'boolean'
+            ? raw.validate
+            : null;
+
+      if (typeof validated !== 'boolean') {
+        throw new AuthServiceError('Resposta inválida do servidor ao autenticar.');
+      }
+
+      if (typeof raw.sub !== 'string' || typeof raw.email !== 'string' || typeof raw.full_name !== 'string') {
+        throw new AuthServiceError('Resposta inválida do servidor ao autenticar.');
+      }
+
+      const role = normalizeUserRole(raw.role);
+      const loggedWithGoogle = typeof raw.loggedWithGoogle === 'boolean' ? raw.loggedWithGoogle : false;
+
+      const token = extractSecurityToken(response, payload);
+      persistSecurityToken(token);
+
+      return {
+        validated,
+        sub: raw.sub,
+        role,
+        email: raw.email,
+        full_name: raw.full_name,
+        loggedWithGoogle,
+        securityToken: token,
+      };
+    } catch (error) {
+      if (error instanceof AuthServiceError) {
+        throw error;
+      }
+      return handleAPIError(error);
+    }
+  },
+
   async signupCitizen(data: CitizenSignupRequest): Promise<CitizenSignupResponse> {
     try {
       const response = await fetch(`${API.BASE_URL}${API.ENDPOINTS.SIGNUP.CITIZEN}`, {
@@ -121,14 +214,8 @@ export const authService = {
         throw new AuthServiceError('Resposta inválida do servidor ao criar conta.');
       }
 
-      const rawHeader = response.headers.get('x-security-token') || response.headers.get('X-Security-Token') || '';
-      const fallbackToken = (payload as Record<string, unknown>).securityToken as string || '';
-      
-      const token = (rawHeader || fallbackToken).trim();
-
-      if (token && typeof window !== 'undefined') {
-        localStorage.setItem('x-security-token', token);
-      }
+      const token = extractSecurityToken(response, payload);
+      persistSecurityToken(token);
 
       return {
         ...(payload as CitizenSignupResponse),
@@ -162,14 +249,8 @@ export const authService = {
         throw new AuthServiceError('Resposta inválida do servidor ao criar conta profissional.');
       }
 
-      const rawHeader = response.headers.get('x-security-token') || response.headers.get('X-Security-Token') || '';
-      const fallbackToken = (payload as Record<string, unknown>).securityToken as string || '';
-      
-      const token = (rawHeader || fallbackToken).trim();
-
-      if (token && typeof window !== 'undefined') {
-        localStorage.setItem('x-security-token', token);
-      }
+      const token = extractSecurityToken(response, payload);
+      persistSecurityToken(token);
 
       return {
         ...(payload as LawyerSignupResponse),
@@ -225,7 +306,7 @@ export const authService = {
         headers: {
           'Content-Type': 'application/json',
           'x-security-token': securityToken,
-          'Authorization': `Bearer ${securityToken}`, // Fallback resiliente para o Passport.js do Nest
+          'Authorization': `Bearer ${securityToken}`,
         },
         body: JSON.stringify(payload),
       });

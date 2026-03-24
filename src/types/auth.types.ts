@@ -9,6 +9,13 @@ export interface GoogleAuthResponse {
   loggedWithGoogle: boolean;
 }
 
+export type AuthResponse = GoogleAuthResponse;
+
+export interface CredentialsLoginRequest {
+  email: string;
+  password: string;
+}
+
 export interface AuthState {
   userRole: UserRole | null;
   isAuthenticated: boolean;
