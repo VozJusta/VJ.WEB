@@ -275,11 +275,13 @@ export const authService = {
       });
 
       const data = await parseResponseBody(response);
+      const token = extractSecurityToken(response, data);
 
       if (!response.ok) {
         if (response.status === 409) {
           return {
             message: getResponseMessage(data, 'Código já existe para este e-mail. Use o código já enviado.'),
+            securityToken: token || undefined,
           };
         }
         await handleAPIError(response);
@@ -287,6 +289,7 @@ export const authService = {
 
       return {
         message: getResponseMessage(data, 'Código enviado para o e-mail informado.'),
+        securityToken: token || undefined,
       };
     } catch (error) {
       if (error instanceof AuthServiceError) {
