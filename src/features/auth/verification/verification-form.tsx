@@ -85,19 +85,38 @@ export function VerificationForm({ config, onVerified, onBack }: VerificationFor
     try {
       const validatedData = verificationSchema.parse({ code });
       
-      const sessionToken = sessionStorage.getItem("pending_verification_token") || localStorage.getItem("x-security-token") || "";
+      const pendingToken = sessionStorage.getItem("pending_verification_token") || "";
+      const fallbackToken = localStorage.getItem("x-security-token") || "";
+      const primaryToken = pendingToken || fallbackToken;
 
-      if (!sessionToken) {
+      if (!primaryToken) {
         throw new AuthServiceError("Sessão de verificação inválida. Refaça o processo de cadastro.");
       }
 
-      const tokens = await authService.validateEmailVerificationCode(
-        {
-          email: config.contact,
-          code: validatedData.code,
-        },
-        sessionToken
-      );
+      const requestPayload = {
+        email: config.contact,
+        code: validatedData.code,
+      };
+
+      let tokens: { access_token: string; refresh_token: string };
+
+      try {
+        tokens = await authService.validateEmailVerificationCode(requestPayload, primaryToken);
+      } catch (firstError) {
+        const shouldRetry =
+          firstError instanceof AuthServiceError &&
+          firstError.statusCode === 401 &&
+          pendingToken &&
+          fallbackToken &&
+          pendingToken !== fallbackToken;
+
+        if (!shouldRetry) {
+          throw firstError;
+        }
+
+        const secondaryToken = primaryToken === pendingToken ? fallbackToken : pendingToken;
+        tokens = await authService.validateEmailVerificationCode(requestPayload, secondaryToken);
+      }
 
       localStorage.setItem("access_token", tokens.access_token);
       localStorage.setItem("refresh_token", tokens.refresh_token);

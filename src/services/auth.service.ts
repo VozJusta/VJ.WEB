@@ -268,6 +268,7 @@ export const authService = {
     try {
       const response = await fetch(`${API.BASE_URL}${API.ENDPOINTS.SIGNUP.EMAIL_SEND}`, {
         method: 'POST',
+        credentials: 'include',
         headers: {
           'Content-Type': 'application/json',
         },
@@ -306,6 +307,7 @@ export const authService = {
     try {
       const response = await fetch(`${API.BASE_URL}${API.ENDPOINTS.SIGNUP.EMAIL_VALIDATE}`, {
         method: 'POST',
+        credentials: 'include',
         headers: {
           'Content-Type': 'application/json',
           'x-security-token': securityToken,
@@ -314,6 +316,13 @@ export const authService = {
       });
 
       if (!response.ok) {
+        if (response.status === 401) {
+          throw new AuthServiceError(
+            'Sessão de verificação inválida ou expirada. Solicite um novo código e tente novamente.',
+            401,
+            response
+          );
+        }
         await handleAPIError(response);
       }
 
