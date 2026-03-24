@@ -3,10 +3,12 @@
 import { Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { VerificationForm, type VerificationConfig } from "@/features/auth/verification";
+import { useAuth } from "@/hooks/useAuth";
 
 function EmailVerificationContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const { setAuthenticated } = useAuth();
   
   const email = searchParams.get("email") || "seu@email.com";
   const type = searchParams.get("type") || "signup";
@@ -22,6 +24,10 @@ function EmailVerificationContent() {
     if (type === "reset") {
       router.push(`/redefinir-senha?email=${encodeURIComponent(email)}`);
       return;
+    }
+
+    if (type === "login") {
+      setAuthenticated(true);
     }
 
     router.push("/dashboard");

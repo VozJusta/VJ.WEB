@@ -37,7 +37,7 @@ export function LoginForm() {
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
   const { toast } = useToast();
   const router = useRouter();
-  const { setUserRole, login } = useAuth();
+  const { setUserRole, setUser, setAuthenticated, setError } = useAuth();
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -52,15 +52,27 @@ export function LoginForm() {
         password: validatedData.password,
       });
 
-      login(authResponse);
+      setUserRole(authResponse.role);
+      setUser({
+        id: authResponse.sub,
+        email: authResponse.email,
+        fullName: authResponse.full_name,
+        role: authResponse.role,
+      });
+      setAuthenticated(false);
+      setError(null);
+
+      await authService.sendEmailVerificationCode(validatedData.email);
       
       toast({
-        title: "Login realizado com sucesso!",
-        description: "Você será redirecionado em instantes.",
+        title: "Código enviado!",
+        description: "Verifique seu e-mail para concluir o acesso.",
         variant: "success",
       });
 
-      router.replace("/dashboard");
+      router.replace(
+        `/verificacao/email?email=${encodeURIComponent(validatedData.email)}&type=login`
+      );
       
     } catch (error) {
       if (error instanceof ZodError) {
