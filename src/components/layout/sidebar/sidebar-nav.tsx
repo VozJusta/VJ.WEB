@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
-import { authStorage } from "@/lib/auth";
+import { useAuthStore } from "@/store/auth.store";
 import { sidebarMainNav, sidebarBottomNav } from "./sidebar.navigation";
 import type { SidebarNavItem } from "./sidebar.types";
 
@@ -87,11 +87,11 @@ type SidebarNavProps = {
 export function SidebarNav({ isOpen }: SidebarNavProps) {
   const pathname = usePathname();
   const router = useRouter();
+  const logout = useAuthStore((state) => state.logout);
 
   const handleLogout = () => {
-    authStorage.clearAll();
-    localStorage.removeItem("auth-store");
-    router.push("/login");
+    logout();
+    router.replace("/login");
   };
 
   return (

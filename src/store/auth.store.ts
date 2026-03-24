@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { devtools, persist } from 'zustand/middleware';
+import { authStorage } from '@/lib/auth';
 import type { AuthState, UserRole, AuthResponse } from '@/types/auth.types';
 
 interface AuthStore extends AuthState {
@@ -63,8 +64,10 @@ export const useAuthStore = create<AuthStore>()(
         loginWithGoogle: (response: AuthResponse) =>
           set(authResponseToState(response), false, 'loginWithGoogle'),
 
-        logout: () =>
-          set({ ...initialState }, false, 'logout'),
+        logout: () => {
+          set({ ...initialState }, false, 'logout');
+          authStorage.logout();
+        },
 
         reset: () =>
           set({ ...initialState }, false, 'reset'),
