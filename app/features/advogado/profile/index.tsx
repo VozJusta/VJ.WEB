@@ -154,47 +154,47 @@ export function LawyerDashboardProfileFeature() {
       </section>
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
-        <section className="rounded-2xl border border-(--border-subtle) bg-surface-elevated p-6 lg:col-span-2">
+        <section className="rounded-3xl border border-[#1B2233] bg-[#0d1526] p-6 lg:col-span-2">
           <header className="flex items-start justify-between gap-4">
-            <div className="flex items-start gap-3">
-              <span className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-foreground/5 text-text-secondary">
+            <div className="flex items-start gap-4">
+              <span className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-[#2585F4]/15 text-[#2585F4] shrink-0">
                 <VerifiedRounded fontSize="small" aria-hidden />
               </span>
               <div>
-                <h3 className="text-lg font-semibold tracking-tight text-foreground">
-                  Dados da OAB
-                </h3>
-                <p className="text-sm text-text-secondary">Registro Profissional</p>
+                <h3 className="text-base font-semibold text-white">Dados da OAB</h3>
+                <p className="text-sm text-white/50">Registro Profissional</p>
               </div>
             </div>
 
             <Badge text={profile.oab.validatedLabel} variant="green" />
           </header>
 
-          <div className="mt-5 grid grid-cols-1 gap-4 md:grid-cols-3">
-            <div className="rounded-xl border border-(--border-subtle) bg-surface p-4">
-              <p className="text-xs font-semibold uppercase tracking-wide text-text-muted">
+          <div className="mt-6 space-y-5">
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-wider text-white/35">
                 Número de inscrição
               </p>
-              <p className="mt-2 text-sm font-medium text-foreground">
-                {profile.oab.number}
-              </p>
+              <div className="mt-2 rounded-xl border border-[#1B2233] bg-[#0a0f1a]/40 px-4 py-3">
+                <p className="text-sm font-semibold text-white">
+                  {profile.oab.number}
+                </p>
+              </div>
             </div>
 
-            <div className="rounded-xl border border-(--border-subtle) bg-surface p-4">
-              <p className="text-xs font-semibold uppercase tracking-wide text-text-muted">
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-wider text-white/35">
                 Seccional
               </p>
-              <p className="mt-2 text-sm font-medium text-foreground">
+              <p className="mt-2 text-sm font-medium text-white">
                 {profile.oab.section}
               </p>
             </div>
 
-            <div className="rounded-xl border border-(--border-subtle) bg-surface p-4">
-              <p className="text-xs font-semibold uppercase tracking-wide text-text-muted">
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-wider text-white/35">
                 Status na Ordem
               </p>
-              <p className="mt-2 text-sm font-medium text-foreground">
+              <p className="mt-2 text-sm font-medium text-white">
                 {profile.oab.status}
               </p>
             </div>

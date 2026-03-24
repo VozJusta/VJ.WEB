@@ -1,7 +1,15 @@
 "use client";
 
 import { useMemo } from "react";
-import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from "recharts";
+import {
+  Area,
+  AreaChart,
+  CartesianGrid,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
+} from "recharts";
 import type { ChartDataPoint } from "@/types/dashboard.types";
 
 type ProductivityChartProps = {
@@ -15,10 +23,7 @@ export function ProductivityChart({ data, className }: ProductivityChartProps) {
   return (
     <div className={className}>
       <ResponsiveContainer width="100%" height="100%">
-        <AreaChart
-          data={data}
-          margin={{ top: 10, right: 10, left: 0, bottom: 0 }}
-        >
+        <AreaChart data={data} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
           <defs>
             <linearGradient id="productivityGradient" x1="0" y1="0" x2="0" y2="1">
               <stop offset="0%" stopColor="rgb(37, 133, 244)" stopOpacity={0.3} />
@@ -69,8 +74,21 @@ export function ProductivityChart({ data, className }: ProductivityChartProps) {
               fontSize: "14px",
               fontWeight: 500,
             }}
-            cursor={{ stroke: "rgb(37, 133, 244)", strokeWidth: 1, strokeDasharray: "5 5" }}
-            formatter={(value: number) => [`${value} casos`, "Processados"]}
+            cursor={{
+              stroke: "rgb(37, 133, 244)",
+              strokeWidth: 1,
+              strokeDasharray: "5 5",
+            }}
+            formatter={(value) => {
+              const parsedValue =
+                typeof value === "number"
+                  ? value
+                  : typeof value === "string"
+                    ? Number(value)
+                    : 0;
+
+              return [`${Number.isFinite(parsedValue) ? parsedValue : 0} casos`, "Processados"];
+            }}
             labelFormatter={(label) => `Dia ${label}`}
           />
 
