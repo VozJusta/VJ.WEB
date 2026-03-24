@@ -81,7 +81,7 @@ export function SidebarNav({ isOpen, mainNav, bottomNav }: SidebarNavProps) {
   const bottomNavItems = bottomNav || sidebarBottomNav;
 
   const isMainNavItemActive = (href: string) => {
-    const isDashboardRoot = href === "/dashboard" || href.endsWith("/dashboard");
+    const isDashboardRoot = href === "/dashboard" || href === "/advogado" || href.endsWith("/dashboard");
     return pathname === href || (!isDashboardRoot && pathname.startsWith(`${href}/`));
   };
 
