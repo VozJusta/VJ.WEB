@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { devtools, persist } from 'zustand/middleware';
-import type { AuthState, UserRole, GoogleAuthResponse } from '@/types/auth.types';
+import type { AuthState, UserRole, AuthResponse } from '@/types/auth.types';
 
 interface AuthStore extends AuthState {
   setUserRole: (role: UserRole) => void;
@@ -8,7 +8,8 @@ interface AuthStore extends AuthState {
   setError: (error: string | null) => void;
   setUser: (user: AuthState['user']) => void;
   setAuthenticated: (authenticated: boolean) => void;
-  loginWithGoogle: (response: GoogleAuthResponse) => void;
+  login: (response: AuthResponse) => void;
+  loginWithGoogle: (response: AuthResponse) => void;
   logout: () => void;
   reset: () => void;
 }
@@ -21,11 +22,28 @@ const initialState: AuthState = {
   user: null,
 };
 
+function authResponseToState(response: AuthResponse) {
+  return {
+    isAuthenticated: response.validated,
+    userRole: response.role,
+    user: {
+      id: response.sub,
+      email: response.email,
+      fullName: response.full_name,
+      role: response.role,
+    },
+    error: null,
+  } as const;
+}
+
 export const useAuthStore = create<AuthStore>()(
   devtools(
     persist(
       (set) => ({
         ...initialState,
+
+        login: (response: AuthResponse) =>
+          set(authResponseToState(response), false, 'login'),
 
         setUserRole: (role: UserRole) =>
           set({ userRole: role }, false, 'setUserRole'),
@@ -42,22 +60,8 @@ export const useAuthStore = create<AuthStore>()(
         setUser: (user: AuthState['user']) =>
           set({ user }, false, 'setUser'),
 
-        loginWithGoogle: (response: GoogleAuthResponse) =>
-          set(
-            {
-              isAuthenticated: response.validated,
-              userRole: response.role,
-              user: {
-                id: response.sub,
-                email: response.email,
-                fullName: response.full_name,
-                role: response.role,
-              },
-              error: null,
-            },
-            false,
-            'loginWithGoogle'
-          ),
+        loginWithGoogle: (response: AuthResponse) =>
+          set(authResponseToState(response), false, 'loginWithGoogle'),
 
         logout: () =>
           set({ ...initialState }, false, 'logout'),

@@ -6,7 +6,7 @@ import { useAuth } from '@/hooks/useAuth';
 
 export function GoogleAuthHandler() {
   const searchParams = useSearchParams();
-  const { loginWithGoogle, isAuthenticated } = useAuth();
+  const { login, isAuthenticated } = useAuth();
 
   useEffect(() => {
     const authData = searchParams.get('authData');
@@ -16,12 +16,12 @@ export function GoogleAuthHandler() {
         const decodedData = JSON.parse(
           atob(authData)
         );
-        loginWithGoogle(decodedData);
+        login(decodedData);
       } catch (error) {
         console.error('Failed to decode auth data:', error);
       }
     }
-  }, [searchParams, loginWithGoogle, isAuthenticated]);
+  }, [searchParams, login, isAuthenticated]);
 
   return null;
 }

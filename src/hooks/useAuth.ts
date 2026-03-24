@@ -1,7 +1,6 @@
 'use client';
 
 import { useAuthStore } from '@/store/auth.store';
-import type { UserRole, GoogleAuthResponse } from '@/types/auth.types';
 
 export function useAuth() {
   const {
@@ -15,6 +14,7 @@ export function useAuth() {
     setError,
     setUser,
     setAuthenticated,
+    login,
     loginWithGoogle,
     logout,
     reset,
@@ -31,6 +31,7 @@ export function useAuth() {
     setError,
     setUser,
     setAuthenticated,
+    login,
     loginWithGoogle,
     logout,
     reset,

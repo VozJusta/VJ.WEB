@@ -33,10 +33,7 @@ export async function GET(request: Request) {
 
     const encodedData = Buffer.from(JSON.stringify(authData)).toString('base64');
 
-    const dashboardUrl =
-      authData.role === 'lawyer' ? '/dashboard/lawyer' : '/dashboard/citizen';
-
-    const redirectUrl = new URL(dashboardUrl, request.url);
+    const redirectUrl = new URL('/dashboard', request.url);
     redirectUrl.searchParams.set('authData', encodedData);
 
     const response2 = NextResponse.redirect(redirectUrl.toString());
