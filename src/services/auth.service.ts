@@ -115,7 +115,7 @@ async function handleAPIError(error: unknown): Promise<never> {
       case 400:
         throw new AuthServiceError('Dados inválidos. Verifique as informações fornecidas.', statusCode, error);
       case 401:
-        throw new AuthServiceError('Acesso não autorizado. Verifique seu e-mail e senha.', statusCode, error);
+        throw new AuthServiceError(errorMessage, statusCode, error);
       case 409:
         throw new AuthServiceError(errorMessage, statusCode, error);
       case 422:
@@ -146,6 +146,9 @@ export const authService = {
       });
 
       if (!response.ok) {
+        if (response.status === 401) {
+          throw new AuthServiceError('Acesso não autorizado. Verifique seu e-mail e senha.', 401, response);
+        }
         await handleAPIError(response);
       }
 
@@ -311,18 +314,12 @@ export const authService = {
         headers: {
           'Content-Type': 'application/json',
           'x-security-token': securityToken,
+          'Authorization': `Bearer ${securityToken}`,
         },
         body: JSON.stringify(payload),
       });
 
       if (!response.ok) {
-        if (response.status === 401) {
-          throw new AuthServiceError(
-            'Sessão de verificação inválida ou expirada. Solicite um novo código e tente novamente.',
-            401,
-            response
-          );
-        }
         await handleAPIError(response);
       }
 

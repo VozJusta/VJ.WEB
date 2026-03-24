@@ -94,7 +94,7 @@ export function VerificationForm({ config, onVerified, onBack }: VerificationFor
       }
 
       const requestPayload = {
-        email: config.contact,
+        email: config.contact.trim().toLowerCase(),
         code: validatedData.code,
       };
 
