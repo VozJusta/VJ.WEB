@@ -1,3 +1,5 @@
+"use client";
+
 import {
   PictureAsPdfRounded,
   ImageRounded,
@@ -17,7 +19,7 @@ export function CaseDocCard({
   const isPdf = mimeType === "application/pdf";
 
   return (
-    <div className={docCardWrapper}>
+    <article className={docCardWrapper}>
       <span
         className={docCardIconWrapper({ mimeType: isPdf ? "pdf" : "image" })}
         aria-hidden
@@ -48,6 +50,6 @@ export function CaseDocCard({
           <VisibilityRounded fontSize="small" aria-hidden />
         )}
       </button>
-    </div>
+    </article>
   );
 }
