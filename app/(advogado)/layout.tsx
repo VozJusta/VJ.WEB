@@ -16,9 +16,9 @@ export default function LawyerLayout({
   const { user } = useAuth();
 
   const displayUser = {
-    name: user.name,
+    name: user?.name ?? "Advogado",
     role: "Advogado",
-    avatarUrl: user.avatarUrl,
+    avatarUrl: user?.avatarUrl,
   };
 
   return (
