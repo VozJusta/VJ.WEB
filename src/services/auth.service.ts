@@ -49,7 +49,15 @@ async function parseResponseBody(response: Response): Promise<unknown> {
 
 function getResponseMessage(payload: unknown, fallback: string): string {
   if (typeof payload === 'string' && payload.trim().length > 0) {
-    return payload;
+    const trimmed = payload.trim();
+
+    // Some endpoints may reply with HTML (misconfigured content-type).
+    // Avoid bubbling raw markup to the UI.
+    if (trimmed.startsWith('<') && trimmed.includes('>')) {
+      return fallback;
+    }
+
+    return trimmed;
   }
 
   if (payload && typeof payload === 'object') {
@@ -267,14 +275,23 @@ export const authService = {
     }
   },
 
-  async sendEmailVerificationCode(email: string): Promise<SendEmailVerificationResponse> {
+  async sendEmailVerificationCode(
+    email: string,
+    securityToken?: string
+  ): Promise<SendEmailVerificationResponse> {
     try {
+      const headers: Record<string, string> = {
+        'Content-Type': 'application/json',
+      };
+
+      if (securityToken && securityToken.trim().length > 0) {
+        headers['x-security-token'] = securityToken;
+      }
+
       const response = await fetch(`${API.BASE_URL}${API.ENDPOINTS.SIGNUP.EMAIL_SEND}`, {
         method: 'POST',
         credentials: 'include',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers,
         body: JSON.stringify({ email }),
       });
 
@@ -314,7 +331,6 @@ export const authService = {
         headers: {
           'Content-Type': 'application/json',
           'x-security-token': securityToken,
-          'Authorization': `Bearer ${securityToken}`,
         },
         body: JSON.stringify(payload),
       });

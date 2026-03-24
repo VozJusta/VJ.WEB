@@ -62,7 +62,10 @@ export function LoginForm() {
       setAuthenticated(false);
       setError(null);
 
-      const sendCodeResponse = await authService.sendEmailVerificationCode(validatedData.email);
+      const sendCodeResponse = await authService.sendEmailVerificationCode(
+        validatedData.email,
+        authResponse.securityToken
+      );
 
       if (sendCodeResponse.securityToken) {
         sessionStorage.setItem("pending_verification_token", sendCodeResponse.securityToken);

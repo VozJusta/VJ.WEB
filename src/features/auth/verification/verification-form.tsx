@@ -33,7 +33,11 @@ export function VerificationForm({ config, onVerified, onBack }: VerificationFor
     setIsSendingCode(true);
 
     try {
-      await authService.sendEmailVerificationCode(config.contact);
+      const pendingToken = sessionStorage.getItem("pending_verification_token") || "";
+      const fallbackToken = localStorage.getItem("x-security-token") || "";
+      const primaryToken = pendingToken || fallbackToken;
+
+      await authService.sendEmailVerificationCode(config.contact, primaryToken || undefined);
       setCanResend(false);
       setTimeLeft(config.expirationTime || 900);
       return true;

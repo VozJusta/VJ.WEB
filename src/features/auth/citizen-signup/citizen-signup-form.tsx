@@ -127,7 +127,10 @@ export function CitizenSignupForm() {
               sessionStorage.setItem("pending_verification_token", signupResponse.securityToken);
             }
 
-                        const sendCodeResponse = await authService.sendEmailVerificationCode(validatedData.email);
+                                                const sendCodeResponse = await authService.sendEmailVerificationCode(
+                                                    validatedData.email,
+                                                    signupResponse.securityToken
+                                                );
 
                         if (sendCodeResponse.securityToken) {
                             sessionStorage.setItem("pending_verification_token", sendCodeResponse.securityToken);
