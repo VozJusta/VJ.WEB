@@ -8,6 +8,8 @@ import {
   CalendarTodayRounded,
   StarRounded,
   VerifiedRounded,
+  DiamondOutlined,
+  CheckCircleOutlined,
   ShieldRounded,
   VisibilityRounded,
   LockRounded,
@@ -250,35 +252,50 @@ export function LawyerDashboardProfileFeature() {
       </div>
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
-        <section className="rounded-2xl border border-(--border-subtle) bg-surface-elevated p-6 lg:col-span-2">
-          <header className="flex items-start justify-between gap-4">
-            <div>
-              <h3 className="text-lg font-semibold tracking-tight text-foreground">
-                {profile.plan.name}
-              </h3>
-              <p className="text-sm text-text-secondary">Assinatura ativa</p>
+        <section className="relative overflow-hidden rounded-3xl border border-blue-500/20 bg-[radial-gradient(circle_at_15%_20%,rgba(37,133,244,0.22)_0%,rgba(13,21,38,1)_55%)] p-8 lg:col-span-2">
+          <header className="flex items-start justify-between gap-6">
+            <div className="flex items-start gap-5">
+              <span className="inline-flex h-14 w-14 items-center justify-center rounded-2xl bg-[#2585F4] text-white">
+                <DiamondOutlined sx={{ fontSize: 28 }} aria-hidden />
+              </span>
+
+              <div className="min-w-0">
+                <h3 className="text-2xl font-bold tracking-tight text-white">
+                  {profile.plan.name}
+                </h3>
+                <p className="mt-1 text-base text-white/70">Assinatura Ativa</p>
+              </div>
             </div>
 
-            <Badge text={profile.plan.status} variant="blue" />
+            <span className="inline-flex items-center justify-center rounded-xl bg-white/10 px-4 py-2 text-sm font-semibold text-white">
+              {profile.plan.status}
+            </span>
           </header>
 
-          <ul className="mt-5 space-y-2 text-sm text-text-secondary">
+          <ul className="mt-8 space-y-6" role="list">
             {profile.plan.benefits.map((benefit) => (
-              <li key={benefit} className="flex items-start gap-2">
-                <span className="mt-1 inline-flex h-2 w-2 rounded-full bg-(--primary)" aria-hidden />
-                <span>{benefit}</span>
+              <li key={benefit} className="flex items-center gap-4">
+                <span className="inline-flex h-7 w-7 items-center justify-center rounded-full border border-[#2585F4]/35 bg-[#2585F4]/10 text-[#2585F4]">
+                  <CheckCircleOutlined sx={{ fontSize: 20 }} aria-hidden />
+                </span>
+                <span className="text-lg text-white/80">{benefit}</span>
               </li>
             ))}
           </ul>
 
-          <div className="mt-6 flex items-center justify-between gap-4">
-            <p className="text-xs text-text-muted">
-              Renovação em {profile.plan.renewal}
+          <div className="mt-10 h-px w-full bg-blue-500/20" aria-hidden="true" />
+
+          <footer className="mt-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+            <p className="text-base text-white/45">
+              Renovação em <span className="font-semibold text-white/80">{profile.plan.renewal}</span>
             </p>
-            <Button variant="ghost" size="sm" href="/advogado/dashboard/settings">
+            <a
+              href="/advogado/dashboard/settings"
+              className="text-base font-semibold uppercase tracking-wide text-[#2585F4] hover:text-[#2585F4]/80 transition-colors"
+            >
               Gerenciar Plano
-            </Button>
-          </div>
+            </a>
+          </footer>
         </section>
 
         <section className="rounded-2xl border border-(--border-subtle) bg-surface-elevated p-6">
