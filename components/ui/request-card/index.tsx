@@ -58,6 +58,7 @@ export function RequestCard({
   area,
   status,
   createdAt,
+  onClick,
   onAccept,
   onReject,
   onViewDossier,
@@ -65,10 +66,12 @@ export function RequestCard({
 }: RequestCardProps) {
   return (
     <article
+      onClick={() => onClick?.(id)}
       className={cn(
         "relative overflow-hidden rounded-2xl border border-(--border-subtle) bg-surface-elevated",
         "transition-all duration-200",
         "hover:border-(--border-subtle-hover) hover:bg-surface-hover",
+        onClick && "cursor-pointer",
         className,
       )}
     >
@@ -131,7 +134,10 @@ export function RequestCard({
                 variant="primary"
                 size="sm"
                 leftIcon={<CheckRounded sx={{ fontSize: 18 }} aria-hidden />}
-                onClick={() => onAccept?.(id)}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onAccept?.(id);
+                }}
                 className="flex-1"
               >
                 Aceitar
@@ -140,7 +146,10 @@ export function RequestCard({
                 variant="outline"
                 size="sm"
                 leftIcon={<CloseRounded sx={{ fontSize: 18 }} aria-hidden />}
-                onClick={() => onReject?.(id)}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onReject?.(id);
+                }}
                 className="flex-1 border-red-500/20 text-red-400 hover:bg-red-500/10 hover:border-red-500/40"
               >
                 Recusar
@@ -155,7 +164,10 @@ export function RequestCard({
               leftIcon={
                 <DescriptionRounded sx={{ fontSize: 18 }} aria-hidden />
               }
-              onClick={() => onViewDossier?.(id)}
+              onClick={(e) => {
+                e.stopPropagation();
+                onViewDossier?.(id);
+              }}
               className="w-full"
             >
               Ver Dossiê
