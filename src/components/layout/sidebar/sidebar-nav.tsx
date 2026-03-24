@@ -1,8 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
+import { authStorage } from "@/lib/auth";
 import { sidebarMainNav, sidebarBottomNav } from "./sidebar.navigation";
 import type { SidebarNavItem } from "./sidebar.types";
 
@@ -11,15 +12,25 @@ type SidebarNavLinkProps = {
   isActive: boolean;
   isDanger?: boolean;
   isOpen: boolean;
+  onLogout?: () => void;
 };
 
-function SidebarNavLink({ item, isActive, isDanger = false, isOpen }: SidebarNavLinkProps) {
+function SidebarNavLink({ item, isActive, isDanger = false, isOpen, onLogout }: SidebarNavLinkProps) {
   const Icon = item.icon;
+  const isLogout = item.href === "/sair";
+
+  const handleClick = (e: React.MouseEvent) => {
+    if (isLogout && onLogout) {
+      e.preventDefault();
+      onLogout();
+    }
+  };
 
   return (
     <li>
       <Link
         href={item.href}
+        onClick={handleClick}
         aria-current={isActive ? "page" : undefined}
         aria-label={!isOpen ? item.label : undefined}
         title={!isOpen ? item.label : undefined}
@@ -75,6 +86,13 @@ type SidebarNavProps = {
 
 export function SidebarNav({ isOpen }: SidebarNavProps) {
   const pathname = usePathname();
+  const router = useRouter();
+
+  const handleLogout = () => {
+    authStorage.clearAll();
+    localStorage.removeItem("auth-store");
+    router.push("/login");
+  };
 
   return (
     <nav aria-label="Navegação principal" className="flex flex-1 flex-col justify-between overflow-y-auto px-3 py-4">
@@ -97,6 +115,7 @@ export function SidebarNav({ isOpen }: SidebarNavProps) {
             isOpen={isOpen}
             isActive={pathname === item.href}
             isDanger={index === sidebarBottomNav.length - 1}
+            onLogout={item.href === "/sair" ? handleLogout : undefined}
           />
         ))}
       </ul>
