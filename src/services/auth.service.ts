@@ -309,7 +309,6 @@ export const authService = {
         headers: {
           'Content-Type': 'application/json',
           'x-security-token': securityToken,
-          'Authorization': `Bearer ${securityToken}`,
         },
         body: JSON.stringify(payload),
       });

@@ -85,7 +85,7 @@ export function VerificationForm({ config, onVerified, onBack }: VerificationFor
     try {
       const validatedData = verificationSchema.parse({ code });
       
-      const sessionToken = localStorage.getItem("x-security-token") || sessionStorage.getItem("pending_verification_token") || "";
+      const sessionToken = sessionStorage.getItem("pending_verification_token") || localStorage.getItem("x-security-token") || "";
 
       if (!sessionToken) {
         throw new AuthServiceError("Sessão de verificação inválida. Refaça o processo de cadastro.");
