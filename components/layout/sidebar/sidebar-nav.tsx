@@ -80,6 +80,11 @@ export function SidebarNav({ isOpen, mainNav, bottomNav }: SidebarNavProps) {
   const mainNavItems = mainNav || sidebarMainNav;
   const bottomNavItems = bottomNav || sidebarBottomNav;
 
+  const isMainNavItemActive = (href: string) => {
+    const isDashboardRoot = href === "/dashboard" || href.endsWith("/dashboard");
+    return pathname === href || (!isDashboardRoot && pathname.startsWith(`${href}/`));
+  };
+
   return (
     <nav aria-label="Navegação principal" className="flex flex-1 flex-col justify-between overflow-y-auto px-3 py-4">
       <ul role="list" className="flex flex-col gap-1">
@@ -88,7 +93,7 @@ export function SidebarNav({ isOpen, mainNav, bottomNav }: SidebarNavProps) {
             key={item.href}
             item={item}
             isOpen={isOpen}
-            isActive={pathname === item.href || (item.href !== "/dashboard" && pathname.startsWith(item.href))}
+            isActive={isMainNavItemActive(item.href)}
           />
         ))}
       </ul>
