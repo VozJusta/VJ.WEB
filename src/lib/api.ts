@@ -11,6 +11,9 @@ export const API = {
       GOOGLE: '/auth/google',
       GOOGLE_CALLBACK: '/auth/google/callback',
       CITIZEN_LOGIN: '/auth/citizen',
+      FORGOT_SEND_EMAIL: '/auth/send/forgot/email',
+      FORGOT_VERIFY_CODE: '/auth/forgot/verify-code',
+      FORGOT_PASSWORD: '/auth/forgot/password',
     },
     SIGNUP: {
       CITIZEN: '/citizen',

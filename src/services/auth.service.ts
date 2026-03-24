@@ -10,6 +10,12 @@ import type {
   SendEmailVerificationResponse,
   ValidateEmailVerificationRequest,
   ValidateEmailVerificationResponse,
+  SendForgotPasswordEmailRequest,
+  SendForgotPasswordEmailResponse,
+  VerifyForgotPasswordCodeRequest,
+  VerifyForgotPasswordCodeResponse,
+  ForgotPasswordResetRequest,
+  ForgotPasswordResetResponse,
   UserRole,
 } from '@/types/auth.types';
 
@@ -355,6 +361,100 @@ export const authService = {
       return {
         access_token: data.access_token,
         refresh_token: data.refresh_token,
+      };
+    } catch (error) {
+      if (error instanceof AuthServiceError) {
+        throw error;
+      }
+      return handleAPIError(error);
+    }
+  },
+
+  async sendForgotPasswordEmail(payload: SendForgotPasswordEmailRequest): Promise<SendForgotPasswordEmailResponse> {
+    try {
+      const response = await fetch(`${API.BASE_URL}${API.ENDPOINTS.AUTH.FORGOT_SEND_EMAIL}`, {
+        method: 'POST',
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload),
+      });
+
+      const data = await parseResponseBody(response);
+
+      if (!response.ok) {
+        if (response.status === 409) {
+          return {
+            message: getResponseMessage(data, 'Não foi possível enviar o código de recuperação.'),
+          };
+        }
+        await handleAPIError(response);
+      }
+
+      return {
+        message: getResponseMessage(data, 'Código de recuperação enviado para o e-mail informado.'),
+      };
+    } catch (error) {
+      if (error instanceof AuthServiceError) {
+        throw error;
+      }
+      return handleAPIError(error);
+    }
+  },
+
+  async verifyForgotPasswordCode(
+    payload: VerifyForgotPasswordCodeRequest
+  ): Promise<VerifyForgotPasswordCodeResponse> {
+    try {
+      const response = await fetch(`${API.BASE_URL}${API.ENDPOINTS.AUTH.FORGOT_VERIFY_CODE}`, {
+        method: 'POST',
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload),
+      });
+
+      const data = await parseResponseBody(response);
+
+      if (!response.ok) {
+        await handleAPIError(response);
+      }
+
+      return {
+        message: getResponseMessage(data, 'Código validado com sucesso.'),
+      };
+    } catch (error) {
+      if (error instanceof AuthServiceError) {
+        throw error;
+      }
+      return handleAPIError(error);
+    }
+  },
+
+  async forgotPasswordReset(payload: ForgotPasswordResetRequest): Promise<ForgotPasswordResetResponse> {
+    try {
+      const response = await fetch(`${API.BASE_URL}${API.ENDPOINTS.AUTH.FORGOT_PASSWORD}`, {
+        method: 'POST',
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload),
+      });
+
+      const data = await parseResponseBody(response);
+
+      if (!response.ok) {
+        await handleAPIError(response);
+      }
+
+      authStorage.clearAll();
+      authStorage.clearAuthStore();
+
+      return {
+        message: getResponseMessage(data, 'Senha alterada com sucesso.'),
       };
     } catch (error) {
       if (error instanceof AuthServiceError) {

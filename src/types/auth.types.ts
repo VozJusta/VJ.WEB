@@ -73,3 +73,29 @@ export interface ValidateEmailVerificationResponse {
   refresh_token: string;
   securityToken?: string;
 }
+
+export interface SendForgotPasswordEmailRequest {
+  email: string;
+}
+
+export interface SendForgotPasswordEmailResponse {
+  message: string;
+}
+
+export interface VerifyForgotPasswordCodeRequest {
+  email: string;
+  code: string;
+}
+
+export interface VerifyForgotPasswordCodeResponse {
+  message: string;
+}
+
+export interface ForgotPasswordResetRequest {
+  email: string;
+  new_password: string;
+}
+
+export interface ForgotPasswordResetResponse {
+  message: string;
+}
