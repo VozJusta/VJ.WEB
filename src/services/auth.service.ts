@@ -1,4 +1,5 @@
 import { API } from '@/lib/api';
+import { authStorage } from '@/lib/auth';
 import type {
   CredentialsLoginRequest,
   AuthResponse,
@@ -88,8 +89,8 @@ function extractSecurityToken(response: Response, payload: unknown): string {
 }
 
 function persistSecurityToken(token: string): void {
-  if (!token || typeof window === 'undefined') return;
-  localStorage.setItem('x-security-token', token);
+  if (!token) return;
+  authStorage.setSecurityToken(token);
 }
 
 function normalizeUserRole(role: unknown): UserRole {
