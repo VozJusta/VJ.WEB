@@ -2,6 +2,7 @@
 
 import { FormEvent, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { ZodError } from "zod";
 import { Email, LockOutline, Visibility, VisibilityOff } from "@mui/icons-material";
 import { Button } from "@/components/ui/button";
@@ -12,6 +13,7 @@ import { RoleSelectionModal } from "@/components/modals/role-selection-modal";
 import { useAuth } from "@/hooks/useAuth";
 import { API } from "@/lib/api";
 import type { UserRole } from "@/types/auth.types";
+import { authService, AuthServiceError } from "@/services/auth.service";
 import { loginSchema } from "./login.schema";
 
 type LoginFormState = {
@@ -34,7 +36,8 @@ export function LoginForm() {
   const [isRoleModalOpen, setIsRoleModalOpen] = useState(false);
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
   const { toast } = useToast();
-  const { setUserRole } = useAuth();
+  const router = useRouter();
+  const { setUserRole, login } = useAuth();
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -43,14 +46,21 @@ export function LoginForm() {
 
     try {
       const validatedData = loginSchema.parse(formState);
+
+      const authResponse = await authService.loginCitizen({
+        email: validatedData.email,
+        password: validatedData.password,
+      });
+
+      login(authResponse);
       
       toast({
         title: "Login realizado com sucesso!",
         description: "Você será redirecionado em instantes.",
         variant: "success",
       });
-      
-      console.log("Formulário válido:", validatedData);
+
+      router.replace("/dashboard");
       
     } catch (error) {
       if (error instanceof ZodError) {
@@ -67,7 +77,19 @@ export function LoginForm() {
           description: "Verifique os campos destacados e tente novamente.",
           variant: "error",
         });
+
+        return;
       }
+
+      const description = error instanceof AuthServiceError
+        ? error.message
+        : "Não foi possível realizar o login. Tente novamente.";
+
+      toast({
+        title: "Erro no login",
+        description,
+        variant: "error",
+      });
     } finally {
       setIsSubmitting(false);
     }
@@ -103,6 +125,7 @@ export function LoginForm() {
 
       <form className="mt-8" onSubmit={handleSubmit} noValidate>
         <fieldset className="space-y-5">
+          <legend className="sr-only">Credenciais de acesso</legend>
 
           <Input
             id="email"
