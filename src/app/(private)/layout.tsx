@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import { cn } from "@/lib/utils";
 import { Sidebar } from "@/components/layout/sidebar";
 import { DashboardHeader } from "@/components/layout/dashboard-header";
@@ -21,7 +21,9 @@ export default function PrivateLayout({
 
   return (
     <>
-      <GoogleAuthHandler />
+      <Suspense fallback={null}>
+        <GoogleAuthHandler />
+      </Suspense>
       <div className="layout-bg min-h-screen">
       <Sidebar
         isOpen={isSidebarOpen}
