@@ -33,11 +33,16 @@ export function VerificationForm({ config, onVerified, onBack }: VerificationFor
     setIsSendingCode(true);
 
     try {
-      const pendingToken = sessionStorage.getItem("pending_verification_token") || "";
-      const fallbackToken = localStorage.getItem("x-security-token") || "";
-      const primaryToken = pendingToken || fallbackToken;
+      if (flowType === "reset") {
+        await authService.sendForgotPasswordEmail({ email: config.contact });
+      } else {
+        const pendingToken = sessionStorage.getItem("pending_verification_token") || "";
+        const fallbackToken = localStorage.getItem("x-security-token") || "";
+        const primaryToken = pendingToken || fallbackToken;
 
-      await authService.sendEmailVerificationCode(config.contact, primaryToken || undefined);
+        await authService.sendEmailVerificationCode(config.contact, primaryToken || undefined);
+      }
+
       setCanResend(false);
       setTimeLeft(config.expirationTime || 900);
       return true;
@@ -88,45 +93,49 @@ export function VerificationForm({ config, onVerified, onBack }: VerificationFor
 
     try {
       const validatedData = verificationSchema.parse({ code });
-      
-      const pendingToken = sessionStorage.getItem("pending_verification_token") || "";
-      const fallbackToken = localStorage.getItem("x-security-token") || "";
-      const primaryToken = pendingToken || fallbackToken;
-
-      if (!primaryToken) {
-        throw new AuthServiceError("Sessão de verificação inválida. Refaça o processo de cadastro.");
-      }
 
       const requestPayload = {
         email: config.contact.trim().toLowerCase(),
         code: validatedData.code,
       };
 
-      let tokens: { access_token: string; refresh_token: string };
+      if (flowType === "reset") {
+        await authService.verifyForgotPasswordCode(requestPayload);
+      } else {
+        const pendingToken = sessionStorage.getItem("pending_verification_token") || "";
+        const fallbackToken = localStorage.getItem("x-security-token") || "";
+        const primaryToken = pendingToken || fallbackToken;
 
-      try {
-        tokens = await authService.validateEmailVerificationCode(requestPayload, primaryToken);
-      } catch (firstError) {
-        const shouldRetry =
-          firstError instanceof AuthServiceError &&
-          firstError.statusCode === 401 &&
-          pendingToken &&
-          fallbackToken &&
-          pendingToken !== fallbackToken;
-
-        if (!shouldRetry) {
-          throw firstError;
+        if (!primaryToken) {
+          throw new AuthServiceError("Sessão de verificação inválida. Refaça o processo de cadastro.");
         }
 
-        const secondaryToken = primaryToken === pendingToken ? fallbackToken : pendingToken;
-        tokens = await authService.validateEmailVerificationCode(requestPayload, secondaryToken);
-      }
+        let tokens: { access_token: string; refresh_token: string };
 
-      localStorage.setItem("access_token", tokens.access_token);
-      localStorage.setItem("refresh_token", tokens.refresh_token);
-      
-      sessionStorage.removeItem("pending_verification_token");
-      localStorage.removeItem("x-security-token");
+        try {
+          tokens = await authService.validateEmailVerificationCode(requestPayload, primaryToken);
+        } catch (firstError) {
+          const shouldRetry =
+            firstError instanceof AuthServiceError &&
+            firstError.statusCode === 401 &&
+            pendingToken &&
+            fallbackToken &&
+            pendingToken !== fallbackToken;
+
+          if (!shouldRetry) {
+            throw firstError;
+          }
+
+          const secondaryToken = primaryToken === pendingToken ? fallbackToken : pendingToken;
+          tokens = await authService.validateEmailVerificationCode(requestPayload, secondaryToken);
+        }
+
+        localStorage.setItem("access_token", tokens.access_token);
+        localStorage.setItem("refresh_token", tokens.refresh_token);
+
+        sessionStorage.removeItem("pending_verification_token");
+        localStorage.removeItem("x-security-token");
+      }
       
       toast({
         title: messages.successTitle,

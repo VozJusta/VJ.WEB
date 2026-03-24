@@ -27,11 +27,7 @@ export function ForgotPasswordForm() {
 
     try {
       const validatedData = forgotPasswordSchema.parse({ email });
-      const sendCodeResponse = await authService.sendEmailVerificationCode(validatedData.email);
-
-      if (sendCodeResponse.securityToken) {
-        sessionStorage.setItem("pending_verification_token", sendCodeResponse.securityToken);
-      }
+      await authService.sendForgotPasswordEmail({ email: validatedData.email });
       
       toast({
         title: "Código enviado!",
