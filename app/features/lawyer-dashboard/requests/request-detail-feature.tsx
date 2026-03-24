@@ -38,7 +38,7 @@ export function RequestDetailFeature() {
           </hgroup>
         </div>
 
-        {data.status === "pending" && (
+        {data.status === "pending" ? (
           <div className="flex gap-3">
             <Button
               variant="outline"
@@ -57,6 +57,16 @@ export function RequestDetailFeature() {
               Aceitar Caso
             </Button>
           </div>
+        ) : data.status === "accepted" ? (
+          <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-400/10 px-3 py-1.5 text-sm font-semibold text-emerald-400">
+            <CheckCircleRounded sx={{ fontSize: 16 }} aria-hidden />
+            Caso Aceito
+          </span>
+        ) : (
+          <span className="inline-flex items-center gap-1.5 rounded-full bg-red-400/10 px-3 py-1.5 text-sm font-semibold text-red-400">
+            <CloseRounded sx={{ fontSize: 16 }} aria-hidden />
+            Caso Recusado
+          </span>
         )}
       </header>
 
