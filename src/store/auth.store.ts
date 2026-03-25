@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { devtools, persist } from 'zustand/middleware';
-import type { AuthState, UserRole, AuthResponse } from '@/types/auth.types';
-import { authStorage } from '@/lib/auth';
+import type { AuthState, UserRole, AuthResponse } from '@/src/types/auth.types';
+import { authStorage } from '@/src/lib/auth';
 
 interface AuthStore extends AuthState {
   setUserRole: (role: UserRole) => void;

@@ -25,7 +25,8 @@
     "recharts": "^3.8.0",
     "resend": "^6.9.2",
     "tailwind-merge": "^3.4.1",
-    "zod": "^4.3.6"
+    "zod": "^4.3.6",
+    "zustand": "^5.0.12"
   },
   "devDependencies": {
     "@storybook/addon-a11y": "^10.2.10",
