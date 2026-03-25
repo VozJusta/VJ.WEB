@@ -1,39 +1,5 @@
 "use client";
 
-<<<<<<< HEAD
-import { StatCardProps } from "./stat-card.types";
-import {
-  statCardBaseStyles,
-  statValueStyles,
-  statLabelStyles,
-  glowEffectStyles,
-} from "./stat-card.styles";
-
-export function StatCard({
-  value,
-  label,
-  valueColor = "text-blue-500",
-  labelColor = "text-slate-400",
-  className = "flex items-center flex-col",
-  animationDelay = 0,
-}: StatCardProps) {
-  return (
-    <article
-      className={`
-        ${statCardBaseStyles}
-        ${glowEffectStyles}
-        ${className}
-      `}
-      style={{
-        animationDelay: `${animationDelay}ms`,
-      }}
-      role="figure"
-      aria-label={`${value} ${label}`}
-    >
-      <p className={`${statValueStyles} ${valueColor}`}>{value}</p>
-
-      <p className={`${statLabelStyles} ${labelColor}`}>{label}</p>
-=======
 import { ArrowUpwardRounded, ArrowDownwardRounded } from "@mui/icons-material";
 import { cn } from "@/lib/utils";
 
@@ -135,7 +101,6 @@ export function StatCard({
           "group-hover:opacity-100",
         )}
       />
->>>>>>> 371c675aa384a608654b5512d9c7fa1271534d79
     </article>
   );
 }

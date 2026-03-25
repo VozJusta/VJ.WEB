@@ -4,7 +4,6 @@ import { Suspense, useState } from "react";
 import { cn } from "@/lib/utils";
 import { Sidebar } from "@/components/layout/sidebar";
 import { DashboardHeader } from "@/components/layout/dashboard-header";
-<<<<<<< HEAD
 import { GoogleAuthHandler } from "@/features/auth/google-auth-handler";
 
 const DEMO_USER = {
@@ -12,9 +11,7 @@ const DEMO_USER = {
   role: "Cidadão",
   avatarUrl: undefined,
 };
-=======
 import { useAuth } from "@/contexts/auth-context";
->>>>>>> 371c675aa384a608654b5512d9c7fa1271534d79
 
 export default function PrivateLayout({
   children,
