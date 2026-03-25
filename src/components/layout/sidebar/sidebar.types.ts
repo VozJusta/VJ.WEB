@@ -9,4 +9,6 @@ export type SidebarProps = {
   onToggle: () => void;
   onClose?: () => void;
   className?: string;
+  mainNav?: SidebarNavItem[];
+  bottomNav?: SidebarNavItem[];
 };

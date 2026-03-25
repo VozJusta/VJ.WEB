@@ -82,40 +82,55 @@ function SidebarNavLink({ item, isActive, isDanger = false, isOpen, onLogout }: 
 
 type SidebarNavProps = {
   isOpen: boolean;
+  mainNav?: SidebarNavItem[];
+  bottomNav?: SidebarNavItem[];
 };
 
-export function SidebarNav({ isOpen }: SidebarNavProps) {
+export function SidebarNav({ isOpen, mainNav, bottomNav }: SidebarNavProps) {
   const pathname = usePathname();
+<<<<<<< HEAD
   const router = useRouter();
   const logout = useAuthStore((state) => state.logout);
 
   const handleLogout = () => {
     logout();
     router.replace("/login");
+=======
+  const mainNavItems = mainNav || sidebarMainNav;
+  const bottomNavItems = bottomNav || sidebarBottomNav;
+
+  const isMainNavItemActive = (href: string) => {
+    const isDashboardRoot = href === "/dashboard" || href === "/advogado" || href.endsWith("/dashboard");
+    return pathname === href || (!isDashboardRoot && pathname.startsWith(`${href}/`));
+>>>>>>> 371c675aa384a608654b5512d9c7fa1271534d79
   };
 
   return (
     <nav aria-label="Navegação principal" className="flex flex-1 flex-col justify-between overflow-y-auto px-3 py-4">
       <ul role="list" className="flex flex-col gap-1">
-        {sidebarMainNav.map((item) => (
+        {mainNavItems.map((item) => (
           <SidebarNavLink
             key={item.href}
             item={item}
             isOpen={isOpen}
-            isActive={pathname === item.href || (item.href !== "/dashboard" && pathname.startsWith(item.href))}
+            isActive={isMainNavItemActive(item.href)}
           />
         ))}
       </ul>
 
       <ul role="list" className="flex flex-col gap-1 border-t border-(--border-subtle) pt-4">
-        {sidebarBottomNav.map((item, index) => (
+        {bottomNavItems.map((item, index) => (
           <SidebarNavLink
             key={item.href}
             item={item}
             isOpen={isOpen}
             isActive={pathname === item.href}
+<<<<<<< HEAD
             isDanger={index === sidebarBottomNav.length - 1}
             onLogout={item.href === "/sair" ? handleLogout : undefined}
+=======
+            isDanger={index === bottomNavItems.length - 1}
+>>>>>>> 371c675aa384a608654b5512d9c7fa1271534d79
           />
         ))}
       </ul>

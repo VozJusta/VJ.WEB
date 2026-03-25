@@ -1,22 +1,13 @@
 "use client";
 
-import { Suspense, useState } from "react";
+import { useState } from "react";
 import { cn } from "@/lib/utils";
 import { Sidebar } from "@/components/layout/sidebar";
 import { DashboardHeader } from "@/components/layout/dashboard-header";
-<<<<<<< HEAD
-import { GoogleAuthHandler } from "@/features/auth/google-auth-handler";
-
-const DEMO_USER = {
-  name: "Ricardo Silva",
-  role: "Cidadão",
-  avatarUrl: undefined,
-};
-=======
+import { lawyerMainNav, lawyerBottomNav } from "@/components/layout/sidebar/sidebar-lawyer.navigation";
 import { useAuth } from "@/contexts/auth-context";
->>>>>>> 371c675aa384a608654b5512d9c7fa1271534d79
 
-export default function PrivateLayout({
+export default function LawyerLayout({
   children,
 }: {
   children: React.ReactNode;
@@ -25,21 +16,19 @@ export default function PrivateLayout({
   const { user } = useAuth();
 
   const displayUser = {
-    name: user.name,
-    role: "Cidadão",
-    avatarUrl: user.avatarUrl,
+    name: user?.name ?? "Advogado",
+    role: "Advogado",
+    avatarUrl: user?.avatarUrl,
   };
 
   return (
-    <>
-      <Suspense fallback={null}>
-        <GoogleAuthHandler />
-      </Suspense>
-      <div className="layout-bg min-h-screen">
+    <div className="layout-bg min-h-screen">
       <Sidebar
         isOpen={isSidebarOpen}
         onToggle={() => setIsSidebarOpen((prev) => !prev)}
         onClose={() => setIsSidebarOpen(false)}
+        mainNav={lawyerMainNav}
+        bottomNav={lawyerBottomNav}
       />
 
       <div
@@ -61,7 +50,6 @@ export default function PrivateLayout({
           {children}
         </main>
       </div>
-      </div>
-    </>
+    </div>
   );
 }

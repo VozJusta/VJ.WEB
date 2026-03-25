@@ -2,10 +2,10 @@
 
 import { useState } from "react";
 import { DeleteOutline } from "@mui/icons-material";
-import { NotificationCard } from "@/components/ui/notification-card";
 import { EmptyState } from "@/components/ui/empty-state";
 import { cn } from "@/lib/utils";
 import type { Notification } from "@/types/notification.types";
+import { NotificationCard } from "@/components/ui/notification-card";
 
 interface NotificationsListProps {
   initialNotifications?: Notification[];

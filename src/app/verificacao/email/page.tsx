@@ -3,7 +3,10 @@
 import { Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { VerificationForm, type VerificationConfig } from "@/features/auth/verification";
+<<<<<<< HEAD
 import { useAuth } from "@/hooks/useAuth";
+=======
+>>>>>>> 371c675aa384a608654b5512d9c7fa1271534d79
 
 function EmailVerificationContent() {
   const router = useRouter();

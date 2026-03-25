@@ -65,8 +65,9 @@ export const useAuthStore = create<AuthStore>()(
           set(authResponseToState(response), false, 'loginWithGoogle'),
 
         logout: () => {
-          set({ ...initialState }, false, 'logout');
           authStorage.logout();
+          authStorage.clearAll();
+          set({ ...initialState }, false, 'logout');
         },
 
         reset: () =>
