@@ -1,5 +1,6 @@
 "use client";
 
+import type { MouseEvent, ReactElement } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
@@ -19,7 +20,7 @@ function SidebarNavLink({ item, isActive, isDanger = false, isOpen, onLogout }: 
   const Icon = item.icon;
   const isLogout = item.href === "/sair";
 
-  const handleClick = (e: React.MouseEvent) => {
+  const handleClick = (e: MouseEvent<HTMLAnchorElement>) => {
     if (isLogout && onLogout) {
       e.preventDefault();
       onLogout();
@@ -86,7 +87,7 @@ type SidebarNavProps = {
   bottomNav?: SidebarNavItem[];
 };
 
-export function SidebarNav({ isOpen, mainNav, bottomNav }: SidebarNavProps) {
+export function SidebarNav({ isOpen, mainNav, bottomNav }: SidebarNavProps): ReactElement {
   const pathname = usePathname();
   const router = useRouter();
   const logout = useAuthStore((state) => state.logout);
@@ -94,6 +95,8 @@ export function SidebarNav({ isOpen, mainNav, bottomNav }: SidebarNavProps) {
   const handleLogout = () => {
     logout();
     router.replace("/login");
+  };
+
   const mainNavItems = mainNav || sidebarMainNav;
   const bottomNavItems = bottomNav || sidebarBottomNav;
 
@@ -129,5 +132,4 @@ export function SidebarNav({ isOpen, mainNav, bottomNav }: SidebarNavProps) {
       </ul>
     </nav>
   );
-}
 }
