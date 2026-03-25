@@ -1,8 +1,8 @@
 "use client";
 
 import { createContext, useContext, useState, useEffect, ReactNode } from "react";
-import type { User, UserRole } from "@/src/types/user.types";
-import { getUserRole, setUserRole as setStoredUserRole, getCurrentUser } from "@/src/lib/auth";
+import type { User, UserRole } from "@/types/user.types";
+import { getUserRole, setUserRole as setStoredUserRole, getCurrentUser } from "@/lib/auth";
 
 type AuthContextType = {
   user: User;

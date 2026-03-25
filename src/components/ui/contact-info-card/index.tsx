@@ -1,4 +1,4 @@
-import { cn } from "@/src/lib/utils";
+import { cn } from "@/lib/utils";
 import { EmailRounded, PhoneRounded, PersonRounded } from "@mui/icons-material";
 import type { ContactInfoCardProps } from "./contact-info-card.types";
 

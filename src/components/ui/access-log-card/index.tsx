@@ -1,6 +1,6 @@
 import Image from "next/image";
 import { InfoOutlined } from "@mui/icons-material";
-import { Badge } from "@/src/components/ui/badge";
+import { Badge } from "@/components/ui/badge";
 
 export type AccessLogEntry = {
   id: string;

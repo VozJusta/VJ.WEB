@@ -1,4 +1,4 @@
-import { SimulatorConfig } from '@/app/features/simulator';
+import { SimulatorConfig } from '@/features/simulator';
 
 export default function SimulatorPage() {
   return <SimulatorConfig />;

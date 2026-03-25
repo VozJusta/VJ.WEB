@@ -1,7 +1,7 @@
 "use client";
 
 import { CheckCircleOutlined } from "@mui/icons-material";
-import { Button } from "@/src/components/ui/button";
+import { Button } from "@/components/ui/button";
 import { PlanCardProps } from "./plan-card.types";
 import {
   planCardVariants,

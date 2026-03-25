@@ -1,6 +1,6 @@
 import { type GradientDividerProps } from "./gradient-divider.types";
 import { generateGradient, defaultStops } from "./gradient-divider.utils";
-import { cn } from "@/src/lib/utils";
+import { cn } from "@/lib/utils";
 
 export function GradientDivider({
   direction = "to-right",

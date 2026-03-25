@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { ArrowForwardRounded, PlayCircleOutlineRounded } from "@mui/icons-material";
-import { cn } from "@/src/lib/utils";
+import { cn } from "@/lib/utils";
 import { actionCardVariants, actionCardButtonVariants } from "./action-card.styles";
 import type { ActionCardProps } from "./action-card.types";
 

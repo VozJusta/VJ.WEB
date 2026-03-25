@@ -1,5 +1,5 @@
 import { forwardRef, useId } from "react";
-import { cn } from "@/src/lib/utils";
+import { cn } from "@/lib/utils";
 import { checkboxStyles } from "./checkbox.styles";
 import type { CheckboxProps } from "./checkbox.types";
 

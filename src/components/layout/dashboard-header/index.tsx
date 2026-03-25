@@ -2,7 +2,7 @@ import { SearchRounded, NotificationsNoneRounded, MenuRounded } from "@mui/icons
 import Image from "next/image";
 import Link from "next/link";
 import { DynamicBreadcrumb } from "./dynamic-breadcrumb";
-import { cn } from "@/src/lib/utils";
+import { cn } from "@/lib/utils";
 import type { DashboardHeaderProps } from "./dashboard-header.types";
 
 export function DashboardHeader({ user, onMenuToggle }: DashboardHeaderProps) {

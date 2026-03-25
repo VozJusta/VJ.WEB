@@ -6,7 +6,7 @@ import { Button } from "../../ui/button";
 import { headerNavigation } from "./header.navigation";
 import { MobileMenu } from "./mobile-menu";
 import Image from "next/image";
-import logo from "@/public/logo/logo+name.svg";
+import logo from "@/assets/logo/logo+name.svg";
 import { Menu } from "@mui/icons-material";
 
 export default function Header() {

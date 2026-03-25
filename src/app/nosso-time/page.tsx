@@ -1,7 +1,7 @@
-import Header from "@/src/components/layout/header";
-import Footer from "@/src/components/layout/footer";
-import { TeamMemberCard } from "@/src/components/ui/team-member-card";
-import { GradientDivider } from "@/src/components/ui/gradient-divider";
+import Header from "@/components/layout/header";
+import Footer from "@/components/layout/footer";
+import { TeamMemberCard } from "@/components/ui/team-member-card";
+import { GradientDivider } from "@/components/ui/gradient-divider";
 import { teamMembers } from "./team.data";
 import { GroupsOutlined } from "@mui/icons-material";
 

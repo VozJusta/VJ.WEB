@@ -1,4 +1,4 @@
-import { cn } from "@/src/lib/utils";
+import { cn } from "@/lib/utils";
 import { AutoAwesomeRounded } from "@mui/icons-material";
 import { priorityBadgeVariants } from "./viability-card.styles";
 import type { ViabilityCardProps, PriorityLevel } from "./viability-card.types";

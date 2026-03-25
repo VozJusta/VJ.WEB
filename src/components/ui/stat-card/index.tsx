@@ -1,7 +1,7 @@
 "use client";
 
 import { ArrowUpwardRounded, ArrowDownwardRounded } from "@mui/icons-material";
-import { cn } from "@/src/lib/utils";
+import { cn } from "@/lib/utils";
 
 type StatCardProps = {
   label: string;

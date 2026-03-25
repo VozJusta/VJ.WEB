@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { ChevronRightRounded } from "@mui/icons-material";
-import { cn } from "@/src/lib/utils";
+import { cn } from "@/lib/utils";
 import type { BreadcrumbProps } from "./breadcrumb.types";
 
 export function Breadcrumb({ items, className }: BreadcrumbProps) {

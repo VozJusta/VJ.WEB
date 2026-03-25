@@ -16,7 +16,7 @@ import {
   CloudUploadRounded,
   CheckRounded,
 } from "@mui/icons-material";
-import { cn } from "@/src/lib/utils";
+import { cn } from "@/lib/utils";
 import type { FileUploadProps, UploadedFile, UploadState } from "./file-upload.types";
 import {
   uploadZoneBase,

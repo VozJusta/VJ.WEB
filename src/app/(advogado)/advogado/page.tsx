@@ -1,14 +1,14 @@
 import type { Metadata } from "next";
-import { StatCard } from "@/src/components/ui/stat-card";
-import { ProductivityChart } from "@/src/components/ui/productivity-chart";
-import { OperationalStatus } from "@/src/components/ui/operational-status";
-import { PriorityRequestCard } from "@/src/components/ui/priority-request-card";
+import { StatCard } from "@/components/ui/stat-card";
+import { ProductivityChart } from "@/components/ui/productivity-chart";
+import { OperationalStatus } from "@/components/ui/operational-status";
+import { PriorityRequestCard } from "@/components/ui/priority-request-card";
 import type {
   StatCardData,
   ChartDataPoint,
   OperationalStatus as OperationalStatusType,
   PriorityRequest,
-} from "@/src/types/dashboard.types";
+} from "@/types/dashboard.types";
 
 export const metadata: Metadata = {
   title: "Dashboard - Advogado | Voz Justa",

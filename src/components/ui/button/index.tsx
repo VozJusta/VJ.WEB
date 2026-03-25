@@ -1,6 +1,6 @@
 import { forwardRef } from "react";
 import { AutorenewRounded } from "@mui/icons-material";
-import { cn } from "@/src/lib/utils";
+import { cn } from "@/lib/utils";
 import { buttonVariants } from "./button.styles";
 import { ButtonProps } from "./button.types";
 

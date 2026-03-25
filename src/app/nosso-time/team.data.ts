@@ -1,4 +1,4 @@
-import type { TeamMemberProps } from "@/src/components/ui/team-member-card/team-member-card.types";
+import type { TeamMemberProps } from "@/components/ui/team-member-card/team-member-card.types";
 
 export interface TeamCategory {
   id: string;

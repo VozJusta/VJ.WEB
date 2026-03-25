@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { cn } from "@/src/lib/utils";
+import { cn } from "@/lib/utils";
 import { teamMemberCardStyles } from "./team-member-card.styles";
 import type { TeamMemberProps } from "./team-member-card.types";
 

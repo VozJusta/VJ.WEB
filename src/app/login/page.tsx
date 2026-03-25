@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { LoginFeature } from "@/app/features/auth/login";
+import { LoginFeature } from "@/features/auth/login";
 
 export const metadata: Metadata = {
   title: "Login | VozJusta",

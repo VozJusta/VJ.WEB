@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { cn } from "@/src/lib/utils";
+import { cn } from "@/lib/utils";
 import {
   toastStyles,
   getToastVariantStyles,

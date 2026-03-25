@@ -1,6 +1,6 @@
 import { forwardRef } from "react";
 import { KeyboardArrowDown } from "@mui/icons-material";
-import { cn } from "@/src/lib/utils";
+import { cn } from "@/lib/utils";
 import { selectStyles } from "./select.styles";
 import type { SelectProps } from "./select.types";
 

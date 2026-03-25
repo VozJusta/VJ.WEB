@@ -1,4 +1,4 @@
-import type { PersonalityType } from '@/src/types/simulator.types';
+import type { PersonalityType } from '@/types/simulator.types';
 
 export interface PersonalityOptionProps {
   id: PersonalityType;

@@ -1,5 +1,5 @@
 import { forwardRef, useState } from "react";
-import { cn } from "@/src/lib/utils";
+import { cn } from "@/lib/utils";
 import { textareaStyles } from "./textarea.styles";
 import type { TextareaProps } from "./textarea.types";
 

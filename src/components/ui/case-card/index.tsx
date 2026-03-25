@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { DescriptionRounded, CheckCircleOutlineRounded, ChevronRightRounded, ShieldRounded, BalanceRounded } from "@mui/icons-material";
-import { cn } from "@/src/lib/utils";
+import { cn } from "@/lib/utils";
 import { caseStatusBadgeVariants, caseStatusDotVariants } from "./case-card.styles";
 import type { CaseCardProps, CaseStatus } from "./case-card.types";
 

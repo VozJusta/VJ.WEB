@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { authStorage } from "@/src/lib/auth";
+import { authStorage } from "@/lib/auth";
 
 interface ProtectedRouteProps {
   children: React.ReactNode;

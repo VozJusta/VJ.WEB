@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/nextjs";
 import Footer from "./index";
-import { ToastProvider } from "@/src/components/ui/toast/toast-provider";
+import { ToastProvider } from "@/components/ui/toast/toast-provider";
 
 const meta = {
   title: "Layout/Footer",

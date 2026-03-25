@@ -1,8 +1,8 @@
 "use client";
 
-import { cn } from "@/src/lib/utils";
-import { ProgressRing } from "@/src/components/ui/progress-ring";
-import type { OperationalStatus as OperationalStatusType } from "@/src/types/dashboard.types";
+import { cn } from "@/lib/utils";
+import { ProgressRing } from "@/components/ui/progress-ring";
+import type { OperationalStatus as OperationalStatusType } from "@/types/dashboard.types";
 
 type OperationalStatusProps = {
   statuses: OperationalStatusType[];

@@ -1,11 +1,11 @@
 "use client";
 
 import { useState } from "react";
-import { cn } from "@/src/lib/utils";
-import { Sidebar } from "@/src/components/layout/sidebar";
-import { DashboardHeader } from "@/src/components/layout/dashboard-header";
-import { lawyerMainNav, lawyerBottomNav } from "@/src/components/layout/sidebar/sidebar-lawyer.navigation";
-import { useAuth } from "@/src/contexts/auth-context";
+import { cn } from "@/lib/utils";
+import { Sidebar } from "@/components/layout/sidebar";
+import { DashboardHeader } from "@/components/layout/dashboard-header";
+import { lawyerMainNav, lawyerBottomNav } from "@/components/layout/sidebar/sidebar-lawyer.navigation";
+import { useAuth } from "@/contexts/auth-context";
 
 export default function LawyerLayout({
   children,

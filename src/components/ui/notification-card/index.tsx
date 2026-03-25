@@ -9,8 +9,8 @@ import {
   WarningAmberOutlined,
   GavelOutlined,
 } from "@mui/icons-material";
-import { cn } from "@/src/lib/utils";
-import type { Notification } from "@/src/types/notification.types";
+import { cn } from "@/lib/utils";
+import type { Notification } from "@/types/notification.types";
 
 interface NotificationCardProps {
   notification: Notification;

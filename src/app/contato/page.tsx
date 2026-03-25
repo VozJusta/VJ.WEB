@@ -1,12 +1,12 @@
 "use client";
 
 import { useState } from "react";
-import { Input } from "@/src/components/ui/input";
-import { Textarea } from "@/src/components/ui/textarea";
-import { Button } from "@/src/components/ui/button";
-import { useToast } from "@/src/components/ui/toast/toast-provider";
-import Header from "@/src/components/layout/header";
-import Footer from "@/src/components/layout/footer";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Button } from "@/components/ui/button";
+import { useToast } from "@/components/ui/toast/toast-provider";
+import Header from "@/components/layout/header";
+import Footer from "@/components/layout/footer";
 import { contactSchema, type ContactFormData } from "./contact.schema";
 import {
   WhatsApp,

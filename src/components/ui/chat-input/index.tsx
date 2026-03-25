@@ -2,7 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import { MicNoneRounded, SendRounded } from "@mui/icons-material";
-import { cn } from "@/src/lib/utils";
+import { cn } from "@/lib/utils";
 import type { ChatInputProps } from "./chat-input.types";
 
 export function ChatInput({

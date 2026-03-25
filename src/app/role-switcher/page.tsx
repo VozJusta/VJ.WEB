@@ -1,6 +1,6 @@
 "use client";
 
-import { useAuth } from "@/src/contexts/auth-context";
+import { useAuth } from "@/contexts/auth-context";
 import { useRouter } from "next/navigation";
 import { PersonRounded, GavelRounded } from "@mui/icons-material";
 

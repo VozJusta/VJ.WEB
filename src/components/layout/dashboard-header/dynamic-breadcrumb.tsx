@@ -1,8 +1,8 @@
 "use client";
 
 import { usePathname } from "next/navigation";
-import { Breadcrumb } from "@/src/components/ui/breadcrumb";
-import type { BreadcrumbItem } from "@/src/components/ui/breadcrumb/breadcrumb.types";
+import { Breadcrumb } from "@/components/ui/breadcrumb";
+import type { BreadcrumbItem } from "@/components/ui/breadcrumb/breadcrumb.types";
 
 const routeLabelMap: Record<string, string> = {
   dashboard: "Dashboard",

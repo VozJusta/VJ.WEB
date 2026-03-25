@@ -1,4 +1,4 @@
-import type { User, UserRole } from "@/src/types/user.types";
+import type { User, UserRole } from "@/types/user.types";
 
 export function getUserRole(): UserRole {
   if (typeof window === "undefined") {

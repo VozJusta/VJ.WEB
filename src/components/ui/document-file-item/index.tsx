@@ -1,5 +1,5 @@
 import { PictureAsPdfRounded, ImageRounded } from "@mui/icons-material";
-import { cn } from "@/src/lib/utils";
+import { cn } from "@/lib/utils";
 import type { DocumentFileItemProps } from "./document-file-item.types";
 import {
   itemWrapper,

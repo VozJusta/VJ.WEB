@@ -1,6 +1,6 @@
 "use client";
 
-import { cn } from "@/src/lib/utils";
+import { cn } from "@/lib/utils";
 import type { FilterTabsProps } from "./filter-tabs.types";
 
 export function FilterTabs<T extends string = string>({

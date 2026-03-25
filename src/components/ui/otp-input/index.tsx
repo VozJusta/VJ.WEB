@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, KeyboardEvent, ClipboardEvent, ChangeEvent } from "react";
-import { cn } from "@/src/lib/utils";
+import { cn } from "@/lib/utils";
 import { otpInputStyles } from "./otp-input.styles";
 import type { OtpInputProps } from "./otp-input.types";
 

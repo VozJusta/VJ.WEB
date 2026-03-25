@@ -5,8 +5,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Person, AccountBalance, ArrowForward } from "@mui/icons-material";
-import { RoleCard } from "@/src/components/ui/role-card";
-import { Button } from "@/src/components/ui/button";
+import { RoleCard } from "@/components/ui/role-card";
+import { Button } from "@/components/ui/button";
 
 type UserRole = "individual" | "lawyer";
 

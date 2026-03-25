@@ -3,7 +3,7 @@
 import { formatDistanceToNow } from "date-fns/formatDistanceToNow";
 import { ptBR } from "date-fns/locale/pt-BR";
 import { AutoAwesomeRounded } from "@mui/icons-material";
-import { cn } from "@/src/lib/utils";
+import { cn } from "@/lib/utils";
 import type { MessageBubbleProps } from "./message-bubble.types";
 
 export function MessageBubble({

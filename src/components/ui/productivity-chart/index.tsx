@@ -10,7 +10,7 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
-import type { ChartDataPoint } from "@/src/types/dashboard.types";
+import type { ChartDataPoint } from "@/types/dashboard.types";
 
 type ProductivityChartProps = {
   data: ChartDataPoint[];

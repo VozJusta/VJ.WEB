@@ -5,7 +5,7 @@ import {
   PictureAsPdfRounded,
   InsertDriveFileRounded,
 } from "@mui/icons-material";
-import { Toggle } from "@/src/components/ui/toggle";
+import { Toggle } from "@/components/ui/toggle";
 
 export type DocumentItem = {
   id: string;
