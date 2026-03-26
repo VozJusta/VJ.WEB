@@ -28,7 +28,6 @@ export function CaseAnalysisCompleteFeature({
   const router = useRouter();
 
   const handleDownloadReport = () => {
-    console.log("Download relatório");
   };
 
   const handleViewLawyers = () => {

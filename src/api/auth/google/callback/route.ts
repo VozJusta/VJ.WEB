@@ -47,7 +47,6 @@ export async function GET(request: Request) {
 
     return response2;
   } catch (error) {
-    console.error('Google callback error:', error);
     return NextResponse.redirect(
       new URL('/login?error=authentication_failed', request.url)
     );

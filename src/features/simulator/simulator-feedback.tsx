@@ -12,7 +12,6 @@ export function SimulatorFeedback() {
   const router = useRouter();
 
   const handleDownloadReport = () => {
-    console.log('Downloading report...');
   };
 
   const handleGoHome = () => {

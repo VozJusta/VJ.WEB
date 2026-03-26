@@ -38,11 +38,9 @@ export class EmailService {
     });
 
     if (error) {
-      console.error("[EmailService] Erro do Resend:", error);
       throw new Error(`Erro ao enviar email: ${error.message}`);
     }
 
-    console.log("[EmailService] Email enviado com sucesso:", data);
     return data;
   }
 

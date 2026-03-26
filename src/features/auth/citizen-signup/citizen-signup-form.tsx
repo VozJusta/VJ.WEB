@@ -98,11 +98,9 @@ export function CitizenSignupForm() {
 
         // Prevent duplicate submissions
         if (isSubmittingRef.current) {
-            console.log('[SIGNUP DEBUG] Ignoring duplicate submit attempt');
             return;
         }
 
-        console.log('[SIGNUP DEBUG] handleSubmit called');
         isSubmittingRef.current = true;
         setErrors({});
         setIsSubmitting(true);

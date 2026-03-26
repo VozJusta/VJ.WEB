@@ -23,7 +23,6 @@ export function DossierSentFeature({ lawyerName, lawyerId }: DossierSentFeatureP
   };
 
   const handleViewPDF = () => {
-    console.log("View PDF dossier");
   };
 
   return (

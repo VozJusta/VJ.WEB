@@ -26,7 +26,6 @@ export default function Footer({ className = "" }: FooterProps) {
 
     await new Promise((resolve) => setTimeout(resolve, 1000));
 
-    console.log("Newsletter subscription:", email);
     setEmail("");
     setIsSubmitting(false);
   };

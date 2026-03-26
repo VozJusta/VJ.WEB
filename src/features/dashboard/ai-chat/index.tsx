@@ -63,7 +63,6 @@ export function AIChatFeature({
   };
 
   const handleVoiceRecord = () => {
-    console.log("Voice recording not implemented yet");
   };
 
   return (

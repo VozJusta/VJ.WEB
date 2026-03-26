@@ -89,7 +89,6 @@ export default function ContatoPage() {
 
       setFormData({ name: "", email: "", subject: "", message: "" });
     } catch (error) {
-      console.error("Erro ao enviar:", error);
 
       toast({
         title: "Erro ao enviar mensagem",

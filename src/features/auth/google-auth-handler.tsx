@@ -18,7 +18,6 @@ export function GoogleAuthHandler() {
         );
         login(decodedData);
       } catch (error) {
-        console.error('Failed to decode auth data:', error);
       }
     }
   }, [searchParams, login, isAuthenticated]);

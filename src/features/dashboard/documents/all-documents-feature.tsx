@@ -7,9 +7,6 @@ import { allDocuments } from "./documents.data";
 import type { DocumentFileItemProps } from "@/components/ui/document-file-item/document-file-item.types";
 
 export function AllDocumentsFeature() {
-  const handleDownload = (id: string) => console.log("download", id);
-  const handleRename = (id: string) => console.log("rename", id);
-  const handleDelete = (id: string) => console.log("delete", id);
 
   return (
     <main
