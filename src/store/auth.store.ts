@@ -9,6 +9,7 @@ interface AuthStore extends AuthState {
   setError: (error: string | null) => void;
   setUser: (user: AuthState['user']) => void;
   setAuthenticated: (authenticated: boolean) => void;
+  setTokens: (accessToken: string, refreshToken: string) => void;
   login: (response: AuthResponse) => void;
   loginWithGoogle: (response: AuthResponse) => void;
   logout: () => void;
@@ -60,6 +61,11 @@ export const useAuthStore = create<AuthStore>()(
 
         setUser: (user: AuthState['user']) =>
           set({ user }, false, 'setUser'),
+
+        setTokens: (accessToken: string, refreshToken: string) => {
+          authStorage.setTokens(accessToken, refreshToken);
+          set({ isAuthenticated: true }, false, 'setTokens');
+        },
 
         loginWithGoogle: (response: AuthResponse) =>
           set(authResponseToState(response), false, 'loginWithGoogle'),
