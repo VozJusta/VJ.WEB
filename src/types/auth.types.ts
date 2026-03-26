@@ -10,7 +10,7 @@ export interface GoogleAuthResponse {
 }
 
 export interface AuthenticateResponse {
-  validate: boolean;
+  validated: boolean;
   sub: string;
   role: UserRole;
   email: string;

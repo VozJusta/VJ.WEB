@@ -178,7 +178,11 @@ export const authService = {
       }
 
       const raw = payload as Record<string, unknown>;
-      const validated = typeof raw.validate === 'boolean' ? raw.validate : null;
+      const validated = typeof raw.validate === 'boolean'
+        ? raw.validate
+        : typeof raw.validated === 'boolean'
+          ? raw.validated
+          : null;
 
       console.log('✓ Validated field:', validated);
 
@@ -201,7 +205,7 @@ export const authService = {
       persistSecurityToken(token);
 
       return {
-        validate: validated,
+        validated,
         sub: raw.sub,
         role,
         email: raw.email,
