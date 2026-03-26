@@ -7,6 +7,7 @@ import { VerifiedUserOutlined, ArrowBack } from "@mui/icons-material";
 import { Button } from "@/components/ui/button";
 import { OtpInput } from "@/components/ui/otp-input";
 import { useToast } from "@/components/ui/toast/toast-provider";
+import { useAuthStore } from "@/store/auth.store";
 import { authService, AuthServiceError } from "@/services/auth.service";
 import { verificationSchema } from "./verification.schema";
 import { verificationMessages, type VerificationConfig } from "./verification.types";
@@ -22,9 +23,10 @@ export function VerificationForm({ config, onVerified, onBack }: VerificationFor
   const [error, setError] = useState("");
   const [isSendingCode, setIsSendingCode] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [timeLeft, setTimeLeft] = useState(config.expirationTime || 300); 
+  const [timeLeft, setTimeLeft] = useState(config.expirationTime || 300);
   const [canResend, setCanResend] = useState(false);
   const { toast } = useToast();
+  const { setTokens, setAuthenticated } = useAuthStore();
 
   const messages = verificationMessages[config.type];
   const flowType = config.flowType || "signup";
@@ -130,8 +132,7 @@ export function VerificationForm({ config, onVerified, onBack }: VerificationFor
           tokens = await authService.validateEmailVerificationCode(requestPayload, secondaryToken);
         }
 
-        localStorage.setItem("access_token", tokens.access_token);
-        localStorage.setItem("refresh_token", tokens.refresh_token);
+        setTokens(tokens.access_token, tokens.refresh_token);
 
         sessionStorage.removeItem("pending_verification_token");
         localStorage.removeItem("x-security-token");
