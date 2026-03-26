@@ -52,8 +52,6 @@ export function LoginForm() {
         password: validatedData.password,
       });
 
-      console.log('✅ Authenticate success:', authResponse);
-
       setUserRole(authResponse.role);
       setUser({
         id: authResponse.sub,
@@ -64,14 +62,10 @@ export function LoginForm() {
       setAuthenticated(false);
       setError(null);
 
-      console.log('🔄 Enviando código 2FA...');
-
       const sendCodeResponse = await authService.sendEmailVerificationCode(
         validatedData.email,
         authResponse.securityToken
       );
-
-      console.log('✅ Código enviado:', sendCodeResponse);
 
       if (sendCodeResponse.securityToken) {
         sessionStorage.setItem("pending_verification_token", sendCodeResponse.securityToken);
@@ -88,7 +82,6 @@ export function LoginForm() {
       );
 
     } catch (error) {
-      console.error('❌ Erro capturado:', error);
       if (error instanceof ZodError) {
         const fieldErrors: Record<string, string> = {};
         error.issues.forEach((err) => {
