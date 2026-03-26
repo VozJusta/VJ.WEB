@@ -151,68 +151,6 @@ async function handleAPIError(error: unknown): Promise<never> {
 }
 
 export const authService = {
-  async loginCitizen(data: CredentialsLoginRequest): Promise<AuthResponse & { securityToken: string }> {
-    try {
-      const response = await fetch(`${API.BASE_URL}${API.ENDPOINTS.AUTH.CITIZEN_LOGIN}`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(data),
-      });
-
-      if (!response.ok) {
-        if (response.status === 401) {
-          throw new AuthServiceError('Acesso não autorizado. Verifique seu e-mail e senha.', 401, response);
-        }
-        await handleAPIError(response);
-      }
-
-      const payload = await parseResponseBody(response);
-
-      if (!payload || typeof payload !== 'object') {
-        throw new AuthServiceError('Resposta inválida do servidor ao autenticar.');
-      }
-
-      const raw = payload as Record<string, unknown>;
-      const validated =
-        typeof raw.validated === 'boolean'
-          ? raw.validated
-          : typeof raw.validate === 'boolean'
-            ? raw.validate
-            : null;
-
-      if (typeof validated !== 'boolean') {
-        throw new AuthServiceError('Resposta inválida do servidor ao autenticar.');
-      }
-
-      if (typeof raw.sub !== 'string' || typeof raw.email !== 'string' || typeof raw.full_name !== 'string') {
-        throw new AuthServiceError('Resposta inválida do servidor ao autenticar.');
-      }
-
-      const role = normalizeUserRole(raw.role);
-      const loggedWithGoogle = typeof raw.loggedWithGoogle === 'boolean' ? raw.loggedWithGoogle : false;
-
-      const token = extractSecurityToken(response, payload);
-      persistSecurityToken(token);
-
-      return {
-        validated,
-        sub: raw.sub,
-        role,
-        email: raw.email,
-        full_name: raw.full_name,
-        loggedWithGoogle,
-        securityToken: token,
-      };
-    } catch (error) {
-      if (error instanceof AuthServiceError) {
-        throw error;
-      }
-      return handleAPIError(error);
-    }
-  },
-
   async authenticate(data: CredentialsLoginRequest): Promise<AuthenticateResponse & { securityToken: string }> {
     try {
       const response = await fetch(`${API.BASE_URL}${API.ENDPOINTS.AUTH.AUTHENTICATE}`, {

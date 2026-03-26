@@ -10,7 +10,6 @@ export const API = {
     AUTH: {
       GOOGLE: '/auth/google',
       GOOGLE_CALLBACK: '/auth/google/callback',
-      CITIZEN_LOGIN: '/auth/citizen',
       AUTHENTICATE: '/auth/authenticate',
       SEND_EMAIL_2FA: '/auth/send/email',
       VALIDATE_EMAIL_2FA: '/auth/validate/email',
