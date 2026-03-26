@@ -105,10 +105,10 @@ function normalizeUserRole(role: unknown): UserRole {
     throw new AuthServiceError('Perfil de usuário inválido retornado pelo servidor.');
   }
 
-  const normalized = role.trim().toLowerCase();
+  const firstRole = role.split('|')[0].trim().toLowerCase();
 
-  if (normalized === 'citizen' || normalized === 'lawyer') {
-    return normalized;
+  if (firstRole === 'citizen' || firstRole === 'lawyer') {
+    return firstRole;
   }
 
   throw new AuthServiceError('Perfil de usuário inválido retornado pelo servidor.');
