@@ -161,6 +161,8 @@ export const authService = {
         body: JSON.stringify(data),
       });
 
+      console.log('🔍 Authenticate response status:', response.status);
+
       if (!response.ok) {
         if (response.status === 401) {
           throw new AuthServiceError('Acesso não autorizado. Verifique seu e-mail e senha.', 401, response);
@@ -169,6 +171,7 @@ export const authService = {
       }
 
       const payload = await parseResponseBody(response);
+      console.log('📦 Authenticate payload:', payload);
 
       if (!payload || typeof payload !== 'object') {
         throw new AuthServiceError('Resposta inválida do servidor ao autenticar.');
@@ -176,6 +179,8 @@ export const authService = {
 
       const raw = payload as Record<string, unknown>;
       const validated = typeof raw.validate === 'boolean' ? raw.validate : null;
+
+      console.log('✓ Validated field:', validated);
 
       if (typeof validated !== 'boolean') {
         throw new AuthServiceError('Resposta inválida do servidor ao autenticar.');
@@ -185,10 +190,14 @@ export const authService = {
         throw new AuthServiceError('Resposta inválida do servidor ao autenticar.');
       }
 
+      console.log('✓ Role before normalize:', raw.role);
       const role = normalizeUserRole(raw.role);
+      console.log('✓ Role after normalize:', role);
+
       const loggedWithGoogle = typeof raw.loggedWithGoogle === 'boolean' ? raw.loggedWithGoogle : false;
 
       const token = extractSecurityToken(response, payload);
+      console.log('🔑 Security token extracted:', token ? '✓' : '✗');
       persistSecurityToken(token);
 
       return {
@@ -201,6 +210,7 @@ export const authService = {
         securityToken: token,
       };
     } catch (error) {
+      console.error('❌ Authenticate error:', error);
       if (error instanceof AuthServiceError) {
         throw error;
       }
