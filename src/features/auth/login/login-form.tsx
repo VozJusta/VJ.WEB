@@ -47,7 +47,7 @@ export function LoginForm() {
     try {
       const validatedData = loginSchema.parse(formState);
 
-      const authResponse = await authService.loginCitizen({
+      const authResponse = await authService.authenticate({
         email: validatedData.email,
         password: validatedData.password,
       });
@@ -70,7 +70,7 @@ export function LoginForm() {
       if (sendCodeResponse.securityToken) {
         sessionStorage.setItem("pending_verification_token", sendCodeResponse.securityToken);
       }
-      
+
       toast({
         title: "Código enviado!",
         description: "Verifique seu e-mail para concluir o acesso.",
@@ -80,7 +80,7 @@ export function LoginForm() {
       router.replace(
         `/verificacao/email?email=${encodeURIComponent(validatedData.email)}&type=login`
       );
-      
+
     } catch (error) {
       if (error instanceof ZodError) {
         const fieldErrors: Record<string, string> = {};
