@@ -5,7 +5,7 @@ import { ArrowBackRounded } from "@mui/icons-material";
 import { DocumentFileItem } from "@/components/ui/document-file-item";
 import { allDocuments } from "./documents.data";
 import type { DocumentFileItemProps } from "@/components/ui/document-file-item/document-file-item.types";
-import { useDocumentsActions } from "./hooks/use-documents-actions";
+import { useDocumentsActions } from "@/hooks/use-documents-actions";
 
 export function AllDocumentsFeature() {
   const {
