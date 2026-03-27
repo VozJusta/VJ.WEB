@@ -41,6 +41,8 @@ export const AUTH_STORAGE_KEYS = {
   ACCESS_TOKEN: 'access_token',
   REFRESH_TOKEN: 'refresh_token',
   SECURITY_TOKEN: 'x-security-token',
+  AUTH_STORE: 'auth-store',
+  PENDING_VERIFICATION_TOKEN: 'pending_verification_token',
 } as const;
 
 export const authStorage = {
@@ -74,11 +76,32 @@ export const authStorage = {
     return localStorage.getItem(AUTH_STORAGE_KEYS.SECURITY_TOKEN);
   },
 
+  setTokens(accessToken: string, refreshToken: string): void {
+    this.setAccessToken(accessToken);
+    this.setRefreshToken(refreshToken);
+  },
+
   clearAll(): void {
     if (typeof window === 'undefined') return;
     localStorage.removeItem(AUTH_STORAGE_KEYS.ACCESS_TOKEN);
     localStorage.removeItem(AUTH_STORAGE_KEYS.REFRESH_TOKEN);
     localStorage.removeItem(AUTH_STORAGE_KEYS.SECURITY_TOKEN);
+  },
+
+  clearAuthStore(): void {
+    if (typeof window === 'undefined') return;
+    localStorage.removeItem(AUTH_STORAGE_KEYS.AUTH_STORE);
+  },
+
+  clearPendingVerificationToken(): void {
+    if (typeof window === 'undefined') return;
+    sessionStorage.removeItem(AUTH_STORAGE_KEYS.PENDING_VERIFICATION_TOKEN);
+  },
+
+  logout(): void {
+    this.clearAll();
+    this.clearAuthStore();
+    this.clearPendingVerificationToken();
   },
 
   hasTokens(): boolean {

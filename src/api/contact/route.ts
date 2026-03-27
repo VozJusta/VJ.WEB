@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { contactSchema } from "../../app/contato/contact.schema";
-import { EmailService } from "../../services/email.service";
+import { contactSchema } from "@/app/contato/contact.schema";
+import { EmailService } from "@/services/email.service";
 
 export async function POST(request: NextRequest) {
   try {
@@ -36,7 +36,6 @@ export async function POST(request: NextRequest) {
       { status: 200 },
     );
   } catch (error) {
-    console.error("[API Contact] Erro ao processar solicitação:", error);
 
     const errorMessage =
       error instanceof Error ? error.message : "Erro desconhecido";

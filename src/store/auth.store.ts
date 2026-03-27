@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { devtools, persist } from 'zustand/middleware';
-import type { AuthState, UserRole, AuthResponse } from '@/types/auth.types';
 import { authStorage } from '@/lib/auth';
+import type { AuthState, UserRole, AuthResponse } from '@/types/auth.types';
 
 interface AuthStore extends AuthState {
   setUserRole: (role: UserRole) => void;
@@ -9,6 +9,7 @@ interface AuthStore extends AuthState {
   setError: (error: string | null) => void;
   setUser: (user: AuthState['user']) => void;
   setAuthenticated: (authenticated: boolean) => void;
+  setTokens: (accessToken: string, refreshToken: string) => void;
   login: (response: AuthResponse) => void;
   loginWithGoogle: (response: AuthResponse) => void;
   logout: () => void;
@@ -61,10 +62,16 @@ export const useAuthStore = create<AuthStore>()(
         setUser: (user: AuthState['user']) =>
           set({ user }, false, 'setUser'),
 
+        setTokens: (accessToken: string, refreshToken: string) => {
+          authStorage.setTokens(accessToken, refreshToken);
+          set({ isAuthenticated: true }, false, 'setTokens');
+        },
+
         loginWithGoogle: (response: AuthResponse) =>
           set(authResponseToState(response), false, 'loginWithGoogle'),
 
         logout: () => {
+          authStorage.logout();
           authStorage.clearAll();
           set({ ...initialState }, false, 'logout');
         },

@@ -1,8 +1,9 @@
-export type VerificationType = "email" | "phone";
+export type VerificationType = "email";
 
 export interface VerificationConfig {
   type: VerificationType;
   contact: string;
+  flowType?: "signup" | "reset";
   expirationTime?: number;
 }
 
@@ -16,15 +17,5 @@ export const verificationMessages = {
     errorTitle: "Código inválido",
     errorDescription: "Verifique o código e tente novamente.",
     resendMessage: "Não recebeu o código?",
-  },
-  phone: {
-    title: "Verificação de Telefone",
-    description: "Enviamos um código de 6 dígitos via SMS",
-    buttonText: "Verificar Telefone",
-    successTitle: "Telefone verificado com sucesso!",
-    successDescription: "Você será redirecionado em instantes.",
-    errorTitle: "Código inválido",
-    errorDescription: "Verifique o código e tente novamente.",
-    resendMessage: "Não recebeu o SMS?",
   },
 };

@@ -1,5 +1,5 @@
 export const checkboxStyles = {
-  container: "flex items-start gap-3",
+  container: "flex items-center gap-3",
   checkbox: `
     mt-0.5
     h-6

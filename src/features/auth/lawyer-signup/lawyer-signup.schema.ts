@@ -19,6 +19,17 @@ export const lawyerSignupSchema = z.object({
       (value) => cpfRegex.test(value) || cnpjRegex.test(value),
       "CPF/CNPJ inválido. Use o formato 000.000.000-00 ou 00.000.000/0000-00"
     ),
+
+  email: z
+    .string()
+    .min(1, "E-mail é obrigatório")
+    .email("E-mail inválido"),
+
+  phone: z
+    .string()
+    .min(1, "Telefone é obrigatório")
+    .min(14, "Telefone inválido")
+    .max(15, "Telefone inválido"),
   
   oabNumber: z
     .string()

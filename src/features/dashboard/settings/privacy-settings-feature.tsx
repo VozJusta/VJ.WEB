@@ -19,7 +19,6 @@ export function PrivacySettingsFeature() {
         "Tem certeza que deseja excluir sua conta? Esta ação não pode ser desfeita."
       )
     ) {
-      console.log("Delete account");
     }
   };
 

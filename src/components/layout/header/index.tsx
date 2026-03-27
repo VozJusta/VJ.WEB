@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { Button } from "../../ui/button";
+import { Button } from "@/components/ui/button";
 import { headerNavigation } from "./header.navigation";
 import { MobileMenu } from "./mobile-menu";
 import Image from "next/image";

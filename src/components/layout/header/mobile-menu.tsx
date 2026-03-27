@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
-import { Button } from "../../ui/button";
+import { Button } from "@/components/ui/button";
 import { headerNavigation } from "./header.navigation";
 import { Close } from "@mui/icons-material";
 

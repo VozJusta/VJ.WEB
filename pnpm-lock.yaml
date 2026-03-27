@@ -58,7 +58,7 @@ importers:
         version: 4.3.6
       zustand:
         specifier: ^5.0.12
-        version: 5.0.12(@types/react@19.2.14)(immer@11.1.4)(react@19.2.3)(use-sync-external-store@1.6.0(react@19.2.3))
+        version: 5.0.12(@types/react@19.2.14)(immer@11.1.4)(react@19.2.3)(use-sync-external-store@1.6.0(react@19.2.3)) (@types/react@19.2.14)(react@19.2.3)(use-sync-external-store@1.6.0(react@19.2.3))
     devDependencies:
       '@storybook/addon-a11y':
         specifier: ^10.2.10
@@ -13462,9 +13462,15 @@ snapshots:
 
   zod@4.3.6: {}
 
+<<<<<<< HEAD
+  zustand@5.0.12(@types/react@19.2.14)(react@19.2.3)(use-sync-external-store@1.6.0(react@19.2.3)):
+    optionalDependencies:
+      '@types/react': 19.2.14
+=======
   zustand@5.0.12(@types/react@19.2.14)(immer@11.1.4)(react@19.2.3)(use-sync-external-store@1.6.0(react@19.2.3)):
     optionalDependencies:
       '@types/react': 19.2.14
       immer: 11.1.4
+>>>>>>> 371c675aa384a608654b5512d9c7fa1271534d79
       react: 19.2.3
       use-sync-external-store: 1.6.0(react@19.2.3)

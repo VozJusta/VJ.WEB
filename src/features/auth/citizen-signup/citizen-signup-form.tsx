@@ -1,7 +1,8 @@
 "use client";
 
-import { FormEvent, useMemo, useState } from "react";
+import { FormEvent, useMemo, useRef, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { ZodError } from "zod";
 import {
     AlternateEmail,
@@ -19,6 +20,7 @@ import { useToast } from "@/components/ui/toast/toast-provider";
 import { cn } from "@/lib/utils";
 import { passwordChecks } from "./constants";
 import { citizenSignupSchema } from "./citizen-signup.schema";
+import { authService, AuthServiceError } from "@/services/auth.service";
 
 type CitizenSignupFormState = {
     fullName: string;
@@ -66,6 +68,8 @@ const formatPhone = (value: string) => {
 };
 
 export function CitizenSignupForm() {
+    const router = useRouter();
+    const isSubmittingRef = useRef(false);
     const [showPassword, setShowPassword] = useState(false);
     const [formState, setFormState] = useState(initialFormState);
     const [errors, setErrors] = useState<Record<string, string>>({});
@@ -91,19 +95,54 @@ export function CitizenSignupForm() {
 
     const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
         event.preventDefault();
+
+        // Prevent duplicate submissions
+        if (isSubmittingRef.current) {
+            return;
+        }
+
+        isSubmittingRef.current = true;
         setErrors({});
         setIsSubmitting(true);
 
         try {
             const validatedData = citizenSignupSchema.parse(formState);
 
+            const cleanPhone = validatedData.phone.replace(/\D/g, "");
+            const formattedPhone = cleanPhone.replace(/^(\d{2})(\d{5})(\d{4})$/, "$1 $2-$3");
+
+            const signupData = {
+                fullName: validatedData.fullName,
+                cpf: validatedData.cpf,
+                phone: formattedPhone,
+                email: validatedData.email,
+                password: validatedData.password,
+            };
+
+            const signupResponse = await authService.signupCitizen(signupData);
+
+            if (signupResponse.securityToken) {
+              sessionStorage.setItem("pending_verification_token", signupResponse.securityToken);
+            }
+
+                                                const sendCodeResponse = await authService.sendEmailVerificationCode(
+                                                    validatedData.email,
+                                                    signupResponse.securityToken
+                                                );
+
+                        if (sendCodeResponse.securityToken) {
+                            sessionStorage.setItem("pending_verification_token", sendCodeResponse.securityToken);
+                        }
+
             toast({
                 title: "Cadastro realizado com sucesso!",
-                description: "Sua conta foi criada. Você será redirecionado em instantes.",
+                description: "Enviamos um código para seu e-mail para concluir o acesso.",
                 variant: "success",
             });
 
-            console.log("Formulário válido:", validatedData);
+            setTimeout(() => {
+                router.push(`/verificacao/email?email=${encodeURIComponent(validatedData.email)}&type=signup`);
+            }, 1500);
 
         } catch (error) {
             if (error instanceof ZodError) {
@@ -120,8 +159,21 @@ export function CitizenSignupForm() {
                     description: "Verifique os campos destacados e tente novamente.",
                     variant: "error",
                 });
+            } else if (error instanceof AuthServiceError) {
+                toast({
+                    title: "Erro no cadastro",
+                    description: error.message,
+                    variant: "error",
+                });
+            } else {
+                toast({
+                    title: "Erro no cadastro",
+                    description: "Ocorreu um erro inesperado. Tente novamente.",
+                    variant: "error",
+                });
             }
         } finally {
+            isSubmittingRef.current = false;
             setIsSubmitting(false);
         }
     };

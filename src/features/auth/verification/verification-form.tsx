@@ -7,6 +7,8 @@ import { VerifiedUserOutlined, ArrowBack } from "@mui/icons-material";
 import { Button } from "@/components/ui/button";
 import { OtpInput } from "@/components/ui/otp-input";
 import { useToast } from "@/components/ui/toast/toast-provider";
+import { useAuthStore } from "@/store/auth.store";
+import { authService, AuthServiceError } from "@/services/auth.service";
 import { verificationSchema } from "./verification.schema";
 import { verificationMessages, type VerificationConfig } from "./verification.types";
 
@@ -19,12 +21,53 @@ interface VerificationFormProps {
 export function VerificationForm({ config, onVerified, onBack }: VerificationFormProps) {
   const [code, setCode] = useState("");
   const [error, setError] = useState("");
+  const [isSendingCode, setIsSendingCode] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [timeLeft, setTimeLeft] = useState(config.expirationTime || 300); 
+  const [timeLeft, setTimeLeft] = useState(config.expirationTime || 300);
   const [canResend, setCanResend] = useState(false);
   const { toast } = useToast();
+  const { setTokens, setAuthenticated } = useAuthStore();
 
   const messages = verificationMessages[config.type];
+  const flowType = config.flowType || "signup";
+
+  const sendCode = useCallback(async () => {
+    setIsSendingCode(true);
+
+    try {
+      if (flowType === "reset") {
+        await authService.sendForgotPasswordEmail({ email: config.contact });
+      } else {
+        const pendingToken = sessionStorage.getItem("pending_verification_token") || "";
+        const fallbackToken = localStorage.getItem("x-security-token") || "";
+        const primaryToken = pendingToken || fallbackToken;
+
+        await authService.sendEmailVerificationCode(config.contact, primaryToken || undefined);
+      }
+
+      setCanResend(false);
+      setTimeLeft(config.expirationTime || 900);
+      return true;
+    } catch (sendError) {
+      const description = sendError instanceof AuthServiceError
+        ? sendError.message
+        : "Não foi possível enviar o código. Tente novamente.";
+
+      toast({
+        title: "Erro no envio",
+        description,
+        variant: "error",
+      });
+      setCanResend(true);
+      return false;
+    } finally {
+      setIsSendingCode(false);
+    }
+  }, [config.contact, config.expirationTime, toast]);
+
+  const [hasSentInitialCode, setHasSentInitialCode] = useState(false);
+
+  
 
   useEffect(() => {
     if (timeLeft <= 0) {
@@ -52,21 +95,59 @@ export function VerificationForm({ config, onVerified, onBack }: VerificationFor
 
     try {
       const validatedData = verificationSchema.parse({ code });
-      
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+
+      const requestPayload = {
+        email: config.contact.trim().toLowerCase(),
+        code: validatedData.code,
+      };
+
+      if (flowType === "reset") {
+        await authService.verifyForgotPasswordCode(requestPayload);
+      } else {
+        const pendingToken = sessionStorage.getItem("pending_verification_token") || "";
+        const fallbackToken = localStorage.getItem("x-security-token") || "";
+        const primaryToken = pendingToken || fallbackToken;
+
+        if (!primaryToken) {
+          throw new AuthServiceError("Sessão de verificação inválida. Refaça o processo de cadastro.");
+        }
+
+        let tokens: { access_token: string; refresh_token: string };
+
+        try {
+          tokens = await authService.validateEmailVerificationCode(requestPayload, primaryToken);
+        } catch (firstError) {
+          const shouldRetry =
+            firstError instanceof AuthServiceError &&
+            firstError.statusCode === 401 &&
+            pendingToken &&
+            fallbackToken &&
+            pendingToken !== fallbackToken;
+
+          if (!shouldRetry) {
+            throw firstError;
+          }
+
+          const secondaryToken = primaryToken === pendingToken ? fallbackToken : pendingToken;
+          tokens = await authService.validateEmailVerificationCode(requestPayload, secondaryToken);
+        }
+
+        setTokens(tokens.access_token, tokens.refresh_token);
+
+        sessionStorage.removeItem("pending_verification_token");
+        localStorage.removeItem("x-security-token");
+      }
       
       toast({
         title: messages.successTitle,
         description: messages.successDescription,
         variant: "success",
       });
-      
-      console.log("Código verificado:", validatedData);
-      
+
       if (onVerified) {
         onVerified();
       }
-      
+
     } catch (err) {
       if (err instanceof ZodError) {
         setError(err.issues[0].message);
@@ -76,33 +157,36 @@ export function VerificationForm({ config, onVerified, onBack }: VerificationFor
           description: messages.errorDescription,
           variant: "error",
         });
+        return;
       }
+
+      const description = err instanceof AuthServiceError
+        ? err.message
+        : "Não foi possível validar o código. Tente novamente.";
+
+      setError("Código inválido ou expirado");
+      toast({
+        title: messages.errorTitle,
+        description,
+        variant: "error",
+      });
     } finally {
       setIsSubmitting(false);
     }
   };
 
   const handleResend = async () => {
-    setCanResend(false);
-    setTimeLeft(config.expirationTime || 300);
     setCode("");
     setError("");
     
-    try {
-      await new Promise((resolve) => setTimeout(resolve, 500));
-      
+    const sent = await sendCode();
+
+    if (sent) {
       toast({
         title: "Código reenviado",
         description: `Um novo código foi enviado para ${config.contact}`,
         variant: "success",
       });
-    } catch {
-      toast({
-        title: "Erro ao reenviar",
-        description: "Não foi possível reenviar o código. Tente novamente.",
-        variant: "error",
-      });
-      setCanResend(true);
     }
   };
 
@@ -149,7 +233,7 @@ export function VerificationForm({ config, onVerified, onBack }: VerificationFor
               value={code}
               onChange={setCode}
               error={error}
-              disabled={isSubmitting || timeLeft <= 0}
+              disabled={isSubmitting} // Removido o bloqueio por timeLeft <= 0 para não travar a UI caso o tempo expire antes de reenviar
               autoFocus
             />
 
@@ -166,7 +250,7 @@ export function VerificationForm({ config, onVerified, onBack }: VerificationFor
               size="lg"
               fullWidth
               loading={isSubmitting}
-              disabled={code.length !== 6 || timeLeft <= 0}
+              disabled={code.length !== 6 || isSendingCode} // Removido o check !securityToken para permitir envio e acionar erro apropriado se falhar
               className="rounded-xl text-sm sm:text-base"
             >
               {messages.buttonText}
@@ -179,9 +263,10 @@ export function VerificationForm({ config, onVerified, onBack }: VerificationFor
                   <button
                     type="button"
                     onClick={handleResend}
-                    className="font-semibold text-primary hover:text-primary/80 transition-colors"
+                    disabled={isSendingCode}
+                    className="font-semibold text-primary hover:text-primary/80 transition-colors disabled:cursor-not-allowed disabled:opacity-60"
                   >
-                    Reenviar
+                    {isSendingCode ? "Enviando..." : "Reenviar"}
                   </button>
                 ) : (
                   <span className="font-semibold text-white/30">

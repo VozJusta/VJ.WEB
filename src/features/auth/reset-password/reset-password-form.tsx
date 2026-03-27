@@ -10,8 +10,10 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/components/ui/toast/toast-provider";
 import { cn } from "@/lib/utils";
+import { authService, AuthServiceError } from "@/services/auth.service";
 import { resetPasswordSchema } from "./reset-password.schema";
 import { passwordChecks } from "./constants";
+import logo from "@/assets/logo/logo+name.svg";
 
 type ResetPasswordFormState = {
   password: string;
@@ -59,18 +61,29 @@ export function ResetPasswordForm() {
     setIsSubmitting(true);
 
     try {
+      if (!email) {
+        toast({
+          title: "Sessão inválida",
+          description: "Reinicie o processo de recuperação de senha.",
+          variant: "error",
+        });
+        router.replace("/esqueci-minha-senha");
+        return;
+      }
+
       const validatedData = resetPasswordSchema.parse(formState);
-      
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+
+      const response = await authService.forgotPasswordReset({
+        email,
+        new_password: validatedData.password,
+      });
       
       toast({
         title: "Senha redefinida com sucesso!",
-        description: "Você será redirecionado para o login.",
+        description: response.message || "Você será redirecionado para o login.",
         variant: "success",
       });
-      
-      console.log("Senha redefinida:", validatedData);
-      
+
       setTimeout(() => {
         router.push("/login");
       }, 2000);
@@ -90,7 +103,19 @@ export function ResetPasswordForm() {
           description: "Verifique os campos destacados e tente novamente.",
           variant: "error",
         });
+
+        return;
       }
+
+      const description = error instanceof AuthServiceError
+        ? error.message
+        : "Não foi possível redefinir a senha. Tente novamente.";
+
+      toast({
+        title: "Erro ao redefinir senha",
+        description,
+        variant: "error",
+      });
     } finally {
       setIsSubmitting(false);
     }
@@ -101,7 +126,7 @@ export function ResetPasswordForm() {
       <section className="w-full max-w-md">
         <div className="mb-8 flex justify-center">
           <Image
-            src="/logo/logo+name.svg"
+            src={logo}
             alt="VozJusta"
             width={165}
             height={34}

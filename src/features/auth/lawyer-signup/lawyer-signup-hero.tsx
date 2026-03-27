@@ -1,6 +1,7 @@
 import Image from "next/image";
 import { Gavel, Work, Bolt } from "@mui/icons-material";
 import { heroHighlights } from "./constants";
+import logo from "@/assets/logo/logo+name.svg";
 
 const highlightIcons = [Work, Bolt] as const;
 
@@ -9,7 +10,7 @@ export function LawyerSignupHero() {
     <aside className="mx-auto flex w-full max-w-xl flex-col justify-center gap-10 lg:mx-0 lg:py-8">
       <figure className="w-fit self-center lg:self-start">
         <Image
-          src="/logo/logo+name.svg"
+          src={logo}
           alt="VozJusta"
           width={165}
           height={34}

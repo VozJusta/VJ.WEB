@@ -1,8 +1,10 @@
 "use client";
 
+import type { MouseEvent, ReactElement } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
+import { useAuthStore } from "@/store/auth.store";
 import { sidebarMainNav, sidebarBottomNav } from "./sidebar.navigation";
 import type { SidebarNavItem } from "./sidebar.types";
 
@@ -11,15 +13,25 @@ type SidebarNavLinkProps = {
   isActive: boolean;
   isDanger?: boolean;
   isOpen: boolean;
+  onLogout?: () => void;
 };
 
-function SidebarNavLink({ item, isActive, isDanger = false, isOpen }: SidebarNavLinkProps) {
+function SidebarNavLink({ item, isActive, isDanger = false, isOpen, onLogout }: SidebarNavLinkProps) {
   const Icon = item.icon;
+  const isLogout = item.href === "/sair";
+
+  const handleClick = (e: MouseEvent<HTMLAnchorElement>) => {
+    if (isLogout && onLogout) {
+      e.preventDefault();
+      onLogout();
+    }
+  };
 
   return (
     <li>
       <Link
         href={item.href}
+        onClick={handleClick}
         aria-current={isActive ? "page" : undefined}
         aria-label={!isOpen ? item.label : undefined}
         title={!isOpen ? item.label : undefined}
@@ -75,8 +87,16 @@ type SidebarNavProps = {
   bottomNav?: SidebarNavItem[];
 };
 
-export function SidebarNav({ isOpen, mainNav, bottomNav }: SidebarNavProps) {
+export function SidebarNav({ isOpen, mainNav, bottomNav }: SidebarNavProps): ReactElement {
   const pathname = usePathname();
+  const router = useRouter();
+  const logout = useAuthStore((state) => state.logout);
+
+  const handleLogout = () => {
+    logout();
+    router.replace("/login");
+  };
+
   const mainNavItems = mainNav || sidebarMainNav;
   const bottomNavItems = bottomNav || sidebarBottomNav;
 
@@ -105,7 +125,8 @@ export function SidebarNav({ isOpen, mainNav, bottomNav }: SidebarNavProps) {
             item={item}
             isOpen={isOpen}
             isActive={pathname === item.href}
-            isDanger={index === bottomNavItems.length - 1}
+            isDanger={index === sidebarBottomNav.length - 1}
+            onLogout={item.href === "/sair" ? handleLogout : undefined}
           />
         ))}
       </ul>

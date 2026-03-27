@@ -3,10 +3,12 @@
 import { Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { VerificationForm, type VerificationConfig } from "@/features/auth/verification";
+import { useAuth } from "@/hooks/useAuth";
 
 function EmailVerificationContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const { setAuthenticated } = useAuth();
   
   const email = searchParams.get("email") || "seu@email.com";
   const type = searchParams.get("type") || "signup";
@@ -14,17 +16,21 @@ function EmailVerificationContent() {
   const config: VerificationConfig = {
     type: "email",
     contact: email,
+    flowType: type === "reset" ? "reset" : "signup",
     expirationTime: 300,
   };
 
   const handleVerified = () => {
-    setTimeout(() => {
-      if (type === "reset") {
-        router.push(`/redefinir-senha?email=${encodeURIComponent(email)}`);
-      } else {
-        router.push("/dashboard");
-      }
-    }, 2000);
+    if (type === "reset") {
+      router.push(`/redefinir-senha?email=${encodeURIComponent(email)}`);
+      return;
+    }
+
+    if (type === "login") {
+      setAuthenticated(true);
+    }
+
+    router.push("/dashboard");
   };
 
   const handleBack = () => {

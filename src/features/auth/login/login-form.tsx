@@ -2,12 +2,18 @@
 
 import { FormEvent, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { ZodError } from "zod";
 import { Email, LockOutline, Visibility, VisibilityOff } from "@mui/icons-material";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useToast } from "@/components/ui/toast/toast-provider";
+import { RoleSelectionModal } from "@/components/modals/role-selection-modal";
+import { useAuth } from "@/hooks/useAuth";
+import { API } from "@/lib/api";
+import type { UserRole } from "@/types/auth.types";
+import { authService, AuthServiceError } from "@/services/auth.service";
 import { loginSchema } from "./login.schema";
 
 type LoginFormState = {
@@ -27,7 +33,11 @@ export function LoginForm() {
   const [formState, setFormState] = useState(initialFormState);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isRoleModalOpen, setIsRoleModalOpen] = useState(false);
+  const [isGoogleLoading, setIsGoogleLoading] = useState(false);
   const { toast } = useToast();
+  const router = useRouter();
+  const { setUserRole, setUser, setAuthenticated, setError } = useAuth();
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -36,15 +46,41 @@ export function LoginForm() {
 
     try {
       const validatedData = loginSchema.parse(formState);
-      
+
+      const authResponse = await authService.authenticate({
+        email: validatedData.email,
+        password: validatedData.password,
+      });
+
+      setUserRole(authResponse.role);
+      setUser({
+        id: authResponse.sub,
+        email: authResponse.email,
+        fullName: authResponse.full_name,
+        role: authResponse.role,
+      });
+      setAuthenticated(false);
+      setError(null);
+
+      const sendCodeResponse = await authService.sendEmailVerificationCode(
+        validatedData.email,
+        authResponse.securityToken
+      );
+
+      if (sendCodeResponse.securityToken) {
+        sessionStorage.setItem("pending_verification_token", sendCodeResponse.securityToken);
+      }
+
       toast({
-        title: "Login realizado com sucesso!",
-        description: "Você será redirecionado em instantes.",
+        title: "Código enviado!",
+        description: "Verifique seu e-mail para concluir o acesso.",
         variant: "success",
       });
-      
-      console.log("Formulário válido:", validatedData);
-      
+
+      router.replace(
+        `/verificacao/email?email=${encodeURIComponent(validatedData.email)}&type=login`
+      );
+
     } catch (error) {
       if (error instanceof ZodError) {
         const fieldErrors: Record<string, string> = {};
@@ -60,22 +96,45 @@ export function LoginForm() {
           description: "Verifique os campos destacados e tente novamente.",
           variant: "error",
         });
+
+        return;
       }
+
+      const description = error instanceof AuthServiceError
+        ? error.message
+        : "Não foi possível realizar o login. Tente novamente.";
+
+      toast({
+        title: "Erro no login",
+        description,
+        variant: "error",
+      });
     } finally {
       setIsSubmitting(false);
     }
   };
 
   const handleGoogleLogin = () => {
-    toast({
-      title: "Login com Google",
-      description: "Funcionalidade em desenvolvimento.",
-      variant: "info",
-    });
+    setIsRoleModalOpen(true);
+  };
+
+  const handleRoleSelect = (role: UserRole) => {
+    setIsGoogleLoading(true);
+    setUserRole(role);
+
+    const googleAuthUrl = `${API.BASE_URL}${API.ENDPOINTS.AUTH.GOOGLE}?state=${role}`;
+    window.location.href = googleAuthUrl;
   };
 
   return (
-    <section className="mx-auto w-full max-w-xl rounded-3xl border border-white/8 bg-[#071735]/80 p-6 shadow-[0_20px_80px_rgba(0,0,0,0.25)] backdrop-blur-sm sm:p-8 lg:mx-0">
+    <>
+      <RoleSelectionModal
+        isOpen={isRoleModalOpen}
+        onClose={() => setIsRoleModalOpen(false)}
+        onSelectRole={handleRoleSelect}
+        isLoading={isGoogleLoading}
+      />
+      <section className="mx-auto w-full max-w-xl rounded-3xl border border-white/8 bg-[#071735]/80 p-6 shadow-[0_20px_80px_rgba(0,0,0,0.25)] backdrop-blur-sm sm:p-8 lg:mx-0">
       <div className="space-y-2">
         <h2 className="text-4xl font-bold tracking-tight text-white">Entrar no VozJusta</h2>
         <p className="text-base text-white/60">
@@ -85,6 +144,7 @@ export function LoginForm() {
 
       <form className="mt-8" onSubmit={handleSubmit} noValidate>
         <fieldset className="space-y-5">
+          <legend className="sr-only">Credenciais de acesso</legend>
 
           <Input
             id="email"
@@ -223,5 +283,6 @@ export function LoginForm() {
         </fieldset>
       </form>
     </section>
+    </>
   );
 }

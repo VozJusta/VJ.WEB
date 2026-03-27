@@ -1,9 +1,16 @@
 "use client";
 
-import { useState } from "react";
+import { Suspense, useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
 import { Sidebar } from "@/components/layout/sidebar";
 import { DashboardHeader } from "@/components/layout/dashboard-header";
+import { GoogleAuthHandler } from "@/features/auth/google-auth-handler";
+
+const DEMO_USER = {
+  name: "Ricardo Silva",
+  role: "Cidadão",
+  avatarUrl: undefined,
+};
 import { useAuth } from "@/contexts/auth-context";
 
 export default function PrivateLayout({
@@ -14,6 +21,21 @@ export default function PrivateLayout({
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const { user } = useAuth();
 
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth >= 1024) {
+        setIsSidebarOpen(true);
+      } else {
+        setIsSidebarOpen(false);
+      }
+    };
+
+    handleResize();
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
   const displayUser = {
     name: user.name,
     role: "Cidadão",
@@ -21,7 +43,11 @@ export default function PrivateLayout({
   };
 
   return (
-    <div className="layout-bg min-h-screen">
+    <>
+      <Suspense fallback={null}>
+        <GoogleAuthHandler />
+      </Suspense>
+      <div className="layout-bg min-h-screen">
       <Sidebar
         isOpen={isSidebarOpen}
         onToggle={() => setIsSidebarOpen((prev) => !prev)}
@@ -47,6 +73,7 @@ export default function PrivateLayout({
           {children}
         </main>
       </div>
-    </div>
+      </div>
+    </>
   );
 }
