@@ -15,6 +15,7 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { VoiceRecorder } from "@/components/ui/voice-recorder";
 import { Checkbox } from "@/components/ui/checkbox";
+import { useChat } from "@/hooks/useChat";
 
 type CategoryId = "trabalhista" | "consumidor" | "outros";
 
@@ -61,6 +62,7 @@ export function NewCaseFeature() {
   const [isRecording, setIsRecording] = useState(false);
   const [elapsed, setElapsed] = useState(0);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const { startAnalysis, isLoading, conversationId, caseId, error } = useChat();
 
   useEffect(() => {
     if (isRecording) {
@@ -74,17 +76,20 @@ export function NewCaseFeature() {
     };
   }, [isRecording]);
 
-  const handleStartRecording = () => setIsRecording(true);
+  useEffect(() => {
+    if (conversationId && caseId) {
+      router.push(`/dashboard/casos/${caseId}/chat?conversationId=${conversationId}`);
+    }
+  }, [conversationId, caseId, router]);
 
+  const handleStartRecording = () => setIsRecording(true);
   const handleStopRecording = () => setIsRecording(false);
 
-  const canSubmit = !!selectedCategory && (story.trim().length > 0 || isRecording);
+  const canSubmit = !!selectedCategory && story.trim().length > 0 && !isLoading;
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (!canSubmit) return;
-    
-    const newCaseId = Math.floor(Math.random() * 90000) + 10000;
-    router.push(`/dashboard/casos/${newCaseId}/analise`);
+    await startAnalysis(story, selectedCategory!);
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
@@ -216,11 +221,16 @@ export function NewCaseFeature() {
         </p>
       </section>
 
+      {error && (
+        <p className="text-sm text-red-400 text-center">{error}</p>
+      )}
+
       <Button
         variant="primary"
         size="lg"
         fullWidth
         disabled={!canSubmit}
+        loading={isLoading}
         onClick={handleSubmit}
         leftIcon={
           isRecording ? (
@@ -231,7 +241,7 @@ export function NewCaseFeature() {
         }
         className={isRecording ? "opacity-60 cursor-not-allowed" : ""}
       >
-        {isRecording ? "Aguardando relato..." : "Iniciar Análise por IA"}
+        {isLoading ? "Iniciando análise..." : isRecording ? "Aguardando relato..." : "Iniciar Análise por IA"}
       </Button>
     </div>
   );
