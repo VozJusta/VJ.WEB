@@ -1,42 +1,3 @@
-import type { User, UserRole } from "@/types/user.types";
-
-export function getUserRole(): UserRole {
-  if (typeof window === "undefined") {
-    return "citizen";
-  }
-
-  const storedRole = localStorage.getItem("userRole") as UserRole | null;
-  return storedRole || "citizen";
-}
-
-export function setUserRole(role: UserRole): void {
-  if (typeof window !== "undefined") {
-    localStorage.setItem("userRole", role);
-  }
-}
-
-export function getCurrentUser(): User {
-  const role = getUserRole();
-
-  if (role === "lawyer") {
-    return {
-      id: "lawyer-1",
-      name: "Dra. Ana Carolina Silva",
-      email: "ana.silva@adv.com.br",
-      role: "lawyer",
-      avatarUrl: undefined,
-    };
-  }
-
-  return {
-    id: "citizen-1",
-    name: "Ricardo Silva",
-    email: "ricardo@email.com",
-    role: "citizen",
-    avatarUrl: undefined,
-  };
-}
-
 export const AUTH_STORAGE_KEYS = {
   ACCESS_TOKEN: 'access_token',
   REFRESH_TOKEN: 'refresh_token',
@@ -45,10 +6,22 @@ export const AUTH_STORAGE_KEYS = {
   PENDING_VERIFICATION_TOKEN: 'pending_verification_token',
 } as const;
 
+function setCookie(name: string, value: string, days = 7): void {
+  if (typeof document === 'undefined') return;
+  const expires = new Date(Date.now() + days * 864e5).toUTCString();
+  document.cookie = `${name}=${encodeURIComponent(value)}; expires=${expires}; path=/; SameSite=Lax`;
+}
+
+function deleteCookie(name: string): void {
+  if (typeof document === 'undefined') return;
+  document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/; SameSite=Lax`;
+}
+
 export const authStorage = {
   setAccessToken(token: string): void {
     if (typeof window === 'undefined') return;
     localStorage.setItem(AUTH_STORAGE_KEYS.ACCESS_TOKEN, token);
+    setCookie(AUTH_STORAGE_KEYS.ACCESS_TOKEN, token);
   },
 
   getAccessToken(): string | null {
@@ -86,6 +59,7 @@ export const authStorage = {
     localStorage.removeItem(AUTH_STORAGE_KEYS.ACCESS_TOKEN);
     localStorage.removeItem(AUTH_STORAGE_KEYS.REFRESH_TOKEN);
     localStorage.removeItem(AUTH_STORAGE_KEYS.SECURITY_TOKEN);
+    deleteCookie(AUTH_STORAGE_KEYS.ACCESS_TOKEN);
   },
 
   clearAuthStore(): void {
