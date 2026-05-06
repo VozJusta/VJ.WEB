@@ -15,9 +15,9 @@ export function useLawyersList() {
     setError(null);
     try {
       const data = await lawyersService.getList(p, 10);
-      setLawyers(data.data);
-      setTotal(data.total);
-      setPage(data.page);
+      setLawyers(data.data ?? []);
+      setTotal(data.pagination?.totalItems ?? 0);
+      setPage(data.pagination?.page ?? p);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Erro ao buscar advogados');
     } finally {

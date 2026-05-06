@@ -14,7 +14,7 @@ const PAGE_SIZE = 6;
 
 function apiStatusToUi(status: string): RequestStatus {
   if (status === "Accepted") return "accepted";
-  if (status === "Rejected") return "rejected";
+  if (status === "Refused" || status === "Rejected") return "rejected";
   return "pending";
 }
 
@@ -26,10 +26,10 @@ export function RequestsList() {
   const requests = rawRequests.map((r) => ({
     id: r.id,
     protocol: `#${r.id.slice(0, 8).toUpperCase()}`,
-    citizenName: r.citizen.full_name,
-    citizenInitials: r.citizen.full_name.split(' ').slice(0, 2).map((n) => n[0]).join(''),
-    area: r.report?.category ?? 'Geral',
-    status: apiStatusToUi(r.status),
+    citizenName: r.clientName,
+    citizenInitials: r.clientName.split(' ').slice(0, 2).map((n: string) => n[0]).join(''),
+    area: r.category_detected ?? 'Geral',
+    status: apiStatusToUi(r.statusCase),
     createdAt: new Date(r.created_at).toLocaleDateString('pt-BR'),
   }));
 

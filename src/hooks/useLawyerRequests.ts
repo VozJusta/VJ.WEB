@@ -21,9 +21,9 @@ export function useLawyerRequests(initialStatus?: RequestStatus) {
       setError(null);
       try {
         const data = await lawyerRequestsService.getRequests(status, p, 10);
-        setRequests(data.data);
-        setTotal(data.total);
-        setPage(data.page);
+        setRequests(data.data ?? []);
+        setTotal(data.pagination?.totalItems ?? 0);
+        setPage(data.pagination?.page ?? p);
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Erro ao buscar solicitações');
       } finally {
@@ -37,25 +37,19 @@ export function useLawyerRequests(initialStatus?: RequestStatus) {
     fetchRequests(1, statusFilter);
   }, [fetchRequests, statusFilter]);
 
-  const accept = useCallback(
-    async (requestId: string) => {
-      await lawyerRequestsService.accept(requestId);
-      setRequests((prev) =>
-        prev.map((r) => (r.id === requestId ? { ...r, status: 'Accepted' as RequestStatus } : r)),
-      );
-    },
-    [],
-  );
+  const accept = useCallback(async (requestId: string) => {
+    await lawyerRequestsService.accept(requestId);
+    setRequests((prev) =>
+      prev.map((r) => (r.id === requestId ? { ...r, statusCase: 'Accepted' as RequestStatus } : r)),
+    );
+  }, []);
 
-  const reject = useCallback(
-    async (requestId: string) => {
-      await lawyerRequestsService.reject(requestId);
-      setRequests((prev) =>
-        prev.map((r) => (r.id === requestId ? { ...r, status: 'Rejected' as RequestStatus } : r)),
-      );
-    },
-    [],
-  );
+  const reject = useCallback(async (requestId: string) => {
+    await lawyerRequestsService.reject(requestId);
+    setRequests((prev) =>
+      prev.map((r) => (r.id === requestId ? { ...r, statusCase: 'Refused' as RequestStatus } : r)),
+    );
+  }, []);
 
   return {
     requests,

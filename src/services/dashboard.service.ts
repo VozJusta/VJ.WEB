@@ -1,53 +1,63 @@
 import { apiFetch } from '@/lib/api-client';
 
+// Citizens
+
 export interface ReportCard {
   id: string;
-  title: string;
+  category_detected: string;
   status: string;
   created_at: string;
-  category?: string;
+}
+
+interface Pagination {
+  page: number;
+  pageSize: number;
+  totalItems: number;
+  totalPages: number;
+  hasNextPage: boolean;
+  hasPreviousPage: boolean;
 }
 
 export interface GetReportsResponse {
-  data: ReportCard[];
-  total: number;
-  page: number;
-  pageSize: number;
+  role: string;
+  user: { data: ReportCard[] };
+  pagination: Pagination;
 }
 
 export interface DetailsReport {
   id: string;
-  title: string;
-  description: string;
+  transcription: string;
+  simplified_explanation: string;
+  legal_analysis: string;
+  category_detected: string;
   status: string;
-  created_at: string;
-  category: string;
-  viability?: string;
+  evidence: string[];
+  lawyer?: {
+    full_name: string;
+    bio: string;
+    phone: string;
+    email: string;
+  };
 }
 
+// Lawyer dashboard
+
 export interface AnalyticsResponse {
-  totalCases: number;
-  activeCases: number;
-  resolvedCases: number;
-  pendingCases: number;
-  chartData: Array<{ date: string; value: number }>;
+  data: Array<{ date: string; value: number }>;
 }
 
 export interface OperationalStatsResponse {
-  items: Array<{ label: string; value: number; color: string }>;
+  pending: number;
+  refused: number;
+  accepted: number;
 }
 
-export interface HighRelevanceResponse {
-  items: Array<{
-    id: string;
-    title: string;
-    description: string;
-    status: string;
-    priority: string;
-    date: string;
-    category: string;
-    score: number;
-  }>;
+export interface HighRelevanceItem {
+  id: string;
+  title: string;
+  status: string;
+  confidence_score: number;
+  category_detected: string;
 }
 
 export const dashboardService = {
@@ -62,11 +72,12 @@ export const dashboardService = {
   async getReportDetails(reportId: string): Promise<DetailsReport> {
     const response = await apiFetch(`/dashboard/citizens/me/reports/${reportId}`);
     if (!response.ok) throw new Error('Falha ao buscar detalhes do relatório');
-    return response.json();
+    const json = await response.json();
+    return json?.user?.report ?? json;
   },
 
   async downloadReportPdf(reportId: string): Promise<Blob> {
-    const response = await apiFetch(`/dashboard/citizens/me/reports/${reportId}/pdf`, {
+    const response = await apiFetch(`/report/pdf/${reportId}`, {
       headers: { Accept: 'application/pdf' },
     });
     if (!response.ok) throw new Error('Falha ao baixar PDF');
@@ -85,7 +96,7 @@ export const dashboardService = {
     return response.json();
   },
 
-  async getLawyerHighRelevance(): Promise<HighRelevanceResponse> {
+  async getLawyerHighRelevance(): Promise<HighRelevanceItem[]> {
     const response = await apiFetch('/dashboard/lawyer/high-relevance');
     if (!response.ok) throw new Error('Falha ao buscar casos de alta relevância');
     return response.json();

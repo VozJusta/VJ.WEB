@@ -1,30 +1,30 @@
 import { apiFetch } from '@/lib/api-client';
 
-export type RequestStatus = 'Pending' | 'Accepted' | 'Rejected' | 'Concluded';
+export type RequestStatus = 'Pending' | 'Accepted' | 'Refused';
 
 export interface LawyerRequestItem {
   id: string;
-  citizen: {
-    id: string;
-    full_name: string;
-    email: string;
-    phone?: string;
-  };
-  message: string;
-  status: RequestStatus;
+  title: string;
+  clientName: string;
+  category_detected: string;
+  statusCase: RequestStatus;
+  caseId: string;
+  reportId: string;
   created_at: string;
-  report?: {
-    id: string;
-    title: string;
-    category: string;
-  };
+}
+
+interface Pagination {
+  page: number;
+  pageSize: number;
+  totalItems: number;
+  totalPages: number;
+  hasNextPage: boolean;
+  hasPreviousPage: boolean;
 }
 
 export interface LawyerRequestsResponse {
   data: LawyerRequestItem[];
-  total: number;
-  page: number;
-  pageSize: number;
+  pagination: Pagination;
 }
 
 export const lawyerRequestsService = {
@@ -38,12 +38,6 @@ export const lawyerRequestsService = {
 
     const response = await apiFetch(`/lawyer/requests?${params}`);
     if (!response.ok) throw new Error('Erro ao buscar solicitações');
-    return response.json();
-  },
-
-  async getById(requestId: string): Promise<LawyerRequestItem> {
-    const response = await apiFetch(`/lawyer/requests/${requestId}`);
-    if (!response.ok) throw new Error('Solicitação não encontrada');
     return response.json();
   },
 

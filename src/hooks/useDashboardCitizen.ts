@@ -15,21 +15,9 @@ export function useDashboardCitizen() {
     setError(null);
     try {
       const data = await dashboardService.getCitizenReports(p, 10);
-      const raw = data as unknown;
-      const list: ReportCard[] =
-        Array.isArray(raw)
-          ? raw
-          : Array.isArray((raw as { data?: ReportCard[] }).data)
-            ? (raw as { data: ReportCard[] }).data
-            : Array.isArray((raw as { reports?: ReportCard[] }).reports)
-              ? (raw as { reports: ReportCard[] }).reports
-              : Array.isArray((raw as { items?: ReportCard[] }).items)
-                ? (raw as { items: ReportCard[] }).items
-                : [];
-      const envelope = raw as Partial<import('@/services/dashboard.service').GetReportsResponse>;
-      setReports(list);
-      setTotal(envelope.total ?? list.length);
-      setPage(envelope.page ?? p);
+      setReports(data.user?.data ?? []);
+      setTotal(data.pagination?.totalItems ?? 0);
+      setPage(data.pagination?.page ?? p);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Erro ao carregar relatórios');
     } finally {

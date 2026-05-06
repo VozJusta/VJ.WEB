@@ -57,11 +57,11 @@ export function LawyersListFeature() {
   };
 
   const filteredLawyers = selectedCategory
-    ? lawyers.filter((l) => l.specialty === selectedCategory)
+    ? lawyers.filter((l) => l.specialization === selectedCategory)
     : lawyers;
 
   const sortedLawyers = [...filteredLawyers].sort((a, b) => {
-    if (sortBy === "availability") return Number(b.isOnline ?? false) - Number(a.isOnline ?? false);
+    if (sortBy === "availability") return (b.rating ?? 0) - (a.rating ?? 0);
     if (sortBy === "rating") return (b.rating ?? 0) - (a.rating ?? 0);
     return 0;
   });
@@ -164,13 +164,13 @@ export function LawyersListFeature() {
                   lawyer={{
                     id: lawyer.id,
                     name: lawyer.full_name,
-                    avatar: lawyer.avatar ?? '',
-                    isOnline: lawyer.isOnline ?? false,
-                    rating: { score: lawyer.rating ?? 0, totalReviews: lawyer.totalReviews ?? 0 },
-                    yearsOfExperience: lawyer.yearsOfExperience ?? 0,
-                    specialization: lawyer.specialty,
-                    description: lawyer.description ?? '',
-                    tags: lawyer.tags ?? [],
+                    avatar: lawyer.avatar_image ?? '',
+                    isOnline: false,
+                    rating: { score: lawyer.rating ?? 0, totalReviews: 0 },
+                    yearsOfExperience: 0,
+                    specialization: lawyer.specialization,
+                    description: '',
+                    tags: [],
                   }}
                   onViewDetails={handleViewLawyerDetails}
                 />

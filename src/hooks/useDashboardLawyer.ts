@@ -2,12 +2,16 @@
 
 import { useState, useEffect } from 'react';
 import { dashboardService } from '@/services/dashboard.service';
-import type { AnalyticsResponse, OperationalStatsResponse, HighRelevanceResponse } from '@/services/dashboard.service';
+import type {
+  AnalyticsResponse,
+  OperationalStatsResponse,
+  HighRelevanceItem,
+} from '@/services/dashboard.service';
 
 export function useDashboardLawyer() {
   const [analytics, setAnalytics] = useState<AnalyticsResponse | null>(null);
   const [operationalStats, setOperationalStats] = useState<OperationalStatsResponse | null>(null);
-  const [highRelevance, setHighRelevance] = useState<HighRelevanceResponse | null>(null);
+  const [highRelevance, setHighRelevance] = useState<HighRelevanceItem[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
