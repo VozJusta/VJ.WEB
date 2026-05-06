@@ -4,30 +4,41 @@ import { useState, useMemo } from "react";
 import { RequestCard } from "@/components/ui/request-card";
 import { FilterTabs } from "@/components/ui/filter-tabs";
 import { EmptyState } from "@/components/ui/empty-state";
-import type { RequestCardProps, RequestStatus } from "@/components/ui/request-card/request-card.types";
+import type { RequestStatus } from "@/components/ui/request-card/request-card.types";
 import type { FilterTabItem } from "@/components/ui/filter-tabs/filter-tabs.types";
+import { useLawyerRequests } from "@/hooks/useLawyerRequests";
 
 type FilterValue = "all" | RequestStatus;
 
-interface RequestsListProps {
-  initialRequests?: Omit<RequestCardProps, "onClick" | "onAccept" | "onReject" | "onViewDossier" | "className">[];
-}
-
 const PAGE_SIZE = 6;
 
-export function RequestsList({ initialRequests = [] }: RequestsListProps) {
-  const [requests, setRequests] = useState(initialRequests);
+function apiStatusToUi(status: string): RequestStatus {
+  if (status === "Accepted") return "accepted";
+  if (status === "Rejected") return "rejected";
+  return "pending";
+}
+
+export function RequestsList() {
+  const { requests: rawRequests, isLoading, error, accept, reject } = useLawyerRequests();
   const [activeFilter, setActiveFilter] = useState<FilterValue>("all");
   const [visible, setVisible] = useState(PAGE_SIZE);
 
-  const counts = useMemo(() => {
-    return {
-      all: requests.length,
-      pending: requests.filter((r) => r.status === "pending").length,
-      accepted: requests.filter((r) => r.status === "accepted").length,
-      rejected: requests.filter((r) => r.status === "rejected").length,
-    };
-  }, [requests]);
+  const requests = rawRequests.map((r) => ({
+    id: r.id,
+    protocol: `#${r.id.slice(0, 8).toUpperCase()}`,
+    citizenName: r.citizen.full_name,
+    citizenInitials: r.citizen.full_name.split(' ').slice(0, 2).map((n) => n[0]).join(''),
+    area: r.report?.category ?? 'Geral',
+    status: apiStatusToUi(r.status),
+    createdAt: new Date(r.created_at).toLocaleDateString('pt-BR'),
+  }));
+
+  const counts = useMemo(() => ({
+    all: requests.length,
+    pending: requests.filter((r) => r.status === "pending").length,
+    accepted: requests.filter((r) => r.status === "accepted").length,
+    rejected: requests.filter((r) => r.status === "rejected").length,
+  }), [requests]);
 
   const filterTabs: FilterTabItem<FilterValue>[] = [
     { value: "all", label: "Todas", count: counts.all },
@@ -44,16 +55,12 @@ export function RequestsList({ initialRequests = [] }: RequestsListProps) {
   const shownRequests = filteredRequests.slice(0, visible);
   const hasMore = visible < filteredRequests.length;
 
-  const handleAccept = (id: string) => {
-    setRequests((prev) =>
-      prev.map((r) => (r.id === id ? { ...r, status: "accepted" as const } : r)),
-    );
+  const handleAccept = async (id: string) => {
+    await accept(id);
   };
 
-  const handleReject = (id: string) => {
-    setRequests((prev) =>
-      prev.map((r) => (r.id === id ? { ...r, status: "rejected" as const } : r)),
-    );
+  const handleReject = async (id: string) => {
+    await reject(id);
   };
 
   const handleViewDossier = (id: string) => {
@@ -68,6 +75,21 @@ export function RequestsList({ initialRequests = [] }: RequestsListProps) {
     setActiveFilter(value);
     setVisible(PAGE_SIZE);
   };
+
+  if (requests.length === 0) {
+  if (isLoading) {
+    return (
+      <section className="w-full flex flex-col gap-4" aria-label="Carregando solicitações">
+        {[1, 2, 3].map((i) => (
+          <div key={i} className="h-24 animate-pulse rounded-xl bg-surface-elevated" />
+        ))}
+      </section>
+    );
+  }
+
+  if (error) {
+    return <p className="text-sm text-red-400">{error}</p>;
+  }
 
   if (requests.length === 0) {
     return (

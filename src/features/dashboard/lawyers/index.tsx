@@ -11,7 +11,7 @@ import {
 } from "@mui/icons-material";
 import { LawyerCard } from "@/components/ui/lawyer-card";
 import { cn } from "@/lib/utils";
-import { LAWYERS_DATA } from "./lawyers.data";
+import { useLawyersList } from "@/hooks/useLawyersList";
 import type { LawyerSortOption } from "@/types/lawyer.types";
 
 type SortButton = {
@@ -40,8 +40,9 @@ const SORT_OPTIONS: SortButton[] = [
 
 export function LawyersListFeature() {
   const router = useRouter();
-  const [selectedCategory, setSelectedCategory] = useState<string>("Direito do Consumidor");
+  const [selectedCategory, setSelectedCategory] = useState<string>("");
   const [sortBy, setSortBy] = useState<LawyerSortOption>("availability");
+  const { lawyers, total, isLoading, error } = useLawyersList();
 
   const handleBack = () => {
     router.back();
@@ -56,20 +57,16 @@ export function LawyersListFeature() {
   };
 
   const filteredLawyers = selectedCategory
-    ? LAWYERS_DATA.filter((lawyer) => lawyer.specialization === selectedCategory)
-    : LAWYERS_DATA;
+    ? lawyers.filter((l) => l.specialty === selectedCategory)
+    : lawyers;
 
   const sortedLawyers = [...filteredLawyers].sort((a, b) => {
-    if (sortBy === "availability") {
-      return Number(b.isOnline) - Number(a.isOnline);
-    }
-    if (sortBy === "rating") {
-      return b.rating.score - a.rating.score;
-    }
+    if (sortBy === "availability") return Number(b.isOnline ?? false) - Number(a.isOnline ?? false);
+    if (sortBy === "rating") return (b.rating ?? 0) - (a.rating ?? 0);
     return 0;
   });
 
-  const displayedLawyers = sortedLawyers.slice(0, 3);
+  const displayedLawyers = sortedLawyers.slice(0, 10);
   const totalAvailable = filteredLawyers.length;
 
   return (
@@ -143,17 +140,44 @@ export function LawyersListFeature() {
       </section>
 
       <section aria-labelledby="lawyers-heading">
-        <h2 id="lawyers-heading" className="sr-only">
-          Lista de advogados
-        </h2>
+        <h2 id="lawyers-heading" className="sr-only">Lista de advogados</h2>
 
-        <ul role="list" className="flex flex-col gap-3">
-          {displayedLawyers.map((lawyer) => (
-            <li key={lawyer.id}>
-              <LawyerCard lawyer={lawyer} onViewDetails={handleViewLawyerDetails} />
-            </li>
-          ))}
-        </ul>
+        {isLoading && (
+          <ul role="list" className="flex flex-col gap-3">
+            {[1, 2, 3].map((i) => (
+              <li key={i} className="h-24 animate-pulse rounded-xl bg-[#0d1526]" />
+            ))}
+          </ul>
+        )}
+
+        {error && <p className="text-sm text-red-400">{error}</p>}
+
+        {!isLoading && displayedLawyers.length === 0 && !error && (
+          <p className="text-sm text-white/40">Nenhum advogado encontrado.</p>
+        )}
+
+        {!isLoading && displayedLawyers.length > 0 && (
+          <ul role="list" className="flex flex-col gap-3">
+            {displayedLawyers.map((lawyer) => (
+              <li key={lawyer.id}>
+                <LawyerCard
+                  lawyer={{
+                    id: lawyer.id,
+                    name: lawyer.full_name,
+                    avatar: lawyer.avatar ?? '',
+                    isOnline: lawyer.isOnline ?? false,
+                    rating: { score: lawyer.rating ?? 0, totalReviews: lawyer.totalReviews ?? 0 },
+                    yearsOfExperience: lawyer.yearsOfExperience ?? 0,
+                    specialization: lawyer.specialty,
+                    description: lawyer.description ?? '',
+                    tags: lawyer.tags ?? [],
+                  }}
+                  onViewDetails={handleViewLawyerDetails}
+                />
+              </li>
+            ))}
+          </ul>
+        )}
 
         <footer className="mt-6 text-center">
           <p className="text-xs font-medium tracking-wider uppercase text-white/25">

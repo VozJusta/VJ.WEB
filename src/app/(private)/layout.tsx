@@ -1,45 +1,45 @@
 "use client";
 
 import { Suspense, useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { Sidebar } from "@/components/layout/sidebar";
 import { DashboardHeader } from "@/components/layout/dashboard-header";
 import { GoogleAuthHandler } from "@/features/auth/google-auth-handler";
-
-const DEMO_USER = {
-  name: "Ricardo Silva",
-  role: "Cidadão",
-  avatarUrl: undefined,
-};
-import { useAuth } from "@/contexts/auth-context";
+import { useAuthStore } from "@/store/auth.store";
+import { authStorage } from "@/lib/auth";
 
 export default function PrivateLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const router = useRouter();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const { user } = useAuth();
+  const user = useAuthStore((s) => s.user);
+  const userRole = useAuthStore((s) => s.userRole);
+
+  useEffect(() => {
+    if (!authStorage.hasTokens()) {
+      router.replace("/login");
+    }
+  }, [router]);
 
   useEffect(() => {
     const handleResize = () => {
-      if (window.innerWidth >= 1024) {
-        setIsSidebarOpen(true);
-      } else {
-        setIsSidebarOpen(false);
-      }
+      setIsSidebarOpen(window.innerWidth >= 1024);
     };
-
     handleResize();
-
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
   }, []);
 
+  const roleLabel = userRole === "lawyer" ? "Advogado" : "Cidadão";
+
   const displayUser = {
-    name: user.name,
-    role: "Cidadão",
-    avatarUrl: user.avatarUrl,
+    name: user?.fullName ?? "Usuário",
+    role: roleLabel,
+    avatarUrl: undefined,
   };
 
   return (
@@ -48,31 +48,31 @@ export default function PrivateLayout({
         <GoogleAuthHandler />
       </Suspense>
       <div className="layout-bg min-h-screen">
-      <Sidebar
-        isOpen={isSidebarOpen}
-        onToggle={() => setIsSidebarOpen((prev) => !prev)}
-        onClose={() => setIsSidebarOpen(false)}
-      />
-
-      <div
-        className={cn(
-          "flex min-h-screen flex-col transition-[padding-left] duration-300 ease-in-out",
-          "lg:pl-60",
-        )}
-      >
-        <DashboardHeader
-          user={displayUser}
-          onMenuToggle={() => setIsSidebarOpen((prev) => !prev)}
+        <Sidebar
+          isOpen={isSidebarOpen}
+          onToggle={() => setIsSidebarOpen((prev) => !prev)}
+          onClose={() => setIsSidebarOpen(false)}
         />
 
-        <main
-          id="main-content"
-          tabIndex={-1}
-          className="flex flex-1 flex-col gap-8 px-4 py-6 md:px-6 md:py-8 focus-visible:outline-none"
+        <div
+          className={cn(
+            "flex min-h-screen flex-col transition-[padding-left] duration-300 ease-in-out",
+            "lg:pl-60",
+          )}
         >
-          {children}
-        </main>
-      </div>
+          <DashboardHeader
+            user={displayUser}
+            onMenuToggle={() => setIsSidebarOpen((prev) => !prev)}
+          />
+
+          <main
+            id="main-content"
+            tabIndex={-1}
+            className="flex flex-1 flex-col gap-8 px-4 py-6 md:px-6 md:py-8 focus-visible:outline-none"
+          >
+            {children}
+          </main>
+        </div>
       </div>
     </>
   );
