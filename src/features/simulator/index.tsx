@@ -86,7 +86,7 @@ export function SimulatorConfig() {
   };
 
   const handleStartSimulation = () => {
-    router.push('/dashboard/simulador/sessao');
+    router.push(`/dashboard/simulador/sessao?personality=${selectedPersonality}`);
   };
 
   return (

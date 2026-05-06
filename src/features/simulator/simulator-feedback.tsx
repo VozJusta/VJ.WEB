@@ -1,17 +1,37 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import DownloadIcon from '@mui/icons-material/Download';
 import HomeIcon from '@mui/icons-material/Home';
 import GavelIcon from '@mui/icons-material/Gavel';
 import TrendingUpIcon from '@mui/icons-material/TrendingUp';
+import { simulationService } from '@/services/simulation.service';
+import { useState } from 'react';
 
 export function SimulatorFeedback() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const reportId = searchParams.get('reportId');
+  const [isDownloading, setIsDownloading] = useState(false);
 
-  const handleDownloadReport = () => {
+  const handleDownloadReport = async () => {
+    if (!reportId) return;
+    setIsDownloading(true);
+    try {
+      const blob = await simulationService.downloadPdf(reportId);
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `simulacao_vozjusta_${reportId}.pdf`;
+      a.click();
+      URL.revokeObjectURL(url);
+    } catch {
+      // download failure — silently ignore
+    } finally {
+      setIsDownloading(false);
+    }
   };
 
   const handleGoHome = () => {
@@ -27,10 +47,7 @@ export function SimulatorFeedback() {
             <span className="text-blue-400">100% Concluído</span>
           </div>
           <div className="h-2 w-full overflow-hidden rounded-full bg-gray-800">
-            <div
-              className="h-full bg-blue-500 transition-all duration-500"
-              style={{ width: '100%' }}
-            ></div>
+            <div className="h-full bg-blue-500 transition-all duration-500" style={{ width: '100%' }} />
           </div>
         </header>
 
@@ -40,51 +57,43 @@ export function SimulatorFeedback() {
               <CheckCircleIcon className="text-white" sx={{ fontSize: 48 }} />
             </div>
 
-            <h1 className="mb-4 text-2xl font-bold text-white">
-              Simulação finalizada
-            </h1>
+            <h1 className="mb-4 text-2xl font-bold text-white">Simulação finalizada</h1>
 
             <p className="mb-8 max-w-md text-sm leading-relaxed text-gray-400">
-              Nossa IA processou seu relato e documentos com sucesso.
-              Seu diagnóstico jurídico está pronto para visualização.
+              Nossa IA processou a simulação com sucesso. Seu relatório está pronto para download.
             </p>
 
             <div className="mb-8 flex w-full max-w-lg flex-wrap justify-center gap-4">
               <div className="flex items-center gap-2 rounded-lg bg-gray-800 px-4 py-3">
                 <GavelIcon className="text-blue-400" sx={{ fontSize: 20 }} />
                 <div className="text-left">
-                  <p className="text-xs uppercase tracking-wide text-gray-500">
-                    Categoria
-                  </p>
-                  <p className="text-sm font-semibold text-white">
-                    Direito do Consumidor
-                  </p>
+                  <p className="text-xs uppercase tracking-wide text-gray-500">Tipo</p>
+                  <p className="text-sm font-semibold text-white">Audiência Simulada</p>
                 </div>
               </div>
 
               <div className="flex items-center gap-2 rounded-lg bg-gray-800 px-4 py-3">
                 <TrendingUpIcon className="text-green-400" sx={{ fontSize: 20 }} />
                 <div className="text-left">
-                  <p className="text-xs uppercase tracking-wide text-gray-500">
-                    Viabilidade
-                  </p>
-                  <p className="text-sm font-semibold text-white">
-                    Alta Probabilidade
-                  </p>
+                  <p className="text-xs uppercase tracking-wide text-gray-500">Status</p>
+                  <p className="text-sm font-semibold text-white">Concluída</p>
                 </div>
               </div>
             </div>
 
             <div className="flex w-full flex-col gap-4">
-              <Button
-                variant="primary"
-                size="lg"
-                onClick={handleDownloadReport}
-                leftIcon={<DownloadIcon />}
-                fullWidth
-              >
-                Baixar Relatório Completo
-              </Button>
+              {reportId && (
+                <Button
+                  variant="primary"
+                  size="lg"
+                  onClick={handleDownloadReport}
+                  leftIcon={<DownloadIcon />}
+                  fullWidth
+                  loading={isDownloading}
+                >
+                  Baixar Relatório PDF
+                </Button>
+              )}
 
               <Button
                 variant="outline"
@@ -99,10 +108,11 @@ export function SimulatorFeedback() {
           </div>
         </article>
 
-        <footer className="mt-6 text-center text-xs text-gray-600">
-          Ref. ID: A2-8234-2024 • A análise automatizada não substitui o
-          acompanhamento legal humano.
-        </footer>
+        {reportId && (
+          <footer className="mt-6 text-center text-xs text-gray-600">
+            Ref. ID: {reportId} • A análise automatizada não substitui o acompanhamento legal humano.
+          </footer>
+        )}
       </div>
     </main>
   );
