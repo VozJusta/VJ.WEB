@@ -1,53 +1,69 @@
+"use client";
+
 import Link from "next/link";
-import {
-  ArrowBackRounded,
-  SummarizeRounded,
-} from "@mui/icons-material";
+import { ArrowBackRounded, SummarizeRounded, DownloadingRounded } from "@mui/icons-material";
 import { Button } from "@/components/ui/button";
-import { TimelineItem } from "@/components/ui/timeline-item";
-import { CaseDocCard } from "@/components/ui/case-doc-card";
 import { cn } from "@/lib/utils";
-import type { CaseDetail } from "./cases.data";
+import { useReportDownload } from "@/hooks/useReportDownload";
+import type { DetailsReport } from "@/services/dashboard.service";
 import type { CaseStatus } from "@/components/ui/case-card/case-card.types";
 
+function apiStatusToCaseStatus(status: string): CaseStatus {
+  const s = status?.toLowerCase();
+  if (s === "concluded" || s === "completed" || s === "accepted") return "concluded";
+  if (s === "rejected" || s === "archived" || s === "refused") return "archived";
+  if (s === "pending") return "pending";
+  return "analysis";
+}
 
 const bannerConfig: Record<
   CaseStatus,
-  { dot: string; title: string; border: string; bg: string }
+  { dot: string; title: string; border: string; bg: string; label: string }
 > = {
   analysis: {
-    dot: "bg-[#2585F4]  animate-[analyzing-pulse_1.4s_ease-in-out_infinite]",
+    dot: "bg-[#2585F4] animate-[analyzing-pulse_1.4s_ease-in-out_infinite]",
     title: "text-white",
     border: "border-[#2585F4]/40",
     bg: "bg-[#0d1a2e]",
+    label: "Em Análise",
   },
   concluded: {
     dot: "bg-green-400",
     title: "text-green-400",
     border: "border-green-500/30",
     bg: "bg-[#0b1f14]",
+    label: "Concluído",
   },
   pending: {
     dot: "bg-blue-400 animate-[analyzing-pulse_1.4s_ease-in-out_infinite]",
     title: "text-blue-400",
     border: "border-blue-500/30",
     bg: "bg-[#0d1526]",
+    label: "Pendente",
   },
   archived: {
     dot: "bg-white/30",
     title: "text-white/50",
     border: "border-white/10",
     bg: "bg-white/03",
+    label: "Arquivado",
   },
 };
 
+interface CaseDetailFeatureProps {
+  report: DetailsReport;
+  reportId: string;
+}
 
+export function CaseDetailFeature({ report, reportId }: CaseDetailFeatureProps) {
+  const caseStatus = apiStatusToCaseStatus(report.status);
+  const banner = bannerConfig[caseStatus];
+  const { downloadPdf, isDownloading } = useReportDownload();
 
-export function CaseDetailFeature({ caseData }: { caseData: CaseDetail }) {
-  const banner = bannerConfig[caseData.status];
+  const protocol = `#${reportId.slice(0, 8).toUpperCase()}`;
 
   return (
-    <div className="relative flex flex-col gap-6 w-full  mx-auto px-4 py-6 md:px-6 md:py-8 pb-24">
+    <div className="relative flex flex-col gap-6 w-full mx-auto px-4 py-6 md:px-6 md:py-8 pb-24">
       <header className="flex items-center gap-3">
         <Link
           href="/dashboard/casos"
@@ -58,21 +74,15 @@ export function CaseDetailFeature({ caseData }: { caseData: CaseDetail }) {
         </Link>
         <div className="min-w-0">
           <h1 className="text-xl font-bold text-white tracking-tight truncate">
-            {caseData.title}
+            {report.category_detected ?? "Caso"}
           </h1>
-          <p className="text-xs text-white/40 font-mono mt-0.5">
-            Protocolo {caseData.protocol}
-          </p>
+          <p className="text-xs text-white/40 font-mono mt-0.5">Protocolo {protocol}</p>
         </div>
       </header>
 
       <section
         aria-labelledby="status-heading"
-        className={cn(
-          "rounded-2xl border px-6 py-5",
-          banner.bg,
-          banner.border,
-        )}
+        className={cn("rounded-2xl border px-6 py-5", banner.bg, banner.border)}
       >
         <p className="text-xs font-semibold tracking-widest uppercase text-white/45 mb-2">
           Status Atual
@@ -82,81 +92,124 @@ export function CaseDetailFeature({ caseData }: { caseData: CaseDetail }) {
             id="status-heading"
             className={cn("text-xl font-extrabold tracking-tight uppercase", banner.title)}
           >
-            {caseData.statusBanner.label}
+            {banner.label}
           </h2>
           <span className={cn("w-2.5 h-2.5 rounded-full shrink-0", banner.dot)} aria-hidden />
         </div>
-        <p className="text-sm text-white/55">{caseData.statusBanner.description}</p>
       </section>
 
-      <section aria-labelledby="timeline-heading">
-        <h2
-          id="timeline-heading"
-          className="text-xs font-semibold tracking-widest uppercase text-white/40 mb-4"
-        >
-          Evolução do Caso
-        </h2>
-
-        <div className="rounded-2xl border border-[#1B2233] bg-[#111c30] px-6 py-5">
-          <ol aria-label="Etapas do processo">
-            {caseData.timeline.map((step, i) => (
-              <TimelineItem
-                key={step.title}
-                {...step}
-                isLast={i === caseData.timeline.length - 1}
-              />
-            ))}
-          </ol>
-        </div>
-      </section>
-
-      <section aria-labelledby="report-heading">
-        <h2
-          id="report-heading"
-          className="text-xs font-semibold tracking-widest uppercase text-white/40 mb-4"
-        >
-          Resumo do Relato
-        </h2>
-
-        <blockquote className="rounded-2xl border border-[#1B2233] bg-[#111c30] px-6 py-5 text-sm text-white/75 leading-relaxed italic">
-          {caseData.report}
-        </blockquote>
-      </section>
-
-      <section aria-labelledby="docs-heading">
-        <header className="flex items-center justify-between mb-4">
+      {report.simplified_explanation && (
+        <section aria-labelledby="summary-heading">
           <h2
-            id="docs-heading"
-            className="text-xs font-semibold tracking-widest uppercase text-white/40"
+            id="summary-heading"
+            className="text-xs font-semibold tracking-widest uppercase text-white/40 mb-4"
           >
-            Documentos
+            Resumo Simplificado
           </h2>
-          <span className="text-xs text-white/35">
-            {caseData.documents.length} anexo{caseData.documents.length !== 1 ? "s" : ""}
-          </span>
-        </header>
+          <p className="rounded-2xl border border-[#1B2233] bg-[#111c30] px-6 py-5 text-sm text-white/75 leading-relaxed">
+            {report.simplified_explanation}
+          </p>
+        </section>
+      )}
 
-        <ul className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          {caseData.documents.map((doc) => (
-            <li key={doc.id}>
-              <CaseDocCard
-                filename={doc.filename}
-                meta={doc.meta}
-                mimeType={doc.mimeType}
-              />
-            </li>
-          ))}
-        </ul>
-      </section>
+      {report.legal_analysis && (
+        <section aria-labelledby="legal-heading">
+          <h2
+            id="legal-heading"
+            className="text-xs font-semibold tracking-widest uppercase text-white/40 mb-4"
+          >
+            Análise Jurídica
+          </h2>
+          <p className="rounded-2xl border border-[#1B2233] bg-[#111c30] px-6 py-5 text-sm text-white/75 leading-relaxed">
+            {report.legal_analysis}
+          </p>
+        </section>
+      )}
+
+      {report.transcription && (
+        <section aria-labelledby="transcription-heading">
+          <h2
+            id="transcription-heading"
+            className="text-xs font-semibold tracking-widest uppercase text-white/40 mb-4"
+          >
+            Relato Original
+          </h2>
+          <blockquote className="rounded-2xl border border-[#1B2233] bg-[#111c30] px-6 py-5 text-sm text-white/75 leading-relaxed italic">
+            {report.transcription}
+          </blockquote>
+        </section>
+      )}
+
+      {report.evidence && report.evidence.length > 0 && (
+        <section aria-labelledby="docs-heading">
+          <header className="flex items-center justify-between mb-4">
+            <h2
+              id="docs-heading"
+              className="text-xs font-semibold tracking-widest uppercase text-white/40"
+            >
+              Evidências
+            </h2>
+            <span className="text-xs text-white/35">
+              {report.evidence.length} arquivo{report.evidence.length !== 1 ? "s" : ""}
+            </span>
+          </header>
+          <ul className="flex flex-col gap-2">
+            {report.evidence.map((url, i) => (
+              <li key={i}>
+                <a
+                  href={url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-3 rounded-xl border border-[#1B2233] bg-[#111c30] px-4 py-3 text-sm text-[#2585F4] hover:bg-[#0d1526] transition-colors"
+                >
+                  <SummarizeRounded fontSize="small" aria-hidden />
+                  Evidência {i + 1}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
+
+      {report.lawyer && (
+        <section
+          aria-labelledby="lawyer-heading"
+          className="rounded-2xl border border-[#1B2233] bg-[#111c30] px-6 py-5"
+        >
+          <h2
+            id="lawyer-heading"
+            className="text-xs font-semibold tracking-widest uppercase text-white/40 mb-3"
+          >
+            Advogado Responsável
+          </h2>
+          <p className="text-sm font-semibold text-white">{report.lawyer.full_name}</p>
+          {report.lawyer.email && (
+            <a
+              href={`mailto:${report.lawyer.email}`}
+              className="text-sm text-[#2585F4] hover:underline"
+            >
+              {report.lawyer.email}
+            </a>
+          )}
+        </section>
+      )}
 
       <div className="fixed bottom-6 right-6 z-10">
         <Button
           variant="primary"
           size="md"
-          leftIcon={<SummarizeRounded fontSize="small" aria-hidden />}
+          leftIcon={
+            isDownloading ? (
+              <DownloadingRounded fontSize="small" aria-hidden />
+            ) : (
+              <SummarizeRounded fontSize="small" aria-hidden />
+            )
+          }
+          onClick={() => downloadPdf(reportId)}
+          disabled={isDownloading}
           className="shadow-[0_8px_32px_rgba(37,133,244,0.45)]"
         >
-          Baixar Relatório
+          {isDownloading ? "Baixando..." : "Baixar Relatório"}
         </Button>
       </div>
     </div>

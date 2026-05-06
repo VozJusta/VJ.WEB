@@ -38,6 +38,11 @@ export interface DetailsReport {
     phone: string;
     email: string;
   };
+  citizen?: {
+    full_name: string;
+    phone: string;
+    email: string;
+  };
 }
 
 // Lawyer dashboard
@@ -100,5 +105,12 @@ export const dashboardService = {
     const response = await apiFetch('/dashboard/lawyer/high-relevance');
     if (!response.ok) throw new Error('Falha ao buscar casos de alta relevância');
     return response.json();
+  },
+
+  async getLawyerCaseDetail(caseId: string): Promise<DetailsReport> {
+    const response = await apiFetch(`/lawyer/cases/${caseId}`);
+    if (!response.ok) throw new Error('Caso não encontrado');
+    const json = await response.json();
+    return json?.user?.report ?? json;
   },
 };

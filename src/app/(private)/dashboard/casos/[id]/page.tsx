@@ -1,27 +1,32 @@
-import { notFound } from "next/navigation";
-import type { Metadata } from "next";
-import { getCaseById } from "@/features/dashboard/cases/cases.data";
+"use client";
+
+import { use } from "react";
 import { CaseDetailFeature } from "@/features/dashboard/cases/case-detail-feature";
+import { useCaseDetail } from "@/hooks/useCaseDetail";
 
-type Props = {
-  params: Promise<{ id: string }>;
-};
+type Props = { params: Promise<{ id: string }> };
 
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const { id } = await params;
-  const caseData = getCaseById(id);
-  if (!caseData) return { title: "Caso não encontrado | Voz Justa" };
-  return {
-    title: `${caseData.title} | Voz Justa`,
-    description: `Protocolo ${caseData.protocol} — acompanhe a evolução do seu caso.`,
-  };
-}
+export default function CaseDetailPage({ params }: Props) {
+  const { id } = use(params);
+  const { report, isLoading, error } = useCaseDetail(id);
 
-export default async function CaseDetailPage({ params }: Props) {
-  const { id } = await params;
-  const caseData = getCaseById(id);
+  if (isLoading) {
+    return (
+      <div className="flex flex-col gap-6 w-full mx-auto px-4 py-6 md:px-6 md:py-8">
+        <div className="h-10 w-40 animate-pulse rounded-lg bg-white/8" />
+        <div className="h-32 animate-pulse rounded-2xl bg-[#0d1526]" />
+        <div className="h-48 animate-pulse rounded-2xl bg-[#0d1526]" />
+      </div>
+    );
+  }
 
-  if (!caseData) notFound();
+  if (error || !report) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-screen px-4">
+        <p className="text-sm text-red-400">{error ?? "Caso não encontrado."}</p>
+      </div>
+    );
+  }
 
-  return <CaseDetailFeature caseData={caseData} />;
+  return <CaseDetailFeature report={report} reportId={id} />;
 }

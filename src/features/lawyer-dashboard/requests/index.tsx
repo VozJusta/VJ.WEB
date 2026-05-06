@@ -64,11 +64,15 @@ export function RequestsList() {
   };
 
   const handleViewDossier = (id: string) => {
-    window.location.href = `/advogado/solicitacoes/${id}`;
+    const req = rawRequests.find((r) => r.id === id);
+    const query = req ? `?caseId=${req.caseId}&reportId=${req.reportId}&status=${req.statusCase}` : "";
+    window.location.href = `/advogado/solicitacoes/${id}${query}`;
   };
 
   const handleCardClick = (id: string) => {
-    window.location.href = `/advogado/solicitacoes/${id}`;
+    const req = rawRequests.find((r) => r.id === id);
+    const query = req ? `?caseId=${req.caseId}&reportId=${req.reportId}&status=${req.statusCase}` : "";
+    window.location.href = `/advogado/solicitacoes/${id}${query}`;
   };
 
   const handleFilterChange = (value: FilterValue) => {
