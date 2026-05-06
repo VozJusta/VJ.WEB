@@ -33,20 +33,33 @@ export async function GET(request: Request) {
 
     const encodedData = Buffer.from(JSON.stringify(authData)).toString('base64');
 
-    const redirectUrl = new URL('/dashboard', request.url);
+    // Prefer the role from the API response; fall back to the state param (set before Google redirect)
+    const rawRole = typeof authData.role === 'string'
+      ? authData.role.split('|')[0].trim().toLowerCase()
+      : (state ?? 'citizen');
+    const role = rawRole === 'lawyer' ? 'lawyer' : 'citizen';
+    const homePath = role === 'lawyer' ? '/advogado' : '/dashboard';
+
+    const redirectUrl = new URL(homePath, request.url);
     redirectUrl.searchParams.set('authData', encodedData);
 
-    const response2 = NextResponse.redirect(redirectUrl.toString());
+    const redirectResponse = NextResponse.redirect(redirectUrl.toString());
 
-    response2.cookies.set('google_auth_data', encodedData, {
+    redirectResponse.cookies.set('user_role', role, {
+      sameSite: 'lax',
+      maxAge: 60 * 60 * 24 * 7,
+      path: '/',
+    });
+
+    redirectResponse.cookies.set('google_auth_data', encodedData, {
       httpOnly: true,
       sameSite: 'lax',
       maxAge: 300,
       path: '/',
     });
 
-    return response2;
-  } catch (error) {
+    return redirectResponse;
+  } catch {
     return NextResponse.redirect(
       new URL('/login?error=authentication_failed', request.url)
     );

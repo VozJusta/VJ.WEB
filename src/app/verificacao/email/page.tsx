@@ -4,14 +4,20 @@ import { Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { VerificationForm, type VerificationConfig } from "@/features/auth/verification";
 import { useAuth } from "@/hooks/useAuth";
+import { authStorage } from "@/lib/auth";
+
+function roleToHome(role: string | null): string {
+  return role === "lawyer" ? "/advogado" : "/dashboard";
+}
 
 function EmailVerificationContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { setAuthenticated } = useAuth();
-  
+  const { userRole, setAuthenticated } = useAuth();
+
   const email = searchParams.get("email") || "seu@email.com";
   const type = searchParams.get("type") || "signup";
+  const roleParam = searchParams.get("role");
 
   const config: VerificationConfig = {
     type: "email",
@@ -26,11 +32,14 @@ function EmailVerificationContent() {
       return;
     }
 
+    const role = roleParam || userRole || "citizen";
+    authStorage.setUserRole(role);
+
     if (type === "login") {
       setAuthenticated(true);
     }
 
-    router.push("/dashboard");
+    router.push(roleToHome(role));
   };
 
   const handleBack = () => {
@@ -42,8 +51,8 @@ function EmailVerificationContent() {
   };
 
   return (
-    <VerificationForm 
-      config={config} 
+    <VerificationForm
+      config={config}
       onVerified={handleVerified}
       onBack={handleBack}
     />

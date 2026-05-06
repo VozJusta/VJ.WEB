@@ -141,7 +141,7 @@ export function CitizenSignupForm() {
             });
 
             setTimeout(() => {
-                router.push(`/verificacao/email?email=${encodeURIComponent(validatedData.email)}&type=signup`);
+                router.push(`/verificacao/email?email=${encodeURIComponent(validatedData.email)}&type=signup&role=citizen`);
             }, 1500);
 
         } catch (error) {

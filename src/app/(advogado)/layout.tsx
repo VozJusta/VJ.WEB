@@ -1,10 +1,11 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { Suspense, useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
 import { Sidebar } from "@/components/layout/sidebar";
 import { DashboardHeader } from "@/components/layout/dashboard-header";
 import { lawyerMainNav, lawyerBottomNav } from "@/components/layout/sidebar/sidebar-lawyer.navigation";
+import { GoogleAuthHandler } from "@/features/auth/google-auth-handler";
 import { useAuth } from "@/contexts/auth-context";
 
 export default function LawyerLayout({
@@ -37,6 +38,10 @@ export default function LawyerLayout({
   };
 
   return (
+    <>
+    <Suspense fallback={null}>
+      <GoogleAuthHandler />
+    </Suspense>
     <div className="layout-bg min-h-screen">
       <Sidebar
         isOpen={isSidebarOpen}
@@ -66,5 +71,6 @@ export default function LawyerLayout({
         </main>
       </div>
     </div>
+    </>
   );
 }

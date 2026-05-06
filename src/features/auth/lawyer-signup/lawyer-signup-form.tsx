@@ -160,7 +160,7 @@ export function LawyerSignupForm() {
       });
       
       setTimeout(() => {
-        router.push(`/verificacao/email?email=${encodeURIComponent(validatedData.email)}&type=signup`);
+        router.push(`/verificacao/email?email=${encodeURIComponent(validatedData.email)}&type=signup&role=lawyer`);
       }, 1500);
       
     } catch (error) {

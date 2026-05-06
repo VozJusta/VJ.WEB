@@ -18,6 +18,21 @@ function deleteCookie(name: string): void {
 }
 
 export const authStorage = {
+  setUserRole(role: string): void {
+    if (typeof document === 'undefined') return;
+    setCookie('user_role', role);
+  },
+
+  getUserRole(): string | null {
+    if (typeof document === 'undefined') return null;
+    const match = document.cookie.match(/(?:^|;\s*)user_role=([^;]+)/);
+    return match ? decodeURIComponent(match[1]) : null;
+  },
+
+  clearUserRole(): void {
+    deleteCookie('user_role');
+  },
+
   setAccessToken(token: string): void {
     if (typeof window === 'undefined') return;
     localStorage.setItem(AUTH_STORAGE_KEYS.ACCESS_TOKEN, token);
@@ -60,6 +75,7 @@ export const authStorage = {
     localStorage.removeItem(AUTH_STORAGE_KEYS.REFRESH_TOKEN);
     localStorage.removeItem(AUTH_STORAGE_KEYS.SECURITY_TOKEN);
     deleteCookie(AUTH_STORAGE_KEYS.ACCESS_TOKEN);
+    deleteCookie('user_role');
   },
 
   clearAuthStore(): void {

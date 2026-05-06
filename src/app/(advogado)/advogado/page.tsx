@@ -1,102 +1,36 @@
+"use client";
+
 import type { Metadata } from "next";
 import { StatCard } from "@/components/ui/stat-card";
 import { ProductivityChart } from "@/components/ui/productivity-chart";
 import { OperationalStatus } from "@/components/ui/operational-status";
 import { PriorityRequestCard } from "@/components/ui/priority-request-card";
-import type {
-  StatCardData,
-  ChartDataPoint,
-  OperationalStatus as OperationalStatusType,
-  PriorityRequest,
-} from "@/types/dashboard.types";
-
-export const metadata: Metadata = {
-  title: "Dashboard - Advogado | Voz Justa",
-  description: "Painel de gestão para advogados da plataforma Voz Justa",
-};
-
-const statsData: StatCardData[] = [
-  {
-    label: "SOLICITAÇÕES NO MÊS",
-    value: 142,
-    change: 12,
-    isPositive: true,
-  },
-  {
-    label: "CASOS ACEITOS",
-    value: "89%",
-    change: 2,
-    isPositive: false,
-  },
-  {
-    label: "MÉDIA DE RESPOSTA",
-    value: 1.2,
-    change: 15,
-    isPositive: true,
-    unit: "dias",
-  },
-];
-
-const generateChartData = (): ChartDataPoint[] => {
-  const data: ChartDataPoint[] = [];
-  const baseValue = 40;
-
-  for (let i = 1; i <= 30; i++) {
-    const variation = Math.sin(i / 5) * 20 + Math.random() * 15;
-    data.push({
-      date: i.toString(),
-      value: Math.round(baseValue + variation),
-    });
-  }
-
-  return data;
-};
-
-const chartData = generateChartData();
-
-const operationalStatuses: OperationalStatusType[] = [
-  { label: "EM ANÁLISE", value: 24, color: "rgb(59, 130, 246)" },
-  { label: "CONCLUÍDOS", value: 12, color: "rgb(34, 197, 94)" },
-  { label: "NOVOS PEDIDOS", value: 5, color: "rgb(251, 146, 60)" },
-];
-
-const priorityRequests: PriorityRequest[] = [
-  {
-    id: "1",
-    score: 95,
-    title: "Despejo injusto - Família com 3 crianças",
-    description:
-      "Família está sendo despejada sem aviso prévio adequado, com crianças em idade escolar. Caso requer atenção imediata.",
-    status: "pending",
-    priority: "urgent",
-    date: "2026-03-15",
-    category: "Direito Imobiliário",
-  },
-  {
-    id: "2",
-    score: 88,
-    title: "Demissão sem justa causa durante licença médica",
-    description:
-      "Trabalhador foi demitido durante afastamento por problema de saúde comprovado por atestado médico.",
-    status: "in_progress",
-    priority: "high",
-    date: "2026-03-14",
-    category: "Direito Trabalhista",
-  },
-  {
-    id: "3",
-    score: 82,
-    title: "Negação de cobertura para cirurgia essencial",
-    description:
-      "Plano de saúde negou cobertura para procedimento cirúrgico prescrito por médico, alegando cláusula contratual.",
-    status: "pending",
-    priority: "high",
-    date: "2026-03-13",
-    category: "Direito do Consumidor",
-  },
-];
+import { useDashboardLawyer } from "@/hooks/useDashboardLawyer";
+import { getCategoryLabel, translateStatus } from "@/lib/status";
 
 export default function LawyerDashboardPage() {
+  const { analytics, operationalStats, highRelevance, isLoading } = useDashboardLawyer();
+
+  const chartData = analytics?.data?.map((d) => ({
+    date: d.date,
+    value: d.value,
+  })) ?? [];
+
+  const operationalStatusItems = operationalStats
+    ? [
+        { label: "PENDENTES", value: operationalStats.pending, color: "rgb(251, 146, 60)" },
+        { label: "ACEITOS", value: operationalStats.accepted, color: "rgb(34, 197, 94)" },
+        { label: "RECUSADOS", value: operationalStats.refused, color: "rgb(239, 68, 68)" },
+      ]
+    : [];
+
+  const total = operationalStats
+    ? operationalStats.pending + operationalStats.accepted + operationalStats.refused
+    : 0;
+  const progressPercent = total > 0
+    ? Math.round((operationalStats!.accepted / total) * 100)
+    : 0;
+
   return (
     <div className="space-y-8">
       <header>
@@ -108,67 +42,104 @@ export default function LawyerDashboardPage() {
         </p>
       </header>
 
-      <section aria-labelledby="stats-heading">
-        <h2 id="stats-heading" className="sr-only">
-          Estatísticas do mês
-        </h2>
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
-          {statsData.map((stat, index) => (
-            <StatCard
-              key={index}
-              label={stat.label}
-              value={stat.value}
-              change={stat.change}
-              isPositive={stat.isPositive}
-              unit={stat.unit}
-            />
+      {isLoading && (
+        <div className="flex flex-col gap-4">
+          {[1, 2, 3].map((i) => (
+            <div key={i} className="h-24 animate-pulse rounded-2xl bg-surface-elevated" />
           ))}
         </div>
-      </section>
+      )}
 
-      <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
-        <section
-          aria-labelledby="productivity-heading"
-          className="lg:col-span-2 rounded-2xl border border-(--border-subtle) bg-surface-elevated p-6"
-        >
+      {!isLoading && operationalStats && (
+        <section aria-labelledby="stats-heading">
+          <h2 id="stats-heading" className="sr-only">Estatísticas</h2>
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+            <StatCard
+              label="PENDENTES"
+              value={operationalStats.pending}
+              change={0}
+              isPositive={false}
+            />
+            <StatCard
+              label="ACEITOS"
+              value={operationalStats.accepted}
+              change={0}
+              isPositive={true}
+            />
+            <StatCard
+              label="RECUSADOS"
+              value={operationalStats.refused}
+              change={0}
+              isPositive={false}
+            />
+          </div>
+        </section>
+      )}
+
+      {!isLoading && (chartData.length > 0 || operationalStatusItems.length > 0) && (
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+          {chartData.length > 0 && (
+            <section
+              aria-labelledby="productivity-heading"
+              className="lg:col-span-2 rounded-2xl border border-(--border-subtle) bg-surface-elevated p-6"
+            >
+              <header className="mb-6">
+                <h2
+                  id="productivity-heading"
+                  className="text-lg font-semibold tracking-tight text-foreground"
+                >
+                  Análise de Produtividade
+                </h2>
+                <p className="mt-1 text-sm text-text-secondary">
+                  Volume de casos processados
+                </p>
+              </header>
+              <ProductivityChart data={chartData} className="h-80" />
+            </section>
+          )}
+
+          {operationalStatusItems.length > 0 && (
+            <OperationalStatus
+              statuses={operationalStatusItems}
+              progressPercent={progressPercent}
+            />
+          )}
+        </div>
+      )}
+
+      {!isLoading && highRelevance.length > 0 && (
+        <section aria-labelledby="priority-requests-heading">
           <header className="mb-6">
             <h2
-              id="productivity-heading"
-              className="text-lg font-semibold tracking-tight text-foreground"
+              id="priority-requests-heading"
+              className="text-2xl font-bold tracking-tight text-foreground"
             >
-              Análise de Produtividade
+              Solicitações de Alta Relevância
             </h2>
-            <p className="mt-1 text-sm text-text-secondary">
-              Volume de casos processados nos últimos 30 dias
+            <p className="mt-2 text-base text-text-secondary">
+              Casos que requerem sua atenção prioritária
             </p>
           </header>
 
-          <ProductivityChart data={chartData} className="h-80" />
+          <div className="grid grid-cols-1 gap-4 lg:grid-cols-2 xl:grid-cols-3">
+            {highRelevance.map((item) => (
+              <PriorityRequestCard
+                key={item.id}
+                request={{
+                  id: item.id,
+                  score: Math.round(item.confidence_score * 100),
+                  title: item.title,
+                  description: getCategoryLabel(item.category_detected),
+                  status: item.status === "Accepted" ? "in_progress" : "pending",
+                  priority: item.confidence_score >= 0.9 ? "urgent" : "high",
+                  date: new Date().toISOString().slice(0, 10),
+                  category: getCategoryLabel(item.category_detected),
+                }}
+              />
+            ))}
+          </div>
         </section>
-
-        <OperationalStatus statuses={operationalStatuses} progressPercent={60} />
-      </div>
-
-      <section aria-labelledby="priority-requests-heading">
-        <header className="mb-6">
-          <h2
-            id="priority-requests-heading"
-            className="text-2xl font-bold tracking-tight text-foreground"
-          >
-            Solicitações de Alta Relevância
-          </h2>
-          <p className="mt-2 text-base text-text-secondary">
-            Casos que requerem sua atenção prioritária baseados em urgência e impacto social
-          </p>
-        </header>
-
-        <div className="grid grid-cols-1 gap-4 lg:grid-cols-2 xl:grid-cols-3">
-          {priorityRequests.map((request) => (
-            <PriorityRequestCard key={request.id} request={request} />
-          ))}
-        </div>
-      </section>
+      )}
     </div>
   );
 }
-

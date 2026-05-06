@@ -4,10 +4,15 @@ import type { NextRequest } from "next/server";
 const PROTECTED_ROUTES = ["/dashboard", "/advogado"];
 const AUTH_ROUTES = ["/login", "/onBoarding", "/esqueci-minha-senha", "/redefinir-senha", "/verificacao"];
 
+function getDashboardForRole(role: string | undefined): string {
+  return role === "lawyer" ? "/advogado" : "/dashboard";
+}
+
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   const accessToken = request.cookies.get("access_token")?.value;
+  const userRole = request.cookies.get("user_role")?.value;
   const hasAccessToken = !!accessToken;
 
   const isProtectedRoute = PROTECTED_ROUTES.some((route) =>
@@ -22,7 +27,8 @@ export function middleware(request: NextRequest) {
   }
 
   if (isAuthRoute && hasAccessToken) {
-    return NextResponse.redirect(new URL("/dashboard", request.url));
+    const home = getDashboardForRole(userRole);
+    return NextResponse.redirect(new URL(home, request.url));
   }
 
   return NextResponse.next();
