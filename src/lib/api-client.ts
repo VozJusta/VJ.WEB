@@ -46,7 +46,10 @@ export async function apiFetch(
 
   const buildHeaders = (token: string | null): Headers => {
     const headers = new Headers(init?.headers);
-    headers.set('Content-Type', headers.get('Content-Type') ?? 'application/json');
+    // Don't set Content-Type for FormData — the browser must set it with the multipart boundary
+    if (!(init?.body instanceof FormData)) {
+      headers.set('Content-Type', headers.get('Content-Type') ?? 'application/json');
+    }
     if (token) headers.set('Authorization', `Bearer ${token}`);
     return headers;
   };

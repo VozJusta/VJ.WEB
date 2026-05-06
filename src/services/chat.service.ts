@@ -56,11 +56,10 @@ export const chatService = {
   async transcribeAudio(audioUri: string): Promise<string> {
     const formData = new FormData();
     const audioBlob = await fetch(audioUri).then((r) => r.blob());
-    formData.append('file', audioBlob, 'audio.m4a');
+    formData.append('file', audioBlob, 'audio.webm');
 
     const response = await apiFetch('/report/transcribe', {
       method: 'POST',
-      headers: {},
       body: formData,
     });
     if (!response.ok) throw new Error('Erro ao transcrever áudio');
