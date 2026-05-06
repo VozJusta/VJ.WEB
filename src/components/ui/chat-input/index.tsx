@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { MicNoneRounded, SendRounded } from "@mui/icons-material";
+import { MicNoneRounded, SendRounded, StopRounded } from "@mui/icons-material";
 import { cn } from "@/lib/utils";
 import type { ChatInputProps } from "./chat-input.types";
 
@@ -13,6 +13,8 @@ export function ChatInput({
   placeholder = "Digite sua resposta...",
   disabled = false,
   maxHeight = 200,
+  isRecording = false,
+  isTranscribing = false,
 }: ChatInputProps) {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
@@ -47,26 +49,49 @@ export function ChatInput({
         "px-6 py-4",
       )}
     >
+      {isRecording && (
+        <div className="mb-2 flex items-center gap-2 px-1">
+          <span className="relative flex h-2 w-2">
+            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-red-500 opacity-75" />
+            <span className="relative inline-flex h-2 w-2 rounded-full bg-red-500" />
+          </span>
+          <span className="text-xs font-medium text-red-400">Gravando... clique no microfone para parar</span>
+        </div>
+      )}
+      {isTranscribing && (
+        <div className="mb-2 flex items-center gap-2 px-1">
+          <span className="h-2 w-2 animate-pulse rounded-full bg-primary" />
+          <span className="text-xs font-medium text-text-muted">Transcrevendo áudio...</span>
+        </div>
+      )}
+
       <div
         className={cn(
-          "flex items-end gap-3 rounded-2xl border border-(--border-subtle) bg-surface-elevated p-3 transition-all",
-          "focus-within:border-(--border-default) focus-within:bg-surface",
+          "flex items-end gap-3 rounded-2xl border bg-surface-elevated p-3 transition-all",
+          isRecording
+            ? "border-red-500/50 bg-red-500/5"
+            : "border-(--border-subtle) focus-within:border-(--border-default) focus-within:bg-surface",
         )}
       >
         {onVoiceRecord && (
           <button
             type="button"
             onClick={onVoiceRecord}
-            disabled={disabled}
-            aria-label="Gravar mensagem de voz"
+            disabled={disabled && !isRecording}
+            aria-label={isRecording ? "Parar gravação" : "Gravar mensagem de voz"}
             className={cn(
-              "flex h-10 w-10 shrink-0 items-center justify-center rounded-xl text-text-secondary transition-all",
-              "hover:bg-white/10 hover:text-foreground",
+              "flex h-10 w-10 shrink-0 items-center justify-center rounded-xl transition-all",
               "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary",
-              "disabled:cursor-not-allowed disabled:opacity-50",
+              isRecording
+                ? "bg-red-500/20 text-red-400 hover:bg-red-500/30"
+                : "text-text-secondary hover:bg-white/10 hover:text-foreground",
+              isTranscribing && "cursor-not-allowed opacity-50",
             )}
           >
-            <MicNoneRounded fontSize="small" aria-hidden="true" />
+            {isRecording
+              ? <StopRounded fontSize="small" aria-hidden="true" />
+              : <MicNoneRounded fontSize="small" aria-hidden="true" />
+            }
           </button>
         )}
 
@@ -79,8 +104,8 @@ export function ChatInput({
           value={value}
           onChange={(e) => onChange(e.target.value)}
           onKeyDown={handleKeyDown}
-          placeholder={placeholder}
-          disabled={disabled}
+          placeholder={isTranscribing ? "Transcrevendo áudio..." : placeholder}
+          disabled={disabled || isRecording || isTranscribing}
           rows={1}
           className={cn(
             "min-h-10 flex-1 resize-none bg-transparent py-2 text-sm text-foreground placeholder:text-text-muted",
@@ -94,7 +119,7 @@ export function ChatInput({
         <button
           type="button"
           onClick={handleSend}
-          disabled={!value.trim() || disabled}
+          disabled={!value.trim() || disabled || isRecording || isTranscribing}
           aria-label="Enviar mensagem"
           className={cn(
             "flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary text-primary-foreground transition-all",

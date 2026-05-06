@@ -1,11 +1,11 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { MessageBubble } from "@/components/ui/message-bubble";
 import { ChatInput } from "@/components/ui/chat-input";
 import { useChat } from "@/hooks/useChat";
-import type { QuickAction } from "@/types/chat.types";
+import { chatService } from "@/services/chat.service";
 
 interface AIChatFeatureProps {
   conversationId?: string;
@@ -29,6 +29,11 @@ export function AIChatFeature({ conversationId, caseId }: AIChatFeatureProps) {
     loadHistory,
   } = useChat();
 
+  const [isRecording, setIsRecording] = useState(false);
+  const [isTranscribing, setIsTranscribing] = useState(false);
+  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
+  const chunksRef = useRef<Blob[]>([]);
+
   useEffect(() => {
     if (conversationId && messages.length === 0) {
       loadHistory(conversationId);
@@ -41,11 +46,50 @@ export function AIChatFeature({ conversationId, caseId }: AIChatFeatureProps) {
     }
   }, [isFinished, reportId, caseId, router]);
 
-  const stage = isFinished ? "Análise Concluída" : isFetchingHistory ? "Carregando..." : "Análise em Andamento";
+  const handleVoiceRecord = async () => {
+    if (isRecording) {
+      mediaRecorderRef.current?.stop();
+      setIsRecording(false);
+      return;
+    }
 
-  const handleQuickAction = (action: QuickAction) => {
-    sendMessage(action.value);
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const recorder = new MediaRecorder(stream);
+      chunksRef.current = [];
+
+      recorder.ondataavailable = (e) => {
+        if (e.data.size > 0) chunksRef.current.push(e.data);
+      };
+
+      recorder.onstop = async () => {
+        stream.getTracks().forEach((t) => t.stop());
+        const blob = new Blob(chunksRef.current, { type: 'audio/webm' });
+        const url = URL.createObjectURL(blob);
+
+        setIsTranscribing(true);
+        try {
+          const text = await chatService.transcribeAudio(url);
+          if (text.trim()) {
+            setInputValue(text);
+          }
+        } catch {
+          // transcription failed — user can type manually
+        } finally {
+          URL.revokeObjectURL(url);
+          setIsTranscribing(false);
+        }
+      };
+
+      mediaRecorderRef.current = recorder;
+      recorder.start();
+      setIsRecording(true);
+    } catch {
+      // microphone access denied or not available
+    }
   };
+
+  const stage = isFinished ? "Análise Concluída" : isFetchingHistory ? "Carregando..." : "Análise em Andamento";
 
   return (
     <div className="flex h-full min-h-screen flex-col">
@@ -136,8 +180,10 @@ export function AIChatFeature({ conversationId, caseId }: AIChatFeatureProps) {
         value={inputValue}
         onChange={setInputValue}
         onSend={() => sendMessage(inputValue)}
-        onVoiceRecord={() => {}}
+        onVoiceRecord={handleVoiceRecord}
         disabled={isLoading || isFinished || isFetchingHistory}
+        isRecording={isRecording}
+        isTranscribing={isTranscribing}
         maxHeight={200}
       />
     </div>

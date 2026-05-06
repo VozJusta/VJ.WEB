@@ -37,6 +37,7 @@ export function useChat() {
   }, [messages]);
 
   const loadHistory = useCallback(async (convId: string) => {
+    setConversationId(convId);
     setIsFetchingHistory(true);
     try {
       const data = await chatService.getHistory(convId);

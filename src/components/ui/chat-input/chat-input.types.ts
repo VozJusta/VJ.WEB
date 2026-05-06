@@ -6,4 +6,6 @@ export interface ChatInputProps {
   placeholder?: string;
   disabled?: boolean;
   maxHeight?: number;
+  isRecording?: boolean;
+  isTranscribing?: boolean;
 }

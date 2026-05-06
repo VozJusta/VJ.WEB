@@ -47,13 +47,13 @@ export function CasesSection() {
         <p className="text-sm text-red-400">{error}</p>
       )}
 
-      {!isLoading && !error && reports.length === 0 && (
+      {!isLoading && !error && (reports ?? []).length === 0 && (
         <p className="text-sm text-text-muted">Nenhum caso encontrado.</p>
       )}
 
-      {!isLoading && reports.length > 0 && (
+      {!isLoading && (reports ?? []).length > 0 && (
         <ul role="list" className="flex flex-col gap-3">
-          {reports.slice(0, 3).map((report) => (
+          {(reports ?? []).slice(0, 3).map((report) => (
             <li key={report.id}>
               <CaseCard
                 id={report.id}

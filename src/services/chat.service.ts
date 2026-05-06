@@ -48,7 +48,7 @@ export const chatService = {
   },
 
   async getHistory(conversationId: string): Promise<HistoryResponse> {
-    const response = await apiFetch(`/report/conversation/history/${conversationId}`);
+    const response = await apiFetch(`/report/chat/${conversationId}`);
     if (!response.ok) throw new Error('Erro ao carregar histórico');
     return response.json();
   },
@@ -58,13 +58,13 @@ export const chatService = {
     const audioBlob = await fetch(audioUri).then((r) => r.blob());
     formData.append('file', audioBlob, 'audio.m4a');
 
-    const response = await apiFetch('/report/conversation/transcribe', {
+    const response = await apiFetch('/report/transcribe', {
       method: 'POST',
       headers: {},
       body: formData,
     });
     if (!response.ok) throw new Error('Erro ao transcrever áudio');
     const data = await response.json();
-    return data.text ?? data.transcription ?? '';
+    return data.transcription ?? '';
   },
 };
