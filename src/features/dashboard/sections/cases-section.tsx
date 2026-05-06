@@ -5,10 +5,10 @@ import { ListAltRounded, ChevronRightRounded } from "@mui/icons-material";
 import { CaseCard } from "@/components/ui/case-card";
 import { useDashboardCitizen } from "@/hooks/useDashboardCitizen";
 
-function statusMap(apiStatus: string): "analysis" | "concluded" | "pending" | "rejected" {
+function statusMap(apiStatus: string): "analysis" | "concluded" | "pending" | "archived" {
   const s = apiStatus?.toLowerCase();
   if (s === "concluded" || s === "completed") return "concluded";
-  if (s === "rejected") return "rejected";
+  if (s === "rejected" || s === "archived") return "archived";
   if (s === "pending") return "pending";
   return "analysis";
 }

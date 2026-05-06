@@ -76,7 +76,6 @@ export function RequestsList() {
     setVisible(PAGE_SIZE);
   };
 
-  if (requests.length === 0) {
   if (isLoading) {
     return (
       <section className="w-full flex flex-col gap-4" aria-label="Carregando solicitações">

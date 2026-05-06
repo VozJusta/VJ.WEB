@@ -105,8 +105,6 @@ export function AIChatFeature({ conversationId, caseId }: AIChatFeatureProps) {
               role={message.role}
               content={message.content}
               timestamp={message.timestamp}
-              quickActions={message.quickActions}
-              onQuickAction={handleQuickAction}
             />
           ))}
 
