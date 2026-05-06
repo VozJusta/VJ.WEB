@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { DossierSentFeature } from "@/features/dashboard/lawyers/dossier-sent-feature";
 import { useLawyerProfile } from "@/hooks/useLawyerProfile";
 import { lawyersService } from "@/services/lawyers.service";
+import { useChatStore } from "@/store/chat.store";
 
 interface DossierSentPageProps {
   params: Promise<{ id: string }>;
@@ -13,8 +14,9 @@ interface DossierSentPageProps {
 export default function DossierSentPage({ params }: DossierSentPageProps) {
   const { id: lawyerId } = use(params);
   const searchParams = useSearchParams();
-  const caseId = searchParams.get("caseId") ?? "";
-  const reportId = searchParams.get("reportId") ?? "";
+  const chatStore = useChatStore();
+  const caseId = searchParams.get("caseId") || chatStore.caseId || "";
+  const reportId = searchParams.get("reportId") || chatStore.reportId || "";
   const router = useRouter();
 
   const { lawyer, isLoading } = useLawyerProfile(lawyerId);

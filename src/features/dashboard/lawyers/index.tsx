@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { 
   ArrowBackRounded, 
   CloseRounded, 
@@ -40,6 +40,8 @@ const SORT_OPTIONS: SortButton[] = [
 
 export function LawyersListFeature() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const caseId = searchParams.get("caseId") ?? "";
   const [selectedCategory, setSelectedCategory] = useState<string>("");
   const [sortBy, setSortBy] = useState<LawyerSortOption>("availability");
   const { lawyers, total, isLoading, error } = useLawyersList();
@@ -53,7 +55,8 @@ export function LawyersListFeature() {
   };
 
   const handleViewLawyerDetails = (lawyerId: string) => {
-    router.push(`/dashboard/advogados/${lawyerId}`);
+    const query = caseId ? `?caseId=${caseId}` : "";
+    router.push(`/dashboard/advogados/${lawyerId}${query}`);
   };
 
   const filteredLawyers = selectedCategory

@@ -4,11 +4,12 @@ import Link from "next/link";
 import { ListAltRounded, ChevronRightRounded } from "@mui/icons-material";
 import { CaseCard } from "@/components/ui/case-card";
 import { useDashboardCitizen } from "@/hooks/useDashboardCitizen";
+import { getCategoryLabel } from "@/lib/status";
 
 function statusMap(apiStatus: string): "analysis" | "concluded" | "pending" | "archived" {
   const s = apiStatus?.toLowerCase();
-  if (s === "concluded" || s === "completed") return "concluded";
-  if (s === "rejected" || s === "archived") return "archived";
+  if (s === "accepted") return "concluded";
+  if (s === "refused" || s === "archived") return "archived";
   if (s === "pending") return "pending";
   return "analysis";
 }
@@ -57,7 +58,7 @@ export function CasesSection() {
             <li key={report.id}>
               <CaseCard
                 id={report.id}
-                title={report.category_detected ?? 'Caso'}
+                title={getCategoryLabel(report.category_detected) || 'Caso'}
                 status={statusMap(report.status)}
                 updatedLabel={new Date(report.created_at).toLocaleDateString('pt-BR')}
                 protocol={`#${report.id.slice(0, 8).toUpperCase()}`}

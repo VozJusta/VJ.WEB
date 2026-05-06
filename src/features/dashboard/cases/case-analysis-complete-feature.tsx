@@ -11,6 +11,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { useReportDownload } from "@/hooks/useReportDownload";
 import type { DetailsReport } from "@/services/dashboard.service";
+import { getCategoryLabel, translateStatus } from "@/lib/status";
 
 interface CaseAnalysisCompleteFeatureProps {
   caseId: string;
@@ -28,7 +29,9 @@ export function CaseAnalysisCompleteFeature({
   const router = useRouter();
   const { downloadPdf, isDownloading } = useReportDownload();
 
-  const category = report?.category_detected ?? "Analisando...";
+  const category = report?.category_detected
+    ? getCategoryLabel(report.category_detected)
+    : "Analisando...";
   const referenceId = `#${reportId.slice(0, 8).toUpperCase()}`;
 
   const handleViewLawyers = () => {
@@ -123,7 +126,7 @@ export function CaseAnalysisCompleteFeature({
                       Status
                     </h2>
                     <p className="text-sm font-semibold text-white truncate">
-                      {report.status ?? "Gerado"}
+                      {report.status ? translateStatus(report.status) : "Gerado"}
                     </p>
                   </div>
                 </div>

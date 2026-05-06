@@ -2,6 +2,7 @@
 
 import { useState, useCallback, useRef, useEffect } from 'react';
 import { chatService, ConversationMessage } from '@/services/chat.service';
+import { useChatStore, StoredMessage } from '@/store/chat.store';
 
 interface ChatMessage {
   id: string;
@@ -19,35 +20,61 @@ function toUiMessage(msg: ConversationMessage): ChatMessage {
   };
 }
 
+function storedToUi(msg: StoredMessage): ChatMessage {
+  return { ...msg, timestamp: new Date(msg.timestamp) };
+}
+
+function uiToStored(msg: ChatMessage): StoredMessage {
+  return { ...msg, timestamp: msg.timestamp.toISOString() };
+}
+
 export function useChat() {
-  const [messages, setMessages] = useState<ChatMessage[]>([]);
+  const store = useChatStore();
+
+  const [messages, setMessages] = useState<ChatMessage[]>(
+    () => store.messages.map(storedToUi)
+  );
   const [inputValue, setInputValue] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [isFetchingHistory, setIsFetchingHistory] = useState(false);
-  const [isFinished, setIsFinished] = useState(false);
-  const [conversationId, setConversationId] = useState<string | null>(null);
-  const [caseId, setCaseId] = useState<string | null>(null);
-  const [reportId, setReportId] = useState<string | null>(null);
+  const [isFinished, setIsFinished] = useState(() => store.finished);
+  const [conversationId, setConversationId] = useState<string | null>(
+    () => store.conversationId || null
+  );
+  const [caseId, setCaseId] = useState<string | null>(
+    () => store.caseId || null
+  );
+  const [reportId, setReportId] = useState<string | null>(
+    () => store.reportId || null
+  );
   const [error, setError] = useState<string | null>(null);
-  const [progress, setProgress] = useState(10);
+  const [progress, setProgress] = useState(() => (store.finished ? 100 : 10));
   const bottomRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
+  const syncMessages = useCallback((msgs: ChatMessage[]) => {
+    setMessages(msgs);
+    store.setMessages(msgs.map(uiToStored));
+  }, [store]);
+
   const loadHistory = useCallback(async (convId: string) => {
     setConversationId(convId);
+    store.setConversationId(convId);
     setIsFetchingHistory(true);
     try {
       const data = await chatService.getHistory(convId);
-      setMessages(data.messages.map(toUiMessage));
+      const uiMsgs = data.messages.map(toUiMessage);
+      setMessages(uiMsgs);
+      store.setMessages(uiMsgs.map(uiToStored));
     } catch {
       // history load failure is non-critical
     } finally {
       setIsFetchingHistory(false);
     }
-  }, []);
+  }, [store]);
 
   const startAnalysis = useCallback(
     async (description: string, category: string) => {
@@ -65,40 +92,45 @@ export function useChat() {
         role: 'user',
         timestamp: new Date(),
       };
-      setMessages([userMsg]);
+      syncMessages([userMsg]);
 
       try {
         const data = await chatService.startConversation(description);
 
         setConversationId(data.conversationId);
+        store.setConversationId(data.conversationId);
         setCaseId(data.caseId);
+        store.setCaseId(data.caseId);
         setProgress(20);
 
         if (data.finished) {
           setIsFinished(true);
-          if (data.reportId) setReportId(data.reportId);
+          store.setFinished(true);
+          if (data.reportId) {
+            setReportId(data.reportId);
+            store.setReportId(data.reportId);
+          }
           setProgress(100);
         }
 
         if (data.question) {
-          setMessages((prev) => [
-            ...prev,
-            {
-              id: `${Date.now()}-assistant`,
-              content: data.question,
-              role: 'assistant',
-              timestamp: new Date(),
-            },
-          ]);
+          const aiMsg: ChatMessage = {
+            id: `${Date.now()}-assistant`,
+            content: data.question,
+            role: 'assistant',
+            timestamp: new Date(),
+          };
+          const updated = [userMsg, aiMsg];
+          syncMessages(updated);
         }
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Erro ao iniciar análise');
-        setMessages([]);
+        syncMessages([]);
       } finally {
         setIsLoading(false);
       }
     },
-    [],
+    [store, syncMessages],
   );
 
   const sendMessage = useCallback(
@@ -106,10 +138,9 @@ export function useChat() {
       if (!message.trim() || isLoading || isFinished || !conversationId) return;
 
       const tempId = `${Date.now()}-user`;
-      setMessages((prev) => [
-        ...prev,
-        { id: tempId, content: message, role: 'user', timestamp: new Date() },
-      ]);
+      const newMsg: ChatMessage = { id: tempId, content: message, role: 'user', timestamp: new Date() };
+      const updated = [...messages, newMsg];
+      syncMessages(updated);
       setInputValue('');
       setIsLoading(true);
       setError(null);
@@ -118,33 +149,35 @@ export function useChat() {
         const data = await chatService.continueConversation(conversationId, message);
 
         if (data.question) {
-          setMessages((prev) => [
-            ...prev,
-            {
-              id: `${Date.now()}-assistant`,
-              content: data.question,
-              role: 'assistant',
-              timestamp: new Date(),
-            },
-          ]);
+          const aiMsg: ChatMessage = {
+            id: `${Date.now()}-assistant`,
+            content: data.question,
+            role: 'assistant',
+            timestamp: new Date(),
+          };
+          syncMessages([...updated, aiMsg]);
         }
 
         if (data.finished) {
           setIsFinished(true);
-          if (data.reportId) setReportId(data.reportId);
+          store.setFinished(true);
+          if (data.reportId) {
+            setReportId(data.reportId);
+            store.setReportId(data.reportId);
+          }
           setProgress(100);
         } else {
           setProgress((p) => Math.min(p + 10, 90));
         }
       } catch (err) {
-        setMessages((prev) => prev.filter((m) => m.id !== tempId));
+        syncMessages(messages);
         setInputValue(message);
         setError(err instanceof Error ? err.message : 'Erro ao enviar mensagem');
       } finally {
         setIsLoading(false);
       }
     },
-    [conversationId, isLoading, isFinished],
+    [conversationId, isLoading, isFinished, messages, store, syncMessages],
   );
 
   const clearChat = useCallback(() => {
@@ -155,7 +188,8 @@ export function useChat() {
     setIsFinished(false);
     setProgress(10);
     setError(null);
-  }, []);
+    store.clearChat();
+  }, [store]);
 
   return {
     messages,

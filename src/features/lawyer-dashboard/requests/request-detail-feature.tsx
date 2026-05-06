@@ -15,6 +15,7 @@ import { ContactInfoCard } from "@/components/ui/contact-info-card";
 import { useLawyerCaseDetail } from "@/hooks/useLawyerCaseDetail";
 import { useLawyerRequests } from "@/hooks/useLawyerRequests";
 import { useReportDownload } from "@/hooks/useReportDownload";
+import { getCategoryLabel } from "@/lib/status";
 
 interface RequestDetailFeatureProps {
   requestId: string;
@@ -67,7 +68,7 @@ export function RequestDetailFeature({ requestId }: RequestDetailFeatureProps) {
           </Link>
           <hgroup>
             <h1 className="text-2xl font-bold tracking-tight text-white">{protocol}</h1>
-            <p className="mt-1 text-sm text-text-secondary">{report.category_detected}</p>
+            <p className="mt-1 text-sm text-text-secondary">{getCategoryLabel(report.category_detected)}</p>
           </hgroup>
         </div>
 

@@ -10,6 +10,8 @@ import {
 } from "@mui/icons-material";
 import { Button } from "@/components/ui/button";
 import type { LawyerDetail } from "@/services/lawyers.service";
+import { getCategoryLabel } from "@/lib/status";
+import { useChatStore } from "@/store/chat.store";
 
 interface LawyerProfileFeatureProps {
   lawyer: LawyerDetail;
@@ -19,13 +21,16 @@ interface LawyerProfileFeatureProps {
 export function LawyerProfileFeature({ lawyer, lawyerId }: LawyerProfileFeatureProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const caseId = searchParams.get("caseId") ?? "";
+  const chatStore = useChatStore();
+  const caseId = searchParams.get("caseId") || chatStore.caseId || "";
+  const reportId = chatStore.reportId || "";
 
   const handleContact = () => {
-    const url = caseId
-      ? `/dashboard/advogados/${lawyerId}/enviar?caseId=${caseId}`
-      : `/dashboard/advogados/${lawyerId}/enviar`;
-    router.push(url);
+    const params = new URLSearchParams();
+    if (caseId) params.set("caseId", caseId);
+    if (reportId) params.set("reportId", reportId);
+    const query = params.toString() ? `?${params.toString()}` : "";
+    router.push(`/dashboard/advogados/${lawyerId}/enviar${query}`);
   };
 
   return (
@@ -89,7 +94,7 @@ export function LawyerProfileFeature({ lawyer, lawyerId }: LawyerProfileFeatureP
               </div>
               <div className="flex-1 min-w-0">
                 <h4 className="text-xs font-semibold uppercase tracking-wide text-white/40 mb-1">Especialização</h4>
-                <p className="text-sm font-medium text-white">{lawyer.specialization}</p>
+                <p className="text-sm font-medium text-white">{getCategoryLabel(lawyer.specialization)}</p>
               </div>
             </div>
 

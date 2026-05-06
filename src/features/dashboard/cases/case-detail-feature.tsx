@@ -7,6 +7,7 @@ import { cn } from "@/lib/utils";
 import { useReportDownload } from "@/hooks/useReportDownload";
 import type { DetailsReport } from "@/services/dashboard.service";
 import type { CaseStatus } from "@/components/ui/case-card/case-card.types";
+import { getCategoryLabel } from "@/lib/status";
 
 function apiStatusToCaseStatus(status: string): CaseStatus {
   const s = status?.toLowerCase();
@@ -74,7 +75,7 @@ export function CaseDetailFeature({ report, reportId }: CaseDetailFeatureProps) 
         </Link>
         <div className="min-w-0">
           <h1 className="text-xl font-bold text-white tracking-tight truncate">
-            {report.category_detected ?? "Caso"}
+            {getCategoryLabel(report.category_detected) || "Caso"}
           </h1>
           <p className="text-xs text-white/40 font-mono mt-0.5">Protocolo {protocol}</p>
         </div>
