@@ -47,6 +47,7 @@ export default function LawyerLayout({
         isOpen={isSidebarOpen}
         onToggle={() => setIsSidebarOpen((prev) => !prev)}
         onClose={() => setIsSidebarOpen(false)}
+        homeHref="/advogado"
         mainNav={lawyerMainNav}
         bottomNav={lawyerBottomNav}
       />
@@ -60,6 +61,7 @@ export default function LawyerLayout({
         <DashboardHeader
           user={displayUser}
           onMenuToggle={() => setIsSidebarOpen((prev) => !prev)}
+          notificationsHref="/advogado/notificacoes"
         />
 
         <main

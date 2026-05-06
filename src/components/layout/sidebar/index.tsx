@@ -8,7 +8,7 @@ import { cn } from "@/lib/utils";
 import type { SidebarProps } from "./sidebar.types";
 import { SidebarNav } from "./sidebar-nav";
 
-export function Sidebar({ isOpen, onToggle, onClose, className, mainNav, bottomNav }: SidebarProps) {
+export function Sidebar({ isOpen, onToggle, onClose, className, homeHref = "/dashboard", mainNav, bottomNav }: SidebarProps) {
 
   return (
     <>
@@ -39,7 +39,7 @@ export function Sidebar({ isOpen, onToggle, onClose, className, mainNav, bottomN
           )}
         >
           <Link
-            href="/dashboard"
+            href={homeHref}
             aria-label="Ir para o início do dashboard"
             className="inline-flex items-center transition-opacity hover:opacity-80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded-md"
           >

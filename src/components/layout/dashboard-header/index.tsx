@@ -5,7 +5,7 @@ import { DynamicBreadcrumb } from "./dynamic-breadcrumb";
 import { cn } from "@/lib/utils";
 import type { DashboardHeaderProps } from "./dashboard-header.types";
 
-export function DashboardHeader({ user, onMenuToggle }: DashboardHeaderProps) {
+export function DashboardHeader({ user, onMenuToggle, notificationsHref = "/dashboard/notificacoes" }: DashboardHeaderProps) {
   return (
     <header
       aria-label="Cabeçalho do dashboard"
@@ -60,7 +60,7 @@ export function DashboardHeader({ user, onMenuToggle }: DashboardHeaderProps) {
         </form>
 
         <Link
-          href="/dashboard/notificacoes"
+          href={notificationsHref}
           aria-label="Notificações"
           className="relative flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-(--border-subtle) bg-white/5 text-text-secondary transition-all hover:bg-white/10 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
         >

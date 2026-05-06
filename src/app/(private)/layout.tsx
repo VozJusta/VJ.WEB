@@ -52,6 +52,7 @@ export default function PrivateLayout({
           isOpen={isSidebarOpen}
           onToggle={() => setIsSidebarOpen((prev) => !prev)}
           onClose={() => setIsSidebarOpen(false)}
+          homeHref="/dashboard"
         />
 
         <div

@@ -7,4 +7,5 @@ export type DashboardUser = {
 export type DashboardHeaderProps = {
   user: DashboardUser;
   onMenuToggle?: () => void;
+  notificationsHref?: string;
 };
