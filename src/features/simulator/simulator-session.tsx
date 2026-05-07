@@ -25,6 +25,7 @@ export function SimulatorSession() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const personalityParam = searchParams.get('personality') ?? 'impartial';
+  const judgeName = searchParams.get('judgeName') ?? 'Juiz IA';
 
   const {
     status,
@@ -179,7 +180,7 @@ export function SimulatorSession() {
           </div>
 
           <div className="absolute bottom-6 left-6 rounded-lg bg-blue-600/90 px-4 py-2 backdrop-blur-sm">
-            <p className="text-sm font-medium text-white">Juiz IA</p>
+            <p className="text-sm font-medium text-white">{judgeName}</p>
           </div>
         </article>
 

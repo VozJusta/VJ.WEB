@@ -34,49 +34,51 @@ export function SimulatorFeedback() {
     }
   };
 
-  const handleGoHome = () => {
-    router.push('/dashboard');
-  };
-
   return (
-    <main className="flex min-h-screen flex-col px-6 py-8">
+    <main className="flex min-h-screen flex-col px-4 py-6 md:px-6 md:py-8">
       <div className="mx-auto w-full max-w-3xl">
         <header className="mb-8">
           <div className="mb-2 flex items-center justify-between text-xs font-medium uppercase tracking-wide">
-            <span className="text-blue-400">Processamento IA</span>
-            <span className="text-blue-400">100% Concluído</span>
+            <span className="text-primary">Processamento IA</span>
+            <span className="text-primary">100% Concluído</span>
           </div>
-          <div className="h-2 w-full overflow-hidden rounded-full bg-gray-800">
-            <div className="h-full bg-blue-500 transition-all duration-500" style={{ width: '100%' }} />
+          <div
+            className="h-1.5 w-full overflow-hidden rounded-full bg-surface-elevated"
+            role="progressbar"
+            aria-valuenow={100}
+            aria-valuemin={0}
+            aria-valuemax={100}
+          >
+            <div className="h-full bg-primary transition-all duration-500" style={{ width: '100%' }} />
           </div>
         </header>
 
-        <article className="rounded-2xl border border-gray-800 bg-gray-900 p-8 shadow-xl">
+        <article className="rounded-2xl border border-(--border-subtle) bg-surface-elevated p-8 shadow-xl">
           <div className="flex flex-col items-center text-center">
-            <div className="mb-6 flex h-20 w-20 items-center justify-center rounded-2xl bg-blue-600">
+            <div className="mb-6 flex h-20 w-20 items-center justify-center rounded-2xl bg-primary">
               <CheckCircleIcon className="text-white" sx={{ fontSize: 48 }} />
             </div>
 
-            <h1 className="mb-4 text-2xl font-bold text-white">Simulação finalizada</h1>
+            <h1 className="mb-4 text-2xl font-bold text-foreground">Simulação finalizada</h1>
 
-            <p className="mb-8 max-w-md text-sm leading-relaxed text-gray-400">
+            <p className="mb-8 max-w-md text-sm leading-relaxed text-text-secondary">
               Nossa IA processou a simulação com sucesso. Seu relatório está pronto para download.
             </p>
 
             <div className="mb-8 flex w-full max-w-lg flex-wrap justify-center gap-4">
-              <div className="flex items-center gap-2 rounded-lg bg-gray-800 px-4 py-3">
-                <GavelIcon className="text-blue-400" sx={{ fontSize: 20 }} />
+              <div className="flex items-center gap-2 rounded-xl border border-(--border-subtle) bg-surface px-4 py-3">
+                <GavelIcon className="text-primary" sx={{ fontSize: 20 }} />
                 <div className="text-left">
-                  <p className="text-xs uppercase tracking-wide text-gray-500">Tipo</p>
-                  <p className="text-sm font-semibold text-white">Audiência Simulada</p>
+                  <p className="text-xs uppercase tracking-wide text-text-muted">Tipo</p>
+                  <p className="text-sm font-semibold text-foreground">Audiência Simulada</p>
                 </div>
               </div>
 
-              <div className="flex items-center gap-2 rounded-lg bg-gray-800 px-4 py-3">
-                <TrendingUpIcon className="text-green-400" sx={{ fontSize: 20 }} />
+              <div className="flex items-center gap-2 rounded-xl border border-(--border-subtle) bg-surface px-4 py-3">
+                <TrendingUpIcon className="text-emerald-400" sx={{ fontSize: 20 }} />
                 <div className="text-left">
-                  <p className="text-xs uppercase tracking-wide text-gray-500">Status</p>
-                  <p className="text-sm font-semibold text-white">Concluída</p>
+                  <p className="text-xs uppercase tracking-wide text-text-muted">Status</p>
+                  <p className="text-sm font-semibold text-foreground">Concluída</p>
                 </div>
               </div>
             </div>
@@ -98,7 +100,7 @@ export function SimulatorFeedback() {
               <Button
                 variant="outline"
                 size="lg"
-                onClick={handleGoHome}
+                onClick={() => router.push('/dashboard')}
                 leftIcon={<HomeIcon />}
                 fullWidth
               >
@@ -109,7 +111,7 @@ export function SimulatorFeedback() {
         </article>
 
         {reportId && (
-          <footer className="mt-6 text-center text-xs text-gray-600">
+          <footer className="mt-6 text-center text-xs text-text-muted">
             Ref. ID: {reportId} • A análise automatizada não substitui o acompanhamento legal humano.
           </footer>
         )}
