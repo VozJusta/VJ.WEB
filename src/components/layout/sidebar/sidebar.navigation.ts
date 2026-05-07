@@ -3,6 +3,7 @@ import {
   FolderOpenRounded,
   ChatBubbleOutlineRounded,
   PsychologyRounded,
+  NotificationsOutlined,
   PersonOutlineRounded,
   SettingsOutlined,
   LogoutRounded,
@@ -14,6 +15,7 @@ export const sidebarMainNav: SidebarNavItem[] = [
   { label: "Documentos", href: "/dashboard/documentos", icon: FolderOpenRounded },
   { label: "Chat", href: "/dashboard/casos/novo", icon: ChatBubbleOutlineRounded },
   { label: "Simulador", href: "/dashboard/simulador", icon: PsychologyRounded },
+  { label: "Notificações", href: "/dashboard/notificacoes", icon: NotificationsOutlined },
   { label: "Perfil", href: "/dashboard/perfil", icon: PersonOutlineRounded },
 ];
 

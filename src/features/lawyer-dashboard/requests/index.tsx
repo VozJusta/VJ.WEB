@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useMemo } from "react";
+import { useRouter } from "next/navigation";
 import { RequestCard } from "@/components/ui/request-card";
 import { FilterTabs } from "@/components/ui/filter-tabs";
 import { EmptyState } from "@/components/ui/empty-state";
@@ -20,6 +21,7 @@ function apiStatusToUi(status: string): RequestStatus {
 }
 
 export function RequestsList() {
+  const router = useRouter();
   const { requests: rawRequests, isLoading, error, accept, reject } = useLawyerRequests();
   const [activeFilter, setActiveFilter] = useState<FilterValue>("all");
   const [visible, setVisible] = useState(PAGE_SIZE);
@@ -67,13 +69,13 @@ export function RequestsList() {
   const handleViewDossier = (id: string) => {
     const req = rawRequests.find((r) => r.id === id);
     const query = req ? `?caseId=${req.caseId}&reportId=${req.reportId}&status=${req.statusCase}` : "";
-    window.location.href = `/advogado/solicitacoes/${id}${query}`;
+    router.push(`/advogado/solicitacoes/${id}${query}`);
   };
 
   const handleCardClick = (id: string) => {
     const req = rawRequests.find((r) => r.id === id);
     const query = req ? `?caseId=${req.caseId}&reportId=${req.reportId}&status=${req.statusCase}` : "";
-    window.location.href = `/advogado/solicitacoes/${id}${query}`;
+    router.push(`/advogado/solicitacoes/${id}${query}`);
   };
 
   const handleFilterChange = (value: FilterValue) => {
