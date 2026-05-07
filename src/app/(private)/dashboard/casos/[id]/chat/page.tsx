@@ -1,5 +1,4 @@
 import { AIChatFeature } from "@/features/dashboard/ai-chat";
-import { MOCK_CHAT_MESSAGES } from "@/features/dashboard/ai-chat/ai-chat.data";
 
 export const metadata = {
   title: "Chat com IA | Voz Justa",
@@ -8,17 +7,12 @@ export const metadata = {
 
 interface AIChatPageProps {
   params: Promise<{ id: string }>;
+  searchParams: Promise<{ conversationId?: string }>;
 }
 
-export default async function AIChatPage({ params }: AIChatPageProps) {
+export default async function AIChatPage({ params, searchParams }: AIChatPageProps) {
   const { id } = await params;
+  const { conversationId } = await searchParams;
 
-  return (
-    <AIChatFeature
-      initialMessages={MOCK_CHAT_MESSAGES}
-      caseId={id}
-      progress={40}
-      stage="Análise Inicial"
-    />
-  );
+  return <AIChatFeature caseId={id} conversationId={conversationId} />;
 }

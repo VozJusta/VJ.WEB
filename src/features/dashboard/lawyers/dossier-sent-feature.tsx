@@ -2,27 +2,32 @@
 
 import { useRouter } from "next/navigation";
 import Image from "next/image";
-import { 
-  CheckRounded, 
-  DescriptionRounded, 
+import {
+  CheckRounded,
+  DescriptionRounded,
   AttachFileRounded,
-  InfoRounded 
+  InfoRounded,
+  DownloadingRounded,
 } from "@mui/icons-material";
 import { Button } from "@/components/ui/button";
+import { useReportDownload } from "@/hooks/useReportDownload";
 
 interface DossierSentFeatureProps {
   lawyerName: string;
   lawyerId: string;
+  reportId?: string;
 }
 
-export function DossierSentFeature({ lawyerName, lawyerId }: DossierSentFeatureProps) {
+export function DossierSentFeature({ lawyerName, lawyerId, reportId }: DossierSentFeatureProps) {
   const router = useRouter();
+  const { downloadPdf, isDownloading } = useReportDownload();
 
   const handleBackToCases = () => {
     router.push("/dashboard/casos");
   };
 
   const handleViewPDF = () => {
+    if (reportId) downloadPdf(reportId);
   };
 
   return (
@@ -103,7 +108,7 @@ export function DossierSentFeature({ lawyerName, lawyerId }: DossierSentFeatureP
                     Provas e Evidências
                   </h3>
                   <p className="text-xs text-white/50">
-                    8 arquivos anexados
+                    Consolidadas e anexadas
                   </p>
                 </div>
               </div>
@@ -138,16 +143,25 @@ export function DossierSentFeature({ lawyerName, lawyerId }: DossierSentFeatureP
             Voltar para Meus Casos
           </Button>
 
-          <Button
-            variant="ghost"
-            size="lg"
-            fullWidth
-            onClick={handleViewPDF}
-            leftIcon={<DescriptionRounded fontSize="small" aria-hidden />}
-            className="border border-[#1B2233] text-white/70 hover:text-white hover:bg-white/05"
-          >
-            Visualizar PDF do Dossiê
-          </Button>
+          {reportId && (
+            <Button
+              variant="ghost"
+              size="lg"
+              fullWidth
+              onClick={handleViewPDF}
+              disabled={isDownloading}
+              leftIcon={
+                isDownloading ? (
+                  <DownloadingRounded fontSize="small" aria-hidden />
+                ) : (
+                  <DescriptionRounded fontSize="small" aria-hidden />
+                )
+              }
+              className="border border-[#1B2233] text-white/70 hover:text-white hover:bg-white/05"
+            >
+              {isDownloading ? "Baixando..." : "Visualizar PDF do Dossiê"}
+            </Button>
+          )}
         </div>
       </article>
     </div>

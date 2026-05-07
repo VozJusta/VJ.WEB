@@ -1,6 +1,7 @@
 import {
   HomeRounded,
   InboxRounded,
+  NotificationsOutlined,
   PersonOutlineRounded,
   SettingsOutlined,
   LogoutRounded,
@@ -10,6 +11,7 @@ import type { SidebarNavItem } from "./sidebar.types";
 export const lawyerMainNav: SidebarNavItem[] = [
   { label: "Dashboard", href: "/advogado", icon: HomeRounded },
   { label: "Solicitações", href: "/advogado/solicitacoes", icon: InboxRounded },
+  { label: "Notificações", href: "/advogado/notificacoes", icon: NotificationsOutlined },
   { label: "Perfil", href: "/advogado/perfil", icon: PersonOutlineRounded },
 ];
 

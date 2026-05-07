@@ -1,37 +1,34 @@
-import type { Metadata } from "next";
-import { notFound } from "next/navigation";
+"use client";
+
+import { use } from "react";
 import { LawyerProfileFeature } from "@/features/dashboard/lawyers/lawyer-profile-feature";
-import { getLawyerById } from "@/features/dashboard/lawyers/lawyers.data";
+import { useLawyerProfile } from "@/hooks/useLawyerProfile";
 
 interface LawyerProfilePageProps {
-  params: Promise<{
-    id: string;
-  }>;
+  params: Promise<{ id: string }>;
 }
 
-export async function generateMetadata({ params }: LawyerProfilePageProps): Promise<Metadata> {
-  const { id } = await params;
-  const lawyer = getLawyerById(id);
+export default function LawyerProfilePage({ params }: LawyerProfilePageProps) {
+  const { id } = use(params);
+  const { lawyer, isLoading, error } = useLawyerProfile(id);
 
-  if (!lawyer) {
-    return {
-      title: "Advogado não encontrado | Voz Justa",
-    };
+  if (isLoading) {
+    return (
+      <div className="flex flex-col gap-6 w-full max-w-4xl mx-auto px-4 py-6 md:px-6 md:py-8">
+        <div className="h-10 w-40 animate-pulse rounded-lg bg-white/8" />
+        <div className="h-80 animate-pulse rounded-3xl bg-[#0d1526]" />
+        <div className="h-40 animate-pulse rounded-3xl bg-[#0d1526]" />
+      </div>
+    );
   }
 
-  return {
-    title: `${lawyer.name} - ${lawyer.specialization} | Voz Justa`,
-    description: lawyer.description,
-  };
-}
-
-export default async function LawyerProfilePage({ params }: LawyerProfilePageProps) {
-  const { id } = await params;
-  const lawyer = getLawyerById(id);
-
-  if (!lawyer) {
-    notFound();
+  if (error || !lawyer) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-screen px-4">
+        <p className="text-sm text-red-400">{error ?? "Advogado não encontrado."}</p>
+      </div>
+    );
   }
 
-  return <LawyerProfileFeature lawyer={lawyer} />;
+  return <LawyerProfileFeature lawyer={lawyer} lawyerId={id} />;
 }

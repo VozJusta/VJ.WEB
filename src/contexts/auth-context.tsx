@@ -1,8 +1,8 @@
 "use client";
 
-import { createContext, useContext, useState, useEffect, ReactNode } from "react";
+import { createContext, useContext, ReactNode } from "react";
 import type { User, UserRole } from "@/types/user.types";
-import { getUserRole, setUserRole as setStoredUserRole, getCurrentUser } from "@/lib/auth";
+import { useAuthStore } from "@/store/auth.store";
 
 type AuthContextType = {
   user: User;
@@ -12,23 +12,19 @@ type AuthContextType = {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [currentRole, setCurrentRole] = useState<UserRole>("citizen");
-  const [user, setUser] = useState<User>(() => getCurrentUser());
+  const storeUser = useAuthStore((s) => s.user);
+  const setUserRole = useAuthStore((s) => s.setUserRole);
 
-  useEffect(() => {
-    const role = getUserRole();
-    setCurrentRole(role);
-    setUser(getCurrentUser());
-  }, []);
-
-  const handleSetRole = (role: UserRole) => {
-    setStoredUserRole(role);
-    setCurrentRole(role);
-    setUser(getCurrentUser());
+  const user: User = {
+    id: storeUser?.id ?? "",
+    name: storeUser?.fullName ?? "Usuário",
+    email: storeUser?.email ?? "",
+    role: (storeUser?.role ?? "citizen") as UserRole,
+    avatarUrl: undefined,
   };
 
   return (
-    <AuthContext.Provider value={{ user, setRole: handleSetRole }}>
+    <AuthContext.Provider value={{ user, setRole: setUserRole }}>
       {children}
     </AuthContext.Provider>
   );

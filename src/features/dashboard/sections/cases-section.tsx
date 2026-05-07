@@ -1,41 +1,28 @@
+"use client";
+
 import Link from "next/link";
 import { ListAltRounded, ChevronRightRounded } from "@mui/icons-material";
 import { CaseCard } from "@/components/ui/case-card";
-import type { CaseCardProps } from "@/components/ui/case-card/case-card.types";
+import { useDashboardCitizen } from "@/hooks/useDashboardCitizen";
+import { getCategoryLabel } from "@/lib/status";
 
-const RECENT_CASES: Omit<CaseCardProps, "className">[] = [
-  {
-    id: "29384",
-    title: "Ação Trabalhista - XPTO Tecnologia",
-    status: "analysis",
-    updatedLabel: "Atualizado há 2 horas",
-    protocol: "#29384-BR",
-    href: "/dashboard/casos/29384",
-  },
-  {
-    id: "11045",
-    title: "Indenização por Danos Morais - Voo Latam",
-    status: "concluded",
-    updatedLabel: "Finalizado em 15/05/2024",
-    protocol: "#11045-BR",
-    href: "/dashboard/casos/11045",
-  },
-];
+function statusMap(apiStatus: string): "analysis" | "concluded" | "pending" | "archived" {
+  const s = apiStatus?.toLowerCase();
+  if (s === "accepted") return "concluded";
+  if (s === "refused" || s === "archived") return "archived";
+  if (s === "pending") return "pending";
+  return "analysis";
+}
 
 export function CasesSection() {
+  const { reports, isLoading, error } = useDashboardCitizen();
+
   return (
     <section aria-labelledby="my-cases-heading">
       <header className="mb-5 flex items-center justify-between gap-4">
         <div className="flex items-center gap-2.5">
-          <ListAltRounded
-            fontSize="small"
-            className="text-primary"
-            aria-hidden="true"
-          />
-          <h2
-            id="my-cases-heading"
-            className="text-lg font-bold text-foreground"
-          >
+          <ListAltRounded fontSize="small" className="text-primary" aria-hidden="true" />
+          <h2 id="my-cases-heading" className="text-lg font-bold text-foreground">
             Meus Casos
           </h2>
         </div>
@@ -49,13 +36,38 @@ export function CasesSection() {
         </Link>
       </header>
 
-      <ul role="list" className="flex flex-col gap-3">
-        {RECENT_CASES.map((caseItem) => (
-          <li key={caseItem.id}>
-            <CaseCard {...caseItem} />
-          </li>
-        ))}
-      </ul>
+      {isLoading && (
+        <ul role="list" className="flex flex-col gap-3">
+          {[1, 2].map((i) => (
+            <li key={i} className="h-20 animate-pulse rounded-xl bg-surface-elevated" />
+          ))}
+        </ul>
+      )}
+
+      {error && (
+        <p className="text-sm text-red-400">{error}</p>
+      )}
+
+      {!isLoading && !error && (reports ?? []).length === 0 && (
+        <p className="text-sm text-text-muted">Nenhum caso encontrado.</p>
+      )}
+
+      {!isLoading && (reports ?? []).length > 0 && (
+        <ul role="list" className="flex flex-col gap-3">
+          {(reports ?? []).slice(0, 3).map((report) => (
+            <li key={report.id}>
+              <CaseCard
+                id={report.id}
+                title={getCategoryLabel(report.category_detected) || 'Caso'}
+                status={statusMap(report.status)}
+                updatedLabel={new Date(report.created_at).toLocaleDateString('pt-BR')}
+                protocol={`#${report.id.slice(0, 8).toUpperCase()}`}
+                href={`/dashboard/casos/${report.id}`}
+              />
+            </li>
+          ))}
+        </ul>
+      )}
     </section>
   );
 }

@@ -14,6 +14,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { API } from "@/lib/api";
 import type { UserRole } from "@/types/auth.types";
 import { authService, AuthServiceError } from "@/services/auth.service";
+import { authStorage } from "@/lib/auth";
 import { loginSchema } from "./login.schema";
 
 type LoginFormState = {
@@ -59,6 +60,7 @@ export function LoginForm() {
         fullName: authResponse.full_name,
         role: authResponse.role,
       });
+      authStorage.setUserRole(authResponse.role);
       setAuthenticated(false);
       setError(null);
 
@@ -78,7 +80,7 @@ export function LoginForm() {
       });
 
       router.replace(
-        `/verificacao/email?email=${encodeURIComponent(validatedData.email)}&type=login`
+        `/verificacao/email?email=${encodeURIComponent(validatedData.email)}&type=login&role=${authResponse.role}`
       );
 
     } catch (error) {

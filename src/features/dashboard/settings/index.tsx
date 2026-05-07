@@ -136,7 +136,7 @@ export function SettingsFeature() {
             icon={LanguageRounded}
             label="Idioma"
             type="link"
-            href="/dashboard/configuracoes/idioma"
+            href="#"
             value="Português (BR)"
           />
         </ul>
@@ -169,7 +169,7 @@ export function SettingsFeature() {
             icon={DescriptionRounded}
             label="Termos de Uso"
             type="link"
-            href="/termos-de-uso"
+            href="/contato"
           />
           <SectionDivider />
           <SettingRow
@@ -186,7 +186,7 @@ export function SettingsFeature() {
       </section>
 
       <Link
-        href="/suporte"
+        href="/contato"
         className="w-full flex items-center gap-4 px-5 py-4 rounded-2xl bg-[#111c30] border border-[#1B2233] hover:border-[#1B2233] hover:bg-[#152036] transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2585F4]"
         aria-label="Falar com suporte — atendimento 24/7 disponível"
       >

@@ -10,36 +10,29 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-
-const MOCK_USER = {
-  name: "Ricardo Oliveira",
-  plan: "Membro Premium",
-  avatarUrl: "",
-  fields: {
-    fullName: "Ricardo Oliveira Silva",
-    cpf: "123.456.789-00",
-    email: "ricardo.silva@exemplo.com",
-    phone: "(11) 98765-4321",
-  },
-};
+import { useAuthStore } from "@/store/auth.store";
+import { formatCPF, formatPhone } from "@/lib/status";
 
 export function ProfileFeature() {
-  const [fullName, setFullName] = useState(MOCK_USER.fields.fullName);
-  const [cpf, setCpf] = useState(MOCK_USER.fields.cpf);
-  const [email, setEmail] = useState(MOCK_USER.fields.email);
-  const [phone, setPhone] = useState(MOCK_USER.fields.phone);
+  const user = useAuthStore((s) => s.user);
+
+  const [fullName, setFullName] = useState(user?.fullName ?? "");
+  const [email, setEmail] = useState(user?.email ?? "");
+  const [cpf, setCpf] = useState("");
+  const [phone, setPhone] = useState("");
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
 
   const handleSave = async () => {
     setSaving(true);
-    await new Promise((r) => setTimeout(r, 1200));
+    await new Promise((r) => setTimeout(r, 800));
     setSaving(false);
     setSaved(true);
     setTimeout(() => setSaved(false), 2500);
   };
 
-  const initials = MOCK_USER.name
+  const displayName = user?.fullName ?? "Usuário";
+  const initials = displayName
     .split(" ")
     .slice(0, 2)
     .map((n) => n[0])
@@ -52,17 +45,9 @@ export function ProfileFeature() {
         <div className="relative">
           <div className="w-24 h-24 rounded-full p-0.5 bg-linear-to-br from-[#2585F4] to-[#1565C0] shadow-[0_0_24px_rgba(37,133,244,0.35)]">
             <div className="w-full h-full rounded-full bg-[#111c30] overflow-hidden flex items-center justify-center">
-              {MOCK_USER.avatarUrl ? (
-                <img
-                  src={MOCK_USER.avatarUrl}
-                  alt={`Foto de ${MOCK_USER.name}`}
-                  className="w-full h-full object-cover"
-                />
-              ) : (
-                <span className="text-2xl font-bold text-white select-none">
-                  {initials}
-                </span>
-              )}
+              <span className="text-2xl font-bold text-white select-none">
+                {initials}
+              </span>
             </div>
           </div>
 
@@ -77,9 +62,9 @@ export function ProfileFeature() {
 
         <div className="flex flex-col items-center gap-2">
           <h1 className="text-2xl font-bold text-white tracking-tight">
-            {MOCK_USER.name}
+            {displayName}
           </h1>
-          <Badge text={MOCK_USER.plan} variant="blue" />
+          <Badge text="Cidadão" variant="blue" />
         </div>
       </div>
 
@@ -98,9 +83,10 @@ export function ProfileFeature() {
           id="profile-cpf"
           label="CPF"
           value={cpf}
-          onChange={(e) => setCpf(e.target.value)}
+          onChange={(e) => setCpf(formatCPF(e.target.value))}
           inputMode="numeric"
           autoComplete="off"
+          placeholder="000.000.000-00"
         />
         <Input
           id="profile-email"
@@ -115,8 +101,9 @@ export function ProfileFeature() {
           label="Telefone"
           type="tel"
           value={phone}
-          onChange={(e) => setPhone(e.target.value)}
+          onChange={(e) => setPhone(formatPhone(e.target.value))}
           autoComplete="tel"
+          placeholder="(00) 00000-0000"
         />
 
         <Button

@@ -1,33 +1,47 @@
 "use client";
 
 import { useState, useMemo } from "react";
+import { useRouter } from "next/navigation";
 import { RequestCard } from "@/components/ui/request-card";
 import { FilterTabs } from "@/components/ui/filter-tabs";
 import { EmptyState } from "@/components/ui/empty-state";
-import type { RequestCardProps, RequestStatus } from "@/components/ui/request-card/request-card.types";
+import type { RequestStatus } from "@/components/ui/request-card/request-card.types";
 import type { FilterTabItem } from "@/components/ui/filter-tabs/filter-tabs.types";
+import { useLawyerRequests } from "@/hooks/useLawyerRequests";
+import { getCategoryLabel } from "@/lib/status";
 
 type FilterValue = "all" | RequestStatus;
 
-interface RequestsListProps {
-  initialRequests?: Omit<RequestCardProps, "onClick" | "onAccept" | "onReject" | "onViewDossier" | "className">[];
-}
-
 const PAGE_SIZE = 6;
 
-export function RequestsList({ initialRequests = [] }: RequestsListProps) {
-  const [requests, setRequests] = useState(initialRequests);
+function apiStatusToUi(status: string): RequestStatus {
+  if (status === "Accepted") return "accepted";
+  if (status === "Refused" || status === "Rejected") return "rejected";
+  return "pending";
+}
+
+export function RequestsList() {
+  const router = useRouter();
+  const { requests: rawRequests, isLoading, error, accept, reject } = useLawyerRequests();
   const [activeFilter, setActiveFilter] = useState<FilterValue>("all");
   const [visible, setVisible] = useState(PAGE_SIZE);
 
-  const counts = useMemo(() => {
-    return {
-      all: requests.length,
-      pending: requests.filter((r) => r.status === "pending").length,
-      accepted: requests.filter((r) => r.status === "accepted").length,
-      rejected: requests.filter((r) => r.status === "rejected").length,
-    };
-  }, [requests]);
+  const requests = rawRequests.map((r) => ({
+    id: r.id,
+    protocol: `#${r.id.slice(0, 8).toUpperCase()}`,
+    citizenName: r.clientName,
+    citizenInitials: r.clientName.split(' ').slice(0, 2).map((n: string) => n[0]).join(''),
+    area: getCategoryLabel(r.category_detected) || 'Geral',
+    status: apiStatusToUi(r.statusCase),
+    createdAt: new Date(r.created_at).toLocaleDateString('pt-BR'),
+  }));
+
+  const counts = useMemo(() => ({
+    all: requests.length,
+    pending: requests.filter((r) => r.status === "pending").length,
+    accepted: requests.filter((r) => r.status === "accepted").length,
+    rejected: requests.filter((r) => r.status === "rejected").length,
+  }), [requests]);
 
   const filterTabs: FilterTabItem<FilterValue>[] = [
     { value: "all", label: "Todas", count: counts.all },
@@ -44,30 +58,44 @@ export function RequestsList({ initialRequests = [] }: RequestsListProps) {
   const shownRequests = filteredRequests.slice(0, visible);
   const hasMore = visible < filteredRequests.length;
 
-  const handleAccept = (id: string) => {
-    setRequests((prev) =>
-      prev.map((r) => (r.id === id ? { ...r, status: "accepted" as const } : r)),
-    );
+  const handleAccept = async (id: string) => {
+    await accept(id);
   };
 
-  const handleReject = (id: string) => {
-    setRequests((prev) =>
-      prev.map((r) => (r.id === id ? { ...r, status: "rejected" as const } : r)),
-    );
+  const handleReject = async (id: string) => {
+    await reject(id);
   };
 
   const handleViewDossier = (id: string) => {
-    window.location.href = `/advogado/solicitacoes/${id}`;
+    const req = rawRequests.find((r) => r.id === id);
+    const query = req ? `?caseId=${req.caseId}&reportId=${req.reportId}&status=${req.statusCase}` : "";
+    router.push(`/advogado/solicitacoes/${id}${query}`);
   };
 
   const handleCardClick = (id: string) => {
-    window.location.href = `/advogado/solicitacoes/${id}`;
+    const req = rawRequests.find((r) => r.id === id);
+    const query = req ? `?caseId=${req.caseId}&reportId=${req.reportId}&status=${req.statusCase}` : "";
+    router.push(`/advogado/solicitacoes/${id}${query}`);
   };
 
   const handleFilterChange = (value: FilterValue) => {
     setActiveFilter(value);
     setVisible(PAGE_SIZE);
   };
+
+  if (isLoading) {
+    return (
+      <section className="w-full flex flex-col gap-4" aria-label="Carregando solicitações">
+        {[1, 2, 3].map((i) => (
+          <div key={i} className="h-24 animate-pulse rounded-xl bg-surface-elevated" />
+        ))}
+      </section>
+    );
+  }
+
+  if (error) {
+    return <p className="text-sm text-red-400">{error}</p>;
+  }
 
   if (requests.length === 0) {
     return (

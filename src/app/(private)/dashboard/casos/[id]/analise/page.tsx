@@ -1,28 +1,27 @@
-import type { Metadata } from "next";
-import { CaseAnalysisCompleteFeature } from "@/features/dashboard/cases/case-analysis-complete-feature";
+"use client";
 
-export const metadata: Metadata = {
-  title: "Análise Finalizada | Voz Justa",
-  description: "Análise da IA finalizada com sucesso",
-};
+import { use } from "react";
+import { useSearchParams } from "next/navigation";
+import { CaseAnalysisCompleteFeature } from "@/features/dashboard/cases/case-analysis-complete-feature";
+import { useCaseDetail } from "@/hooks/useCaseDetail";
 
 interface AnalisePageProps {
-  params: Promise<{
-    id: string;
-  }>;
+  params: Promise<{ id: string }>;
 }
 
-export default async function AnalisePage({ params }: AnalisePageProps) {
-  const { id } = await params;
-  const referenceId = `AZ-${id}-2024`;
+export default function AnalisePage({ params }: AnalisePageProps) {
+  const { id: caseId } = use(params);
+  const searchParams = useSearchParams();
+  const reportId = searchParams.get("reportId") ?? caseId;
+
+  const { report, isLoading } = useCaseDetail(reportId);
 
   return (
     <CaseAnalysisCompleteFeature
-      caseId={id}
-      category="Direito do Consumidor"
-      viability="Alta Probabilidade"
-      viabilityLevel="high"
-      referenceId={referenceId}
+      caseId={caseId}
+      reportId={reportId}
+      report={report}
+      isLoading={isLoading}
     />
   );
 }

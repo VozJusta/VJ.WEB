@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { formatDistanceToNow } from "date-fns/formatDistanceToNow";
 import { ptBR } from "date-fns/locale/pt-BR";
 import {
@@ -8,65 +7,69 @@ import {
   CheckCircleOutline,
   WarningAmberOutlined,
   GavelOutlined,
+  PersonAddAltRounded,
+  MessageRounded,
 } from "@mui/icons-material";
 import { cn } from "@/lib/utils";
-import type { Notification } from "@/types/notification.types";
+import type { ApiNotification } from "@/types/notification.types";
 
 interface NotificationCardProps {
-  notification: Notification;
+  notification: ApiNotification;
   onMarkAsRead?: (id: string) => void;
+  onDelete?: (id: string) => void;
 }
 
-const iconMap = {
-  info: InfoOutlined,
-  success: CheckCircleOutline,
-  warning: WarningAmberOutlined,
-  "case-update": GavelOutlined,
+type IconKey = "CASE_UPDATED" | "CASE_ACCEPTED" | "CASE_REFUSED" | "NEW_REQUEST" | "MESSAGE" | "default";
+
+const iconMap: Record<IconKey, React.ElementType> = {
+  CASE_UPDATED: GavelOutlined,
+  CASE_ACCEPTED: CheckCircleOutline,
+  CASE_REFUSED: WarningAmberOutlined,
+  NEW_REQUEST: PersonAddAltRounded,
+  MESSAGE: MessageRounded,
+  default: InfoOutlined,
 };
 
-const colorMap = {
-  info: {
-    icon: "text-blue-500",
-    bg: "bg-blue-500/10",
-    border: "border-blue-500/20",
-  },
-  success: {
-    icon: "text-green-500",
-    bg: "bg-green-500/10",
-    border: "border-green-500/20",
-  },
-  warning: {
-    icon: "text-amber-500",
-    bg: "bg-amber-500/10",
-    border: "border-amber-500/20",
-  },
-  "case-update": {
-    icon: "text-primary",
-    bg: "bg-primary/10",
-    border: "border-primary/20",
-  },
+const colorMap: Record<IconKey, { icon: string; bg: string; border: string }> = {
+  CASE_UPDATED: { icon: "text-primary", bg: "bg-primary/10", border: "border-primary/20" },
+  CASE_ACCEPTED: { icon: "text-emerald-500", bg: "bg-emerald-500/10", border: "border-emerald-500/20" },
+  CASE_REFUSED: { icon: "text-red-400", bg: "bg-red-400/10", border: "border-red-400/20" },
+  NEW_REQUEST: { icon: "text-amber-400", bg: "bg-amber-400/10", border: "border-amber-400/20" },
+  MESSAGE: { icon: "text-blue-400", bg: "bg-blue-400/10", border: "border-blue-400/20" },
+  default: { icon: "text-white/50", bg: "bg-white/5", border: "border-white/10" },
 };
 
-export function NotificationCard({
-  notification,
-  onMarkAsRead,
-}: NotificationCardProps) {
-  const Icon = iconMap[notification.type];
-  const colors = colorMap[notification.type];
+function resolveKey(type: string): IconKey {
+  if (type in iconMap) return type as IconKey;
+  return "default";
+}
 
-  const timeAgo = formatDistanceToNow(new Date(notification.timestamp), {
+export function NotificationCard({ notification, onMarkAsRead, onDelete }: NotificationCardProps) {
+  const key = resolveKey(notification.type);
+  const Icon = iconMap[key];
+  const colors = colorMap[key];
+
+  const timeAgo = formatDistanceToNow(new Date(notification.created_at), {
     addSuffix: true,
     locale: ptBR,
   });
 
   const handleClick = () => {
-    if (!notification.read && onMarkAsRead) {
+    if (!notification.is_read && onMarkAsRead) {
       onMarkAsRead(notification.id);
     }
   };
 
-  const content = (
-    <>
+  return (
+    <article
+      onClick={handleClick}
+      className={cn(
+        "group flex gap-3 rounded-xl border border-(--border-subtle) bg-white/5 p-4 transition-all cursor-pointer",
+        "hover:border-(--border-default) hover:bg-white/8",
+        !notification.is_read && "bg-primary/5 border-primary/15",
+      )}
+      aria-label={`Notificação: ${notification.title}`}
+    >
       <div
         className={cn(
           "flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border",
@@ -83,66 +86,36 @@ export function NotificationCard({
           <h3 className="text-sm font-semibold leading-snug text-foreground">
             {notification.title}
           </h3>
-          {!notification.read && (
-            <span
-              className="mt-1 h-2 w-2 shrink-0 rounded-full bg-primary"
-              aria-label="Não lida"
-            />
-          )}
+          <div className="flex items-center gap-2 shrink-0">
+            {!notification.is_read && (
+              <span className="h-2 w-2 rounded-full bg-primary" aria-label="Não lida" />
+            )}
+            {onDelete && (
+              <button
+                type="button"
+                onClick={(e) => { e.stopPropagation(); onDelete(notification.id); }}
+                className="opacity-0 group-hover:opacity-100 text-white/30 hover:text-red-400 transition-all text-xs"
+                aria-label="Remover notificação"
+              >
+                ✕
+              </button>
+            )}
+          </div>
         </header>
 
         <p className="text-sm leading-relaxed text-text-secondary">
-          {notification.message}
+          {notification.body}
         </p>
 
-        <footer className="mt-1 flex items-center gap-3">
+        <footer className="mt-1">
           <time
-            dateTime={new Date(notification.timestamp).toISOString()}
+            dateTime={notification.created_at}
             className="text-xs text-text-muted"
           >
             {timeAgo}
           </time>
-          {notification.actionLabel && notification.actionUrl && (
-            <span
-              className="text-xs font-semibold text-primary transition-colors hover:text-primary/80"
-              aria-label={notification.actionLabel}
-            >
-              {notification.actionLabel}
-            </span>
-          )}
         </footer>
       </div>
-    </>
-  );
-
-  if (notification.actionUrl) {
-    return (
-      <Link href={notification.actionUrl} onClick={handleClick}>
-        <article
-          className={cn(
-            "group flex gap-3 rounded-xl border border-(--border-subtle) bg-white/5 p-4 transition-all",
-            "hover:border-(--border-default) hover:bg-white/8",
-            "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary",
-            !notification.read && "bg-primary/5",
-          )}
-          aria-label={`Notificação: ${notification.title}`}
-        >
-          {content}
-        </article>
-      </Link>
-    );
-  }
-
-  return (
-    <article
-      className={cn(
-        "flex gap-3 rounded-xl border border-(--border-subtle) bg-white/5 p-4",
-        !notification.read && "bg-primary/5",
-      )}
-      aria-label={`Notificação: ${notification.title}`}
-      onClick={handleClick}
-    >
-      {content}
     </article>
   );
 }

@@ -1,69 +1,95 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useEffect, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 import { MessageBubble } from "@/components/ui/message-bubble";
 import { ChatInput } from "@/components/ui/chat-input";
-import type { Message, QuickAction } from "@/types/chat.types";
+import { useChat } from "@/hooks/useChat";
+import { chatService } from "@/services/chat.service";
 
 interface AIChatFeatureProps {
-  initialMessages?: Message[];
+  conversationId?: string;
   caseId?: string;
-  progress?: number;
-  stage?: string;
 }
 
-export function AIChatFeature({
-  initialMessages = [],
-  caseId,
-  progress = 40,
-  stage = "Análise Inicial",
-}: AIChatFeatureProps) {
-  const [messages, setMessages] = useState<Message[]>(initialMessages);
-  const [inputValue, setInputValue] = useState("");
-  const [isProcessing, setIsProcessing] = useState(false);
-  const messagesEndRef = useRef<HTMLDivElement>(null);
+export function AIChatFeature({ conversationId, caseId }: AIChatFeatureProps) {
+  const router = useRouter();
+  const {
+    messages,
+    inputValue,
+    setInputValue,
+    isLoading,
+    isFetchingHistory,
+    isFinished,
+    reportId,
+    error,
+    progress,
+    bottomRef,
+    sendMessage,
+    loadHistory,
+  } = useChat();
 
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  };
+  const [isRecording, setIsRecording] = useState(false);
+  const [isTranscribing, setIsTranscribing] = useState(false);
+  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
+  const chunksRef = useRef<Blob[]>([]);
 
   useEffect(() => {
-    scrollToBottom();
-  }, [messages]);
+    if (conversationId && messages.length === 0) {
+      loadHistory(conversationId);
+    }
+  }, [conversationId]);
 
-  const handleSendMessage = async (content: string) => {
-    if (!content.trim() || isProcessing) return;
+  useEffect(() => {
+    if (isFinished && reportId) {
+      router.push(`/dashboard/casos/${caseId ?? 'novo'}/analise?reportId=${reportId}`);
+    }
+  }, [isFinished, reportId, caseId, router]);
 
-    const userMessage: Message = {
-      id: Date.now().toString(),
-      role: "user",
-      content: content.trim(),
-      timestamp: new Date(),
-    };
+  const handleVoiceRecord = async () => {
+    if (isRecording) {
+      mediaRecorderRef.current?.stop();
+      setIsRecording(false);
+      return;
+    }
 
-    setMessages((prev) => [...prev, userMessage]);
-    setInputValue("");
-    setIsProcessing(true);
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const recorder = new MediaRecorder(stream);
+      chunksRef.current = [];
 
-    setTimeout(() => {
-      const aiResponse: Message = {
-        id: (Date.now() + 1).toString(),
-        role: "assistant",
-        content:
-          "Entendi. Vou analisar as informações fornecidas. Você pode me fornecer mais detalhes sobre o contexto do incidente?",
-        timestamp: new Date(),
+      recorder.ondataavailable = (e) => {
+        if (e.data.size > 0) chunksRef.current.push(e.data);
       };
-      setMessages((prev) => [...prev, aiResponse]);
-      setIsProcessing(false);
-    }, 1500);
+
+      recorder.onstop = async () => {
+        stream.getTracks().forEach((t) => t.stop());
+        const blob = new Blob(chunksRef.current, { type: 'audio/webm' });
+        const url = URL.createObjectURL(blob);
+
+        setIsTranscribing(true);
+        try {
+          const text = await chatService.transcribeAudio(url);
+          if (text.trim()) {
+            setInputValue(text);
+          }
+        } catch {
+          // transcription failed — user can type manually
+        } finally {
+          URL.revokeObjectURL(url);
+          setIsTranscribing(false);
+        }
+      };
+
+      mediaRecorderRef.current = recorder;
+      recorder.start();
+      setIsRecording(true);
+    } catch {
+      // microphone access denied or not available
+    }
   };
 
-  const handleQuickAction = (action: QuickAction) => {
-    handleSendMessage(action.value);
-  };
-
-  const handleVoiceRecord = () => {
-  };
+  const stage = isFinished ? "Análise Concluída" : isFetchingHistory ? "Carregando..." : "Análise em Andamento";
 
   return (
     <div className="flex h-full min-h-screen flex-col">
@@ -96,7 +122,13 @@ export function AIChatFeature({
 
       <main className="flex-1 overflow-y-auto px-6 py-8">
         <div className="mx-auto flex max-w-4xl flex-col gap-6">
-          {messages.length === 0 && (
+          {isFetchingHistory && (
+            <div className="flex justify-center py-10">
+              <span className="animate-spin h-6 w-6 rounded-full border-2 border-primary border-t-transparent" />
+            </div>
+          )}
+
+          {!isFetchingHistory && messages.length === 0 && (
             <section
               className="flex flex-col items-center justify-center py-16 text-center"
               aria-label="Estado inicial do chat"
@@ -107,18 +139,20 @@ export function AIChatFeature({
             </section>
           )}
 
+          {error && (
+            <p className="text-center text-sm text-red-400">{error}</p>
+          )}
+
           {messages.map((message) => (
             <MessageBubble
               key={message.id}
               role={message.role}
               content={message.content}
               timestamp={message.timestamp}
-              quickActions={message.quickActions}
-              onQuickAction={handleQuickAction}
             />
           ))}
 
-          {isProcessing && (
+          {isLoading && (
             <article
               className="flex gap-3"
               aria-label="IA está digitando"
@@ -138,16 +172,18 @@ export function AIChatFeature({
             </article>
           )}
 
-          <div ref={messagesEndRef} aria-hidden="true" />
+          <div ref={bottomRef} aria-hidden="true" />
         </div>
       </main>
 
       <ChatInput
         value={inputValue}
         onChange={setInputValue}
-        onSend={() => handleSendMessage(inputValue)}
+        onSend={() => sendMessage(inputValue)}
         onVoiceRecord={handleVoiceRecord}
-        disabled={isProcessing}
+        disabled={isLoading || isFinished || isFetchingHistory}
+        isRecording={isRecording}
+        isTranscribing={isTranscribing}
         maxHeight={200}
       />
     </div>

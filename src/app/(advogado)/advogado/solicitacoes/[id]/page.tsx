@@ -6,6 +6,11 @@ export const metadata: Metadata = {
   description: "Visualize os detalhes completos da solicitação de caso",
 };
 
-export default function RequestDetailPage() {
-  return <RequestDetailFeature />;
+interface RequestDetailPageProps {
+  params: Promise<{ id: string }>;
+}
+
+export default async function RequestDetailPage({ params }: RequestDetailPageProps) {
+  const { id } = await params;
+  return <RequestDetailFeature requestId={id} />;
 }
