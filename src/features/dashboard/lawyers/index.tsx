@@ -64,8 +64,8 @@ export function LawyersListFeature() {
     : lawyers;
 
   const sortedLawyers = [...filteredLawyers].sort((a, b) => {
-    if (sortBy === "availability") return (b.rating ?? 0) - (a.rating ?? 0);
     if (sortBy === "rating") return (b.rating ?? 0) - (a.rating ?? 0);
+    // availability and proximity use stable (server) order — no local sort possible
     return 0;
   });
 

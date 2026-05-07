@@ -108,7 +108,7 @@ export function DossierSentFeature({ lawyerName, lawyerId, reportId }: DossierSe
                     Provas e Evidências
                   </h3>
                   <p className="text-xs text-white/50">
-                    8 arquivos anexados
+                    Consolidadas e anexadas
                   </p>
                 </div>
               </div>
