@@ -18,19 +18,21 @@ import { Badge } from "@/components/ui/badge";
 import { Toggle } from "@/components/ui/toggle";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/auth-context";
+import { useAuthStore } from "@/store/auth.store";
 
 const DEFAULT_AVATAR =
   "data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='128'%20height='128'%3E%3Crect%20width='128'%20height='128'%20rx='24'%20fill='%23111c30'/%3E%3Cpath%20d='M64%2066c11.05%200%2020-8.95%2020-20S75.05%2026%2064%2026%2044%2034.95%2044%2046s8.95%2020%2020%2020Zm0%2010c-16.57%200-30%209.4-30%2021v5h60v-5c0-11.6-13.43-21-30-21Z'%20fill='%23ffffff'%20fill-opacity='.55'/%3E%3C/svg%3E";
 
 export function LawyerDashboardProfileFeature() {
   const { user } = useAuth();
+  const storeUser = useAuthStore((s) => s.user);
 
   const [twoFactorEnabled, setTwoFactorEnabled] = useState(true);
   const [profileVisible, setProfileVisible] = useState(true);
 
   const profile = useMemo(() => {
     return {
-      name: user.name || "Dr. Ricardo Menezes",
+      name: storeUser?.fullName || user.name || "Advogado",
       headline:
         "Especialista em Direito Civil e do Consumidor com foco em resoluções ágeis. Advocacia digital humanizada.",
       location: "São Paulo, SP",
@@ -290,7 +292,7 @@ export function LawyerDashboardProfileFeature() {
               Renovação em <span className="font-semibold text-white/80">{profile.plan.renewal}</span>
             </p>
             <a
-              href="/advogado/dashboard/settings"
+              href="/advogado/configuracoes"
               className="text-base font-semibold uppercase tracking-wide text-[#2585F4] hover:text-[#2585F4]/80 transition-colors"
             >
               Gerenciar Plano
@@ -348,7 +350,7 @@ export function LawyerDashboardProfileFeature() {
               <Button
                 variant="ghost"
                 size="sm"
-                href="/advogado/dashboard/settings"
+                href="/advogado/configuracoes"
                 leftIcon={<LockRounded fontSize="small" aria-hidden />}
               >
                 Ver Histórico de Acessos
