@@ -1,11 +1,16 @@
+"use client";
+
 import { SearchRounded, NotificationsNoneRounded, MenuRounded } from "@mui/icons-material";
 import Image from "next/image";
 import Link from "next/link";
 import { DynamicBreadcrumb } from "./dynamic-breadcrumb";
 import { cn } from "@/lib/utils";
+import { useNotificationsStore } from "@/store/notifications.store";
 import type { DashboardHeaderProps } from "./dashboard-header.types";
 
 export function DashboardHeader({ user, onMenuToggle, notificationsHref = "/dashboard/notificacoes" }: DashboardHeaderProps) {
+  const unreadCount = useNotificationsStore((s) => s.unreadCount);
+
   return (
     <header
       aria-label="Cabeçalho do dashboard"
@@ -61,14 +66,16 @@ export function DashboardHeader({ user, onMenuToggle, notificationsHref = "/dash
 
         <Link
           href={notificationsHref}
-          aria-label="Notificações"
+          aria-label={unreadCount > 0 ? `Notificações — ${unreadCount} não lida${unreadCount !== 1 ? 's' : ''}` : "Notificações"}
           className="relative flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-(--border-subtle) bg-white/5 text-text-secondary transition-all hover:bg-white/10 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
         >
           <NotificationsNoneRounded fontSize="small" aria-hidden="true" />
-          <span
-            aria-label="Você tem notificações não lidas"
-            className="absolute right-2 top-2 h-2 w-2 rounded-full bg-primary"
-          />
+          {unreadCount > 0 && (
+            <span
+              aria-hidden="true"
+              className="absolute right-2 top-2 h-2 w-2 rounded-full bg-primary"
+            />
+          )}
         </Link>
 
         <div className="flex items-center gap-2.5 rounded-xl border border-(--border-subtle) bg-white/5 px-3 py-2 transition-colors hover:border-(--border-subtle-hover)">

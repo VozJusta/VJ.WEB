@@ -4,13 +4,30 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { io, Socket } from 'socket.io-client';
 import { notificationsService } from '@/services/notifications.service';
 import { authStorage } from '@/lib/auth';
+import { useNotificationsStore } from '@/store/notifications.store';
 import type { ApiNotification } from '@/types/notification.types';
 
+function unread(list: ApiNotification[]) {
+  return list.filter((n) => !n.is_read).length;
+}
+
 export function useNotifications() {
-  const [notifications, setNotifications] = useState<ApiNotification[]>([]);
+  const [notifications, setNotificationsState] = useState<ApiNotification[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const socketRef = useRef<Socket | null>(null);
+  const setUnreadCount = useNotificationsStore((s) => s.setUnreadCount);
+
+  const setNotifications = useCallback(
+    (updater: ApiNotification[] | ((prev: ApiNotification[]) => ApiNotification[])) => {
+      setNotificationsState((prev) => {
+        const next = typeof updater === 'function' ? updater(prev) : updater;
+        setUnreadCount(unread(next));
+        return next;
+      });
+    },
+    [setUnreadCount],
+  );
 
   const fetchAll = useCallback(async () => {
     setIsLoading(true);
@@ -19,7 +36,6 @@ export function useNotifications() {
       const data = await notificationsService.getAll(1, 50);
       setNotifications(data.data ?? []);
     } catch (err) {
-      // 404 means no notifications — treat as empty, not an error
       const msg = err instanceof Error ? err.message : '';
       if (!msg.includes('404') && !msg.includes('não encontrada')) {
         setError(msg || 'Erro ao carregar notificações');
@@ -28,13 +44,12 @@ export function useNotifications() {
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  }, [setNotifications]);
 
   useEffect(() => {
     fetchAll();
   }, [fetchAll]);
 
-  // WebSocket
   useEffect(() => {
     const apiUrl = process.env.NEXT_PUBLIC_API_URL;
     const token = authStorage.getAccessToken();
@@ -51,15 +66,13 @@ export function useNotifications() {
       setNotifications((prev) => [newNotif, ...prev]);
     });
 
-    socket.on('connect_error', () => {
-      // socket connection failure is non-critical — REST data already loaded
-    });
+    socket.on('connect_error', () => {});
 
     return () => {
       socket.disconnect();
       socketRef.current = null;
     };
-  }, []);
+  }, [setNotifications]);
 
   const markAsRead = useCallback(async (id: string) => {
     setNotifications((prev) =>
@@ -68,12 +81,11 @@ export function useNotifications() {
     try {
       await notificationsService.markAsRead(id);
     } catch {
-      // revert on failure
       setNotifications((prev) =>
         prev.map((n) => (n.id === id ? { ...n, is_read: false } : n)),
       );
     }
-  }, []);
+  }, [setNotifications]);
 
   const markAllAsRead = useCallback(async () => {
     const prev = notifications;
@@ -83,7 +95,7 @@ export function useNotifications() {
     } catch {
       setNotifications(prev);
     }
-  }, [notifications]);
+  }, [notifications, setNotifications]);
 
   const deleteOne = useCallback(async (id: string) => {
     const prev = notifications;
@@ -93,7 +105,7 @@ export function useNotifications() {
     } catch {
       setNotifications(prev);
     }
-  }, [notifications]);
+  }, [notifications, setNotifications]);
 
   const deleteAll = useCallback(async () => {
     const prev = notifications;
@@ -103,9 +115,9 @@ export function useNotifications() {
     } catch {
       setNotifications(prev);
     }
-  }, [notifications]);
+  }, [notifications, setNotifications]);
 
-  const unreadCount = notifications.filter((n) => !n.is_read).length;
+  const unreadCount = unread(notifications);
 
   return {
     notifications,
