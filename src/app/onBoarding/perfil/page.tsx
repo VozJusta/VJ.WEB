@@ -102,7 +102,7 @@ export default function OnboardingPerfilPage() {
           <p className="text-xs text-white/30 text-center">
             Ao continuar, você concorda com nossos{" "}
             <Link
-              href="/termos-de-uso"
+              href="/termos"
               className="text-white/50 underline underline-offset-2 transition-colors hover:text-white/70"
             >
               Termos de Uso

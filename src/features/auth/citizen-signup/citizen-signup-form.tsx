@@ -356,7 +356,7 @@ export function CitizenSignupForm() {
                         error={errors.acceptedTerms}
                     >
                         Li e concordo com os{" "}
-                        <Link href="/termos-de-uso" className="text-primary underline hover:text-primary/80">
+                        <Link href="/termos" className="text-primary underline hover:text-primary/80">
                             Termos de Uso
                         </Link>{" "}
                         e a{" "}

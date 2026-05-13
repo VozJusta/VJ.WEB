@@ -19,6 +19,7 @@ const routeLabelMap: Record<string, string> = {
   sessao: "Sessão",
   feedback: "Feedback",
   enviar: "Enviar Dossiê",
+  "alterar-senha": "Alterar Senha",
 };
 
 const pageNameMap: Record<string, string> = {
