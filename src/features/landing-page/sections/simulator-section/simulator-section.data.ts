@@ -27,7 +27,7 @@ export const simulatorContent = {
   description:
     "Perca o medo do tribunal. Nossa ferramenta cria um ambiente realista onde a IA assume o papel do juiz, fazendo perguntas específicas sobre seu caso para preparar suas respostas e acalmar seus nervos.",
   ctaText: "Testar simulador",
-  ctaHref: "#simulator",
+  ctaHref: "/onBoarding/cidadao",
   illustrationPath: SimulatorIllustration,
   illustrationAlt:
     "Interface do simulador de tribunal com IA mostrando análise de voz em tempo real",

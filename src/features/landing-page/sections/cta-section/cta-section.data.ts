@@ -32,5 +32,5 @@ export const ctaContent = {
   description:
     "Receba leads qualificados, casos organizados e documentos pré-analisados pela nossa IA. Foque na estratégia, nós cuidamos da triagem.",
   ctaText: "VozJusta para Advogados",
-  ctaHref: "#cta-advogados",
+  ctaHref: "/onBoarding/advogado",
 } as const;
