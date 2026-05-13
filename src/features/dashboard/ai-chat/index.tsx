@@ -114,7 +114,7 @@ export function AIChatFeature({ conversationId, caseId }: AIChatFeatureProps) {
           aria-label={`Progresso da análise: ${progress}%`}
         >
           <div
-            className="h-full bg-primary transition-all duration-500"
+            className={`h-full bg-primary transition-all duration-500${progress < 100 ? ' relative overflow-hidden after:absolute after:inset-0 after:bg-white/20 after:animate-pulse' : ''}`}
             style={{ width: `${progress}%` }}
           />
         </div>

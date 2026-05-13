@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { PersonalityOption } from '@/components/ui/personality-option';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { useToast } from '@/components/ui/toast/toast-provider';
 import type { PersonalityType } from '@/types/simulator.types';
 import AnchorIcon from '@mui/icons-material/Anchor';
 import BoltIcon from '@mui/icons-material/Bolt';
@@ -71,17 +72,25 @@ const personalities: PersonalityConfig[] = [
 
 export function SimulatorConfig() {
   const router = useRouter();
+  const { toast } = useToast();
   const [judgeName, setJudgeName] = useState('');
+  const [judgeNameError, setJudgeNameError] = useState('');
   const [selectedPersonality, setSelectedPersonality] = useState<PersonalityType>('impartial');
 
   const handleResetToDefault = () => {
     setJudgeName('');
+    setJudgeNameError('');
     setSelectedPersonality('impartial');
   };
 
   const handleStartSimulation = () => {
-    const params = new URLSearchParams({ personality: selectedPersonality });
-    if (judgeName.trim()) params.set('judgeName', judgeName.trim());
+    if (!judgeName.trim()) {
+      setJudgeNameError('Informe o nome do juiz para iniciar');
+      toast({ title: 'Nome do juiz obrigatório', description: 'Defina um nome para o juiz antes de iniciar.', variant: 'error' });
+      return;
+    }
+    setJudgeNameError('');
+    const params = new URLSearchParams({ personality: selectedPersonality, judgeName: judgeName.trim() });
     router.push(`/dashboard/simulador/sessao?${params.toString()}`);
   };
 
@@ -104,8 +113,9 @@ export function SimulatorConfig() {
                 id="judge-name"
                 label="Nome do Juiz"
                 value={judgeName}
-                onChange={(e) => setJudgeName(e.target.value)}
+                onChange={(e) => { setJudgeName(e.target.value); setJudgeNameError(''); }}
                 placeholder="Ex: Dr. Silva ou Juiz Instrutor"
+                error={judgeNameError}
               />
               <p className="mt-2 text-xs text-text-muted">
                 Como você deseja chamar a autoridade na simulação?

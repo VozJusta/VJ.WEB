@@ -52,6 +52,8 @@ export function SimulatorSession() {
   const chunksRef = useRef<Blob[]>([]);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
+  const isSessionEnded = status === 'Completed' || status === 'TimedOut';
+
   useEffect(() => {
     const personality = PERSONALITY_MAP[personalityParam] ?? 'Impartial';
     start(personality);
@@ -124,12 +126,22 @@ export function SimulatorSession() {
     setIsRecording(false);
   };
 
+  const handleTogglePause = () => {
+    const recorder = mediaRecorderRef.current;
+    if (!recorder) return;
+    if (isPaused) {
+      recorder.resume();
+      setIsPaused(false);
+    } else {
+      recorder.pause();
+      setIsPaused(true);
+    }
+  };
+
   const handleEndSession = () => {
     stop();
     router.push('/dashboard/simulador/feedback');
   };
-
-  const confidenceLevel = isRecording ? 85 : 70;
 
   return (
     <main className="flex min-h-screen flex-col">
@@ -209,21 +221,23 @@ export function SimulatorSession() {
             <button
               type="button"
               onClick={isRecording ? handleStopRecording : handleStartRecording}
-              disabled={isLoading || isSpeaking || isTranscribing}
-              className="flex h-14 w-14 items-center justify-center rounded-full bg-[#2585F4] text-white shadow-[0_4px_16px_rgba(37,133,244,0.45)] transition-all hover:bg-[#1978E5] disabled:opacity-50"
+              disabled={isLoading || isSpeaking || isTranscribing || isSessionEnded}
+              className="flex h-14 w-14 items-center justify-center rounded-full bg-[#2585F4] text-white shadow-[0_4px_16px_rgba(37,133,244,0.45)] transition-all hover:bg-[#1978E5] disabled:opacity-50 disabled:cursor-not-allowed"
               aria-label={isRecording ? 'Parar gravação' : 'Gravar áudio'}
             >
               {isRecording ? <StopIcon /> : <MicIcon />}
             </button>
 
-            <button
-              type="button"
-              onClick={() => setIsPaused((p) => !p)}
-              className="flex h-16 w-16 items-center justify-center rounded-full bg-white text-gray-900 shadow-lg transition-all hover:scale-105"
-              aria-label={isPaused ? 'Retomar' : 'Pausar'}
-            >
-              {isPaused ? <PlayArrowIcon fontSize="large" /> : <PauseIcon fontSize="large" />}
-            </button>
+            {isRecording && (
+              <button
+                type="button"
+                onClick={handleTogglePause}
+                className="flex h-16 w-16 items-center justify-center rounded-full bg-white text-gray-900 shadow-lg transition-all hover:scale-105"
+                aria-label={isPaused ? 'Retomar' : 'Pausar'}
+              >
+                {isPaused ? <PlayArrowIcon fontSize="large" /> : <PauseIcon fontSize="large" />}
+              </button>
+            )}
           </div>
         </article>
 
@@ -233,23 +247,6 @@ export function SimulatorSession() {
           </Button>
         </div>
       </section>
-
-      <aside
-        className="fixed right-4 top-1/2 flex -translate-y-1/2 flex-col items-center gap-2"
-        aria-label="Indicador de confiança"
-      >
-        <div className="h-32 w-3 overflow-hidden rounded-full bg-gray-800">
-          <div
-            className="w-full bg-linear-to-t from-red-500 via-yellow-500 to-green-500 transition-all duration-500"
-            style={{ height: `${confidenceLevel}%` }}
-            role="progressbar"
-            aria-valuenow={confidenceLevel}
-            aria-valuemin={0}
-            aria-valuemax={100}
-          />
-        </div>
-        <span className="text-xs font-medium uppercase tracking-wide text-gray-400">Confiança</span>
-      </aside>
     </main>
   );
 }
