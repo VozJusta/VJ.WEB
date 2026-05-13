@@ -27,4 +27,24 @@ export const userService = {
       authStorage.logout();
     }
   },
+
+  async deleteAccount(password: string): Promise<void> {
+    const response = await apiFetch('/auth/terminate-account', {
+      method: 'DELETE',
+      body: JSON.stringify({ password }),
+    });
+    if (!response.ok) throw new Error('Falha ao excluir conta');
+    authStorage.logout();
+  },
+
+  async changePassword(currentPassword: string, newPassword: string): Promise<void> {
+    const response = await apiFetch('/auth/change-password', {
+      method: 'PATCH',
+      body: JSON.stringify({ currentPassword, newPassword }),
+    });
+    if (!response.ok) {
+      const data = await response.json().catch(() => ({}));
+      throw new Error((data as Record<string, string>).message || 'Falha ao alterar senha');
+    }
+  },
 };
