@@ -2,8 +2,10 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
+import { CheckCircleRounded } from "@mui/icons-material";
 import { MessageBubble } from "@/components/ui/message-bubble";
 import { ChatInput } from "@/components/ui/chat-input";
+import { Button } from "@/components/ui/button";
 import { useChat } from "@/hooks/useChat";
 import { chatService } from "@/services/chat.service";
 
@@ -40,11 +42,7 @@ export function AIChatFeature({ conversationId, caseId }: AIChatFeatureProps) {
     }
   }, [conversationId]);
 
-  useEffect(() => {
-    if (isFinished && reportId) {
-      router.push(`/dashboard/casos/${caseId ?? 'novo'}/analise?reportId=${reportId}`);
-    }
-  }, [isFinished, reportId, caseId, router]);
+  // No auto-redirect: show completion banner and let user click through
 
   const handleVoiceRecord = async () => {
     if (isRecording) {
@@ -89,7 +87,7 @@ export function AIChatFeature({ conversationId, caseId }: AIChatFeatureProps) {
     }
   };
 
-  const stage = isFinished ? "Análise Concluída" : isFetchingHistory ? "Carregando..." : "Análise em Andamento";
+  const stage = isFinished ? "Análise Concluída ✓" : isFetchingHistory ? "Carregando..." : "Análise em Andamento";
 
   return (
     <div className="flex h-full min-h-screen flex-col">
@@ -151,6 +149,33 @@ export function AIChatFeature({ conversationId, caseId }: AIChatFeatureProps) {
               timestamp={message.timestamp}
             />
           ))}
+
+          {isFinished && (
+            <article
+              className="flex flex-col items-center gap-4 rounded-2xl border border-green-500/30 bg-green-500/10 px-6 py-8 text-center"
+              aria-live="polite"
+              aria-label="Análise concluída"
+            >
+              <span className="flex h-14 w-14 items-center justify-center rounded-full bg-green-500/20">
+                <CheckCircleRounded className="text-green-400" sx={{ fontSize: 32 }} aria-hidden />
+              </span>
+              <div>
+                <h3 className="text-base font-bold text-white mb-1">Análise Concluída!</h3>
+                <p className="text-sm text-white/60">
+                  Nossa IA processou seu relato com sucesso. Veja o resultado completo abaixo.
+                </p>
+              </div>
+              {reportId && (
+                <Button
+                  variant="primary"
+                  size="md"
+                  href={`/dashboard/casos/${caseId ?? 'novo'}/analise?reportId=${reportId}`}
+                >
+                  Ver Análise Completa
+                </Button>
+              )}
+            </article>
+          )}
 
           {isLoading && (
             <article

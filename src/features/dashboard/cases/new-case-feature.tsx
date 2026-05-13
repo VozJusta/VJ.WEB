@@ -16,6 +16,7 @@ import { Button } from "@/components/ui/button";
 import { VoiceRecorder } from "@/components/ui/voice-recorder";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useChat } from "@/hooks/useChat";
+import { chatService } from "@/services/chat.service";
 
 type CategoryId = "trabalhista" | "consumidor" | "outros";
 
@@ -60,8 +61,11 @@ export function NewCaseFeature() {
   const [selectedCategory, setSelectedCategory] = useState<CategoryId | null>(null);
   const [story, setStory] = useState("");
   const [isRecording, setIsRecording] = useState(false);
+  const [isTranscribing, setIsTranscribing] = useState(false);
   const [elapsed, setElapsed] = useState(0);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
+  const chunksRef = useRef<Blob[]>([]);
   const { startAnalysis, isLoading, conversationId, caseId, error } = useChat();
 
   useEffect(() => {
@@ -82,10 +86,46 @@ export function NewCaseFeature() {
     }
   }, [conversationId, caseId, router]);
 
-  const handleStartRecording = () => setIsRecording(true);
-  const handleStopRecording = () => setIsRecording(false);
+  const handleStartRecording = async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const recorder = new MediaRecorder(stream);
+      chunksRef.current = [];
 
-  const canSubmit = !!selectedCategory && story.trim().length > 0 && !isLoading;
+      recorder.ondataavailable = (e) => {
+        if (e.data.size > 0) chunksRef.current.push(e.data);
+      };
+
+      recorder.onstop = async () => {
+        stream.getTracks().forEach((t) => t.stop());
+        const blob = new Blob(chunksRef.current, { type: 'audio/webm' });
+        const url = URL.createObjectURL(blob);
+        setIsTranscribing(true);
+        try {
+          const text = await chatService.transcribeAudio(url);
+          if (text.trim()) setStory((prev) => (prev ? `${prev} ${text}` : text));
+        } catch {
+          // transcription failed — user can type manually
+        } finally {
+          URL.revokeObjectURL(url);
+          setIsTranscribing(false);
+        }
+      };
+
+      mediaRecorderRef.current = recorder;
+      recorder.start();
+      setIsRecording(true);
+    } catch {
+      // microphone access denied or unavailable
+    }
+  };
+
+  const handleStopRecording = () => {
+    mediaRecorderRef.current?.stop();
+    setIsRecording(false);
+  };
+
+  const canSubmit = !!selectedCategory && story.trim().length > 0 && !isLoading && !isTranscribing;
 
   const handleSubmit = async () => {
     if (!canSubmit) return;
