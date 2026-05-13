@@ -36,7 +36,7 @@ export function AllCasesFeature() {
 
   const cases: Omit<CaseCardProps, "className">[] = reports.map((r) => ({
     id: r.id,
-    title: getCategoryLabel(r.category_detected) || "Caso",
+    title: r.title || getCategoryLabel(r.category_detected) || "Caso",
     status: apiStatusToCard(r.status),
     updatedLabel: new Date(r.created_at).toLocaleDateString("pt-BR"),
     protocol: `#${r.id.slice(0, 8).toUpperCase()}`,

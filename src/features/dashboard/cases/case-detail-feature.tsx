@@ -187,9 +187,17 @@ export function CaseDetailFeature({ report, reportId }: CaseDetailFeatureProps) 
           {report.lawyer.email && (
             <a
               href={`mailto:${report.lawyer.email}`}
-              className="text-sm text-[#2585F4] hover:underline"
+              className="block text-sm text-[#2585F4] hover:underline"
             >
               {report.lawyer.email}
+            </a>
+          )}
+          {report.lawyer.phone && (
+            <a
+              href={`tel:${report.lawyer.phone}`}
+              className="block text-sm text-[#2585F4] hover:underline mt-0.5"
+            >
+              {report.lawyer.phone}
             </a>
           )}
         </section>

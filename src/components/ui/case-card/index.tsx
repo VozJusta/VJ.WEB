@@ -5,10 +5,10 @@ import { caseStatusBadgeVariants, caseStatusDotVariants } from "./case-card.styl
 import type { CaseCardProps, CaseStatus } from "./case-card.types";
 
 const statusLabel: Record<CaseStatus, string> = {
-  analysis: "Em Análise Jurídica",
-  concluded: "Concluído",
-  pending: "Aguardando Advogado",
-  archived: "Arquivado",
+  analysis: "Em Análise",
+  concluded: "Aceito",
+  pending: "Pendente",
+  archived: "Recusado",
 };
 
 const CaseIcon = ({ status }: { status: CaseStatus }) => {

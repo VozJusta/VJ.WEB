@@ -4,6 +4,7 @@ import { apiFetch } from '@/lib/api-client';
 
 export interface ReportCard {
   id: string;
+  title?: string;
   category_detected: string;
   status: string;
   created_at: string;
