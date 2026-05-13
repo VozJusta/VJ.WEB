@@ -183,22 +183,31 @@ export function CaseDetailFeature({ report, reportId }: CaseDetailFeatureProps) 
           >
             Advogado Responsável
           </h2>
-          <p className="text-sm font-semibold text-white">{report.lawyer.full_name}</p>
+          <p className="text-sm font-semibold text-white mb-2">{report.lawyer.full_name}</p>
+          {report.lawyer.bio && (
+            <p className="text-xs text-white/55 leading-relaxed mb-2">{report.lawyer.bio}</p>
+          )}
           {report.lawyer.email && (
-            <a
-              href={`mailto:${report.lawyer.email}`}
-              className="block text-sm text-[#2585F4] hover:underline"
-            >
-              {report.lawyer.email}
-            </a>
+            <div className="flex items-baseline gap-1.5 mt-1">
+              <span className="text-xs font-semibold text-white/40 uppercase tracking-wide shrink-0">E-mail:</span>
+              <a
+                href={`mailto:${report.lawyer.email}`}
+                className="text-sm text-[#2585F4] hover:underline truncate"
+              >
+                {report.lawyer.email}
+              </a>
+            </div>
           )}
           {report.lawyer.phone && (
-            <a
-              href={`tel:${report.lawyer.phone}`}
-              className="block text-sm text-[#2585F4] hover:underline mt-0.5"
-            >
-              {report.lawyer.phone}
-            </a>
+            <div className="flex items-baseline gap-1.5 mt-1">
+              <span className="text-xs font-semibold text-white/40 uppercase tracking-wide shrink-0">Telefone:</span>
+              <a
+                href={`tel:${report.lawyer.phone}`}
+                className="text-sm text-[#2585F4] hover:underline"
+              >
+                {report.lawyer.phone}
+              </a>
+            </div>
           )}
         </section>
       )}
