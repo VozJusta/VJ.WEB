@@ -420,15 +420,7 @@ export function LawyerSignupForm() {
             Li e concordo com os{" "}
             <Link href="/termos" className="text-primary underline hover:text-primary/80">
               Termos de Uso
-            </Link>{" "}
-            profissional e a{" "}
-            <Link
-              href="/politica-de-privacidade"
-              className="text-primary underline hover:text-primary/80"
-            >
-              Código de Conduta
-            </Link>
-            .
+            </Link>.
           </Checkbox>
 
           <Button

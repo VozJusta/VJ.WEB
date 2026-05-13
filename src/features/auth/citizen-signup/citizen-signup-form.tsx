@@ -358,15 +358,7 @@ export function CitizenSignupForm() {
                         Li e concordo com os{" "}
                         <Link href="/termos" className="text-primary underline hover:text-primary/80">
                             Termos de Uso
-                        </Link>{" "}
-                        e a{" "}
-                        <Link
-                            href="/politica-de-privacidade"
-                            className="text-primary underline hover:text-primary/80"
-                        >
-                            Política de Privacidade
-                        </Link>
-                        .
+                        </Link>.
                     </Checkbox>
 
                     <Button
