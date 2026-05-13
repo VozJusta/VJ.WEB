@@ -72,8 +72,14 @@ function DeleteAccountModal({ onClose, onConfirm, isDeleting }: {
   const [password, setPassword] = useState("");
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm px-4">
-      <div className="w-full max-w-md rounded-2xl bg-[#111c30] border border-[#1B2233] p-6 flex flex-col gap-5">
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm px-4"
+      onClick={onClose}
+    >
+      <div
+        className="w-full max-w-md rounded-2xl bg-[#111c30] border border-[#1B2233] p-6 flex flex-col gap-5"
+        onClick={(e) => e.stopPropagation()}
+      >
         <div className="flex items-center gap-3">
           <span className="flex items-center justify-center w-10 h-10 rounded-full bg-red-500/15">
             <WarningAmberRounded className="text-red-400" />
@@ -96,7 +102,7 @@ function DeleteAccountModal({ onClose, onConfirm, isDeleting }: {
 
         <div className="flex gap-3">
           <Button variant="ghost" size="md" fullWidth onClick={onClose} disabled={isDeleting}
-            className="border border-[#1B2233] text-white/70 hover:text-white">
+            className="border border-[#1B2233] text-white/70 hover:text-white hover:bg-white/8"
             Cancelar
           </Button>
           <Button

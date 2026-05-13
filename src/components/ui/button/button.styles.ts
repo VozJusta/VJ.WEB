@@ -41,10 +41,11 @@ export const buttonVariants = cva(
 
         ghost: [
           "bg-transparent",
-          "text-gray-700",
-          "hover:bg-gray-100",
-          "active:bg-gray-200",
-          "focus-visible:ring-gray-400",
+          "text-white/60",
+          "hover:bg-white/8",
+          "hover:text-white",
+          "active:bg-white/12",
+          "focus-visible:ring-white/30",
         ],
 
         danger: [
