@@ -1,13 +1,13 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import Image from "next/image";
 import {
   CheckRounded,
   DescriptionRounded,
   AttachFileRounded,
   InfoRounded,
   DownloadingRounded,
+  TaskAltRounded,
 } from "@mui/icons-material";
 import { Button } from "@/components/ui/button";
 import { useReportDownload } from "@/hooks/useReportDownload";
@@ -37,15 +37,8 @@ export function DossierSentFeature({ lawyerName, lawyerId, reportId }: DossierSe
         aria-labelledby="dossier-sent-title"
       >
         <header className="flex flex-col items-center text-center mb-8">
-          <figure className="mb-8">
-            <Image
-              src="/illustrations/report-sent-illustration.png"
-              alt="Dossiê enviado com sucesso"
-              width={200}
-              height={200}
-              className="h-48 w-48 object-contain"
-              priority
-            />
+          <figure className="mb-8 flex h-32 w-32 items-center justify-center rounded-full bg-[#2585F4]/15">
+            <TaskAltRounded sx={{ fontSize: 64 }} className="text-[#2585F4]" aria-hidden />
           </figure>
 
           <h1 
