@@ -17,8 +17,7 @@ export default function Footer({ className = "" }: FooterProps) {
 
   const handleShareClick = async () => {
     try {
-      const url = window.location.href;
-      await navigator.clipboard.writeText(url);
+      await navigator.clipboard.writeText("https://vozjusta.com.br/");
       toast({ title: "Link da página copiado", variant: "success" });
     } catch {
       toast({ title: "Erro ao copiar link", variant: "error" });
