@@ -22,7 +22,7 @@ export function LawyersListFeature() {
   const sortedLawyers = [...lawyers].sort((a, b) => (b.rating ?? 0) - (a.rating ?? 0));
 
   return (
-    <div className="flex flex-col gap-4 w-full max-w-5xl mx-auto px-4 py-4 md:px-6 md:py-6">
+    <div className="flex flex-col gap-4 w-full max-w-5xl mx-auto px-4 py-2 md:px-6 md:py-4">
       <header className="flex items-center gap-3">
         <button
           type="button"
