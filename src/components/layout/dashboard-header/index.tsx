@@ -78,7 +78,11 @@ export function DashboardHeader({ user, onMenuToggle, notificationsHref = "/dash
           )}
         </Link>
 
-        <div className="flex items-center gap-2.5 rounded-xl border border-(--border-subtle) bg-white/5 px-3 py-2 transition-colors hover:border-(--border-subtle-hover)">
+        <Link
+          href="/dashboard/perfil"
+          className="flex items-center gap-2.5 rounded-xl border border-(--border-subtle) bg-white/5 px-3 py-2 transition-colors hover:border-(--border-subtle-hover) hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+          aria-label={`Perfil de ${user.name}`}
+        >
           <figure className="m-0">
             {user.avatarUrl ? (
               <Image
@@ -111,7 +115,7 @@ export function DashboardHeader({ user, onMenuToggle, notificationsHref = "/dash
               {user.role}
             </span>
           </div>
-        </div>
+        </Link>
       </div>
     </header>
   );

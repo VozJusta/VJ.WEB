@@ -10,6 +10,13 @@ export interface MeResponse {
   } | null;
 }
 
+export interface ProfileResponse {
+  full_name?: string;
+  email?: string;
+  cpf?: string;
+  phone?: string;
+}
+
 export const userService = {
   async getMe(): Promise<MeResponse> {
     const response = await apiFetch('/auth/me', {
@@ -35,6 +42,20 @@ export const userService = {
     });
     if (!response.ok) throw new Error('Falha ao excluir conta');
     authStorage.logout();
+  },
+
+  async getProfile(): Promise<ProfileResponse> {
+    const response = await apiFetch('/profile', { method: 'GET' });
+    if (!response.ok) return {};
+    return response.json();
+  },
+
+  async updateProfile(data: { full_name?: string; phone?: string }): Promise<void> {
+    const response = await apiFetch('/profile', {
+      method: 'PATCH',
+      body: JSON.stringify(data),
+    });
+    if (!response.ok) throw new Error('Falha ao atualizar perfil');
   },
 
   async changePassword(currentPassword: string, newPassword: string): Promise<void> {
