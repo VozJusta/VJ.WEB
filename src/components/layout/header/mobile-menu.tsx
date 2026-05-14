@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
+import { usePathname } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { headerNavigation } from "./header.navigation";
 import { Close } from "@mui/icons-material";
@@ -11,6 +12,8 @@ interface MobileMenuProps {
 }
 
 export function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
+  const pathname = usePathname();
+
   useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = "hidden";
@@ -27,14 +30,17 @@ export function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
     e: React.MouseEvent<HTMLAnchorElement>,
     href: string,
   ) => {
-    if (href.startsWith("#")) {
+    const hashId = href.startsWith("#")
+      ? href
+      : href.startsWith("/#")
+        ? href.slice(1)
+        : null;
+
+    if (hashId && (pathname === "/" || href.startsWith("#"))) {
       e.preventDefault();
-      const element = document.querySelector(href);
+      const element = document.querySelector(hashId);
       if (element) {
-        element.scrollIntoView({
-          behavior: "smooth",
-          block: "start",
-        });
+        element.scrollIntoView({ behavior: "smooth", block: "start" });
       }
     }
     onClose();

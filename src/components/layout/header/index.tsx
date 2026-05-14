@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { headerNavigation } from "./header.navigation";
 import { MobileMenu } from "./mobile-menu";
@@ -11,19 +12,25 @@ import { Menu } from "@mui/icons-material";
 
 export default function Header() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const pathname = usePathname();
 
   const handleAnchorClick = (
     e: React.MouseEvent<HTMLAnchorElement>,
     href: string,
   ) => {
-    if (href.startsWith("#")) {
-      e.preventDefault();
-      const element = document.querySelector(href);
-      if (element) {
-        element.scrollIntoView({
-          behavior: "smooth",
-          block: "start",
-        });
+    const hashId = href.startsWith("#")
+      ? href
+      : href.startsWith("/#")
+        ? href.slice(1)
+        : null;
+
+    if (hashId) {
+      if (pathname === "/" || href.startsWith("#")) {
+        e.preventDefault();
+        const element = document.querySelector(hashId);
+        if (element) {
+          element.scrollIntoView({ behavior: "smooth", block: "start" });
+        }
       }
     }
   };

@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useToast } from "@/components/ui/toast/toast-provider";
 import { footerNavigation } from "./footer.navigation";
 import type { FooterProps } from "./footer.types";
@@ -10,6 +11,7 @@ import { ShareOutlined, ArrowUpward } from "@mui/icons-material";
 
 export default function Footer({ className = "" }: FooterProps) {
   const { toast } = useToast();
+  const pathname = usePathname();
 
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: "smooth" });
@@ -28,9 +30,15 @@ export default function Footer({ className = "" }: FooterProps) {
     e: React.MouseEvent<HTMLAnchorElement>,
     href: string,
   ) => {
-    if (href.startsWith("#")) {
+    const hashId = href.startsWith("#")
+      ? href
+      : href.startsWith("/#")
+        ? href.slice(1)
+        : null;
+
+    if (hashId && (pathname === "/" || href.startsWith("#"))) {
       e.preventDefault();
-      const element = document.querySelector(href);
+      const element = document.querySelector(hashId);
       if (element) {
         element.scrollIntoView({ behavior: "smooth", block: "start" });
       }
