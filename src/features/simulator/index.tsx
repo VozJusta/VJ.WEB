@@ -70,27 +70,49 @@ const personalities: PersonalityConfig[] = [
   },
 ];
 
+const JUDGE_NAME_KEY = 'vj_last_judge_name';
+
 export function SimulatorConfig() {
   const router = useRouter();
   const { toast } = useToast();
-  const [judgeName, setJudgeName] = useState('');
+  const [judgeName, setJudgeName] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem(JUDGE_NAME_KEY) ?? '';
+    }
+    return '';
+  });
   const [judgeNameError, setJudgeNameError] = useState('');
   const [selectedPersonality, setSelectedPersonality] = useState<PersonalityType>('impartial');
+
+  const handleJudgeNameChange = (value: string) => {
+    setJudgeName(value);
+    setJudgeNameError('');
+    if (typeof window !== 'undefined') {
+      if (value.trim()) {
+        localStorage.setItem(JUDGE_NAME_KEY, value.trim());
+      } else {
+        localStorage.removeItem(JUDGE_NAME_KEY);
+      }
+    }
+  };
 
   const handleResetToDefault = () => {
     setJudgeName('');
     setJudgeNameError('');
     setSelectedPersonality('impartial');
+    if (typeof window !== 'undefined') localStorage.removeItem(JUDGE_NAME_KEY);
   };
 
   const handleStartSimulation = () => {
-    if (!judgeName.trim()) {
-      setJudgeNameError('Informe o nome do juiz para iniciar');
+    const trimmed = judgeName.trim();
+    if (!trimmed) {
+      setJudgeNameError('Informe o nome do juiz para iniciar a simulação');
       toast({ title: 'Nome do juiz obrigatório', description: 'Defina um nome para o juiz antes de iniciar.', variant: 'error' });
       return;
     }
     setJudgeNameError('');
-    const params = new URLSearchParams({ personality: selectedPersonality, judgeName: judgeName.trim() });
+    if (typeof window !== 'undefined') localStorage.setItem(JUDGE_NAME_KEY, trimmed);
+    const params = new URLSearchParams({ personality: selectedPersonality, judgeName: trimmed });
     router.push(`/dashboard/simulador/sessao?${params.toString()}`);
   };
 
@@ -113,7 +135,7 @@ export function SimulatorConfig() {
                 id="judge-name"
                 label="Nome do Juiz"
                 value={judgeName}
-                onChange={(e) => { setJudgeName(e.target.value); setJudgeNameError(''); }}
+                onChange={(e) => handleJudgeNameChange(e.target.value)}
                 placeholder="Ex: Dr. Silva ou Juiz Instrutor"
                 error={judgeNameError}
               />
