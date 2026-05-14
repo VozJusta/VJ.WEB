@@ -1,11 +1,5 @@
 import { Resend } from "resend";
 
-if (!process.env.RESEND_API_KEY) {
-  throw new Error("RESEND_API_KEY não está definida no ambiente");
-}
-
-const resend = new Resend(process.env.RESEND_API_KEY);
-
 export interface SendContactEmailParams {
   name: string;
   email: string;
@@ -17,11 +11,16 @@ export class EmailService {
   static async sendContactNotification(params: SendContactEmailParams) {
     const { name, email, subject, message } = params;
 
+    if (!process.env.RESEND_API_KEY) {
+      throw new Error("RESEND_API_KEY não está definida no ambiente");
+    }
     if (!process.env.RESEND_FROM_EMAIL || !process.env.RESEND_TO_EMAIL) {
       throw new Error(
         "Variáveis RESEND_FROM_EMAIL e RESEND_TO_EMAIL devem estar definidas",
       );
     }
+
+    const resend = new Resend(process.env.RESEND_API_KEY);
 
     const emailHtml = this.getContactEmailTemplate({
       name,
