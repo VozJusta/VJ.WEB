@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { SaveRounded, LockOutlined, EditRounded } from "@mui/icons-material";
+import Image from "next/image";
+import { SaveRounded, LockOutlined, EditRounded, PersonRounded } from "@mui/icons-material";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -18,6 +19,7 @@ export function ProfileFeature() {
   const [email, setEmail] = useState(user?.email ?? "");
   const [cpf, setCpf] = useState("");
   const [phone, setPhone] = useState("");
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
 
@@ -26,6 +28,8 @@ export function ProfileFeature() {
       if (profile.cpf) setCpf(formatCPF(profile.cpf));
       if (profile.phone) setPhone(formatPhone(profile.phone));
       if (profile.full_name) setFullName(profile.full_name);
+      if (profile.email) setEmail(profile.email);
+      if (profile.avatar_image) setAvatarUrl(profile.avatar_image);
     }).catch(() => {});
   }, []);
 
@@ -60,9 +64,17 @@ export function ProfileFeature() {
         <div className="relative">
           <div className="w-24 h-24 rounded-full p-0.5 bg-linear-to-br from-[#2585F4] to-[#1565C0] shadow-[0_0_24px_rgba(37,133,244,0.35)]">
             <div className="w-full h-full rounded-full bg-[#111c30] overflow-hidden flex items-center justify-center">
-              <span className="text-2xl font-bold text-white select-none">
-                {initials}
-              </span>
+              {avatarUrl ? (
+                <Image
+                  src={avatarUrl}
+                  alt={`Foto de ${displayName}`}
+                  width={96}
+                  height={96}
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <span className="text-2xl font-bold text-white select-none">{initials}</span>
+              )}
             </div>
           </div>
 

@@ -15,6 +15,7 @@ export interface ProfileResponse {
   email?: string;
   cpf?: string;
   phone?: string;
+  avatar_image?: string;
 }
 
 export const userService = {
