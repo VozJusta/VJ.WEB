@@ -51,7 +51,7 @@ export function CasesList({ initialCases = [] }: CasesListProps) {
         </header>
 
         <EmptyState
-          illustration="/illustrations/empty-cases-illustration.png"
+          illustration="/empty-cases-illustration.png"
           illustrationAlt="Nenhum caso encontrado"
           title="Você ainda não tem casos cadastrados"
           description="Comece criando seu primeiro caso jurídico. Nossa equipe de inteligência artificial está pronta para te auxiliar em todo o processo."
