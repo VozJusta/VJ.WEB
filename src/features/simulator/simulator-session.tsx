@@ -54,19 +54,31 @@ export function SimulatorSession() {
 
   const isSessionEnded = status === 'Completed' || status === 'TimedOut';
 
+  // Stop active recording when session ends
+  useEffect(() => {
+    if (isSessionEnded && isRecording) {
+      mediaRecorderRef.current?.stop();
+      setIsRecording(false);
+      setIsPaused(false);
+    }
+  }, [isSessionEnded, isRecording]);
+
   useEffect(() => {
     const personality = PERSONALITY_MAP[personalityParam] ?? 'Impartial';
     start(personality);
-    return () => reset();
+    return () => {
+      // Disconnect WebSocket and clean up on unmount / navigation
+      reset();
+    };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
     if (status === 'Completed' || status === 'TimedOut') {
-      if (reportId) {
-        router.push(`/dashboard/simulador/feedback?reportId=${reportId}`);
-      } else {
-        router.push('/dashboard/simulador/feedback');
-      }
+      const path = reportId
+        ? `/dashboard/simulador/feedback?reportId=${reportId}`
+        : '/dashboard/simulador/feedback';
+      router.push(path);
     }
   }, [status, reportId, router]);
 
@@ -85,6 +97,7 @@ export function SimulatorSession() {
     `${String(Math.floor(s / 60)).padStart(2, '0')}:${String(s % 60).padStart(2, '0')}`;
 
   const handleStartRecording = async () => {
+    if (isSessionEnded) return;
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       const recorder = new MediaRecorder(stream);
@@ -103,7 +116,7 @@ export function SimulatorSession() {
         try {
           const text = await chatService.transcribeAudio(url);
           setTranscription(text);
-          if (text.trim()) await sendChat(text);
+          if (text.trim() && !isSessionEnded) await sendChat(text);
         } catch {
           // transcription failure — user can retry
         } finally {
@@ -124,6 +137,7 @@ export function SimulatorSession() {
   const handleStopRecording = () => {
     mediaRecorderRef.current?.stop();
     setIsRecording(false);
+    setIsPaused(false);
   };
 
   const handleTogglePause = () => {
@@ -139,9 +153,15 @@ export function SimulatorSession() {
   };
 
   const handleEndSession = () => {
+    if (isRecording) {
+      mediaRecorderRef.current?.stop();
+      setIsRecording(false);
+    }
     stop();
     router.push('/dashboard/simulador/feedback');
   };
+
+  const canRecord = !isLoading && !isSpeaking && !isTranscribing && !isSessionEnded;
 
   return (
     <main className="flex min-h-screen flex-col">
@@ -160,10 +180,11 @@ export function SimulatorSession() {
         </div>
       )}
 
-      <section className="flex flex-1 flex-col gap-6 p-6">
-        <article className="relative overflow-hidden rounded-2xl bg-linear-to-br from-teal-600 to-teal-800 shadow-2xl">
-          <div className="aspect-video w-full">
-            <div className="flex h-full items-end justify-center p-6">
+      <section className="flex flex-1 flex-col gap-4 p-4 md:p-6">
+        {/* Judge video area */}
+        <article className="relative overflow-hidden rounded-2xl bg-linear-to-br from-teal-600 to-teal-800 shadow-2xl max-h-64">
+          <div className="aspect-video w-full max-h-64 overflow-hidden">
+            <div className="flex h-full items-end justify-center p-4">
               {isLoading && (
                 <div className="flex items-center gap-2 rounded-full bg-black/40 px-4 py-2 text-sm text-white">
                   <span className="h-2 w-2 animate-pulse rounded-full bg-blue-400" />
@@ -188,24 +209,31 @@ export function SimulatorSession() {
                   REC {formatTime(elapsedSeconds)}
                 </div>
               )}
+              {isPaused && (
+                <div className="flex items-center gap-2 rounded-full bg-black/30 px-4 py-2 text-sm text-white backdrop-blur-sm">
+                  <PauseIcon sx={{ fontSize: 14 }} />
+                  Pausado
+                </div>
+              )}
             </div>
           </div>
 
-          <div className="absolute bottom-6 left-6 rounded-lg bg-blue-600/90 px-4 py-2 backdrop-blur-sm">
+          <div className="absolute bottom-4 left-4 rounded-lg bg-blue-600/90 px-4 py-2 backdrop-blur-sm">
             <p className="text-sm font-medium text-white">{judgeName}</p>
           </div>
         </article>
 
-        <article className="rounded-xl bg-gray-900 p-6 shadow-lg">
+        {/* Response area */}
+        <article className="rounded-xl bg-gray-900 p-5 shadow-lg">
           {aiResponse && (
-            <h2 className="mb-4 text-center text-lg font-semibold text-white">
+            <h2 className="mb-3 text-center text-base font-semibold text-white leading-relaxed">
               &ldquo;{aiResponse}&rdquo;
             </h2>
           )}
 
           {(transcription || isTranscribing) && (
-            <div className="rounded-lg border border-gray-700 bg-gray-800 p-4 mb-4">
-              <div className="mb-2 flex items-center gap-2">
+            <div className="rounded-lg border border-gray-700 bg-gray-800 p-3 mb-3">
+              <div className="mb-1.5 flex items-center gap-2">
                 <div className={`h-2 w-2 rounded-full ${isTranscribing ? 'animate-pulse bg-blue-500' : 'bg-green-500'}`} />
                 <span className="text-xs font-medium uppercase tracking-wide text-blue-400">
                   {isTranscribing ? 'Transcrevendo...' : 'Sua fala'}
@@ -217,32 +245,44 @@ export function SimulatorSession() {
             </div>
           )}
 
-          <div className="mt-6 flex items-center justify-center gap-4">
-            <button
-              type="button"
-              onClick={isRecording ? handleStopRecording : handleStartRecording}
-              disabled={isLoading || isSpeaking || isTranscribing || isSessionEnded}
-              className="flex h-14 w-14 items-center justify-center rounded-full bg-[#2585F4] text-white shadow-[0_4px_16px_rgba(37,133,244,0.45)] transition-all hover:bg-[#1978E5] disabled:opacity-50 disabled:cursor-not-allowed"
-              aria-label={isRecording ? 'Parar gravação' : 'Gravar áudio'}
-            >
-              {isRecording ? <StopIcon /> : <MicIcon />}
-            </button>
-
+          {/* Controls */}
+          <div className="mt-4 flex items-center justify-center gap-4">
+            {/* Pause button — shown while recording, BEFORE the mic button */}
             {isRecording && (
               <button
                 type="button"
                 onClick={handleTogglePause}
-                className="flex h-16 w-16 items-center justify-center rounded-full bg-white text-gray-900 shadow-lg transition-all hover:scale-105"
-                aria-label={isPaused ? 'Retomar' : 'Pausar'}
+                className="flex h-14 w-14 items-center justify-center rounded-full bg-white text-gray-900 shadow-lg transition-all hover:scale-105 cursor-pointer"
+                aria-label={isPaused ? 'Retomar gravação' : 'Pausar gravação'}
               >
                 {isPaused ? <PlayArrowIcon fontSize="large" /> : <PauseIcon fontSize="large" />}
               </button>
             )}
+
+            {/* Mic / Stop button */}
+            <button
+              type="button"
+              onClick={isRecording ? handleStopRecording : handleStartRecording}
+              disabled={!canRecord && !isRecording}
+              className="flex h-14 w-14 items-center justify-center rounded-full bg-[#2585F4] text-white shadow-[0_4px_16px_rgba(37,133,244,0.45)] transition-all hover:bg-[#1978E5] disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+              aria-label={isRecording ? 'Parar gravação' : 'Gravar áudio'}
+            >
+              {isRecording ? <StopIcon /> : <MicIcon />}
+            </button>
           </div>
+
+          {isSessionEnded && (
+            <p className="mt-3 text-center text-xs text-white/50">Audiência encerrada — envio de áudio desativado</p>
+          )}
         </article>
 
         <div className="flex justify-center">
-          <Button variant="primary" size="lg" onClick={handleEndSession} rightIcon={<ExitToAppIcon />}>
+          <Button
+            variant="primary"
+            size="lg"
+            onClick={handleEndSession}
+            rightIcon={<ExitToAppIcon />}
+          >
             Encerrar e Ver Feedback
           </Button>
         </div>

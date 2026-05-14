@@ -26,6 +26,8 @@ export function useSimulation() {
 
   const socketRef = useRef<Socket | null>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  // Track pending end event until reportId arrives
+  const pendingEndStatusRef = useRef<SimulationStatus | null>(null);
 
   useEffect(() => {
     if (remainingSecs === null || remainingSecs <= 0) return;
@@ -36,6 +38,14 @@ export function useSimulation() {
   useEffect(() => {
     if (status === 'Completed' || status === 'TimedOut') setRemainingSecs(null);
   }, [status]);
+
+  // Resolve race: apply end status once reportId is received
+  useEffect(() => {
+    if (pendingEndStatusRef.current && reportId) {
+      setStatus(pendingEndStatusRef.current);
+      pendingEndStatusRef.current = null;
+    }
+  }, [reportId]);
 
   const disconnectSocket = useCallback(() => {
     socketRef.current?.disconnect();
@@ -71,6 +81,7 @@ export function useSimulation() {
     async (personality: SimulationPersonality) => {
       setIsLoading(true);
       setError(null);
+      pendingEndStatusRef.current = null;
 
       try {
         const sim = await simulationService.start(personality);
@@ -105,8 +116,16 @@ export function useSimulation() {
         });
 
         socket.on('simulation:end', (payload: { status: SimulationStatus }) => {
-          setStatus(payload.status);
           disconnectSocket();
+          // Defer applying the end status until reportId is available
+          pendingEndStatusRef.current = payload.status;
+          // Give 2s for the report event to arrive; if not, apply status anyway
+          setTimeout(() => {
+            if (pendingEndStatusRef.current) {
+              setStatus(pendingEndStatusRef.current);
+              pendingEndStatusRef.current = null;
+            }
+          }, 2000);
         });
 
         socket.on('simulation:report', (payload: { reportId: string }) => {
@@ -155,6 +174,7 @@ export function useSimulation() {
 
   const reset = useCallback(() => {
     disconnectSocket();
+    pendingEndStatusRef.current = null;
     if (audioRef.current) {
       audioRef.current.pause();
       if (audioRef.current.src) URL.revokeObjectURL(audioRef.current.src);
