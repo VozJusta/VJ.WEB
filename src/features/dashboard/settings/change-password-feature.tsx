@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
-import { ArrowBackRounded, LockResetRounded, Visibility, VisibilityOff } from "@mui/icons-material";
+import { ArrowBackRounded, CheckRounded, CloseRounded, LockResetRounded, Visibility, VisibilityOff } from "@mui/icons-material";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { userService } from "@/services/user.service";
@@ -151,8 +151,12 @@ export function ChangePasswordFeature() {
               {passwordChecks.map((check, index) => (
                 <li
                   key={check.id}
-                  className={cn("text-xs", checkResults[index] ? strengthConfig.color : "text-white/45")}
+                  className={cn("flex items-center gap-1 text-xs", checkResults[index] ? strengthConfig.color : "text-white/45")}
                 >
+                  {checkResults[index]
+                    ? <CheckRounded sx={{ fontSize: 12 }} aria-hidden />
+                    : <CloseRounded sx={{ fontSize: 12 }} aria-hidden />
+                  }
                   {check.label}
                 </li>
               ))}
