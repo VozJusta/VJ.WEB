@@ -103,6 +103,7 @@ function DeleteAccountModal({ onClose, onConfirm, isDeleting }: {
         <div className="flex gap-3">
           <Button variant="ghost" size="md" fullWidth onClick={onClose} disabled={isDeleting}
             className="border border-[#1B2233] text-white/70 hover:text-white hover:bg-white/8"
+          >
             Cancelar
           </Button>
           <Button
