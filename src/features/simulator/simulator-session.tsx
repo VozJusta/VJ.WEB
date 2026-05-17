@@ -32,6 +32,7 @@ export function SimulatorSession() {
     aiResponse,
     isLoading,
     isSpeaking,
+    isAudioPaused,
     error,
     warning,
     remainingSecs,
@@ -40,6 +41,8 @@ export function SimulatorSession() {
     sendChat,
     stop,
     reset,
+    pauseAudio,
+    resumeAudio,
   } = useSimulation();
 
   const [isRecording, setIsRecording] = useState(false);
@@ -198,13 +201,33 @@ export function SimulatorSession() {
                   Processando...
                 </div>
               )}
-              {isSpeaking && (
+              {(isSpeaking || isAudioPaused) && (
                 <div className="flex items-center gap-2 rounded-full bg-black/40 px-4 py-2 text-sm text-white">
-                  <span className="relative flex h-2 w-2">
-                    <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-green-400 opacity-75" />
-                    <span className="relative inline-flex h-2 w-2 rounded-full bg-green-400" />
-                  </span>
-                  Juiz falando...
+                  {isAudioPaused ? (
+                    <>
+                      <PauseIcon sx={{ fontSize: 14 }} />
+                      <span>Áudio pausado</span>
+                    </>
+                  ) : (
+                    <>
+                      <span className="relative flex h-2 w-2">
+                        <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-green-400 opacity-75" />
+                        <span className="relative inline-flex h-2 w-2 rounded-full bg-green-400" />
+                      </span>
+                      <span>Juiz falando...</span>
+                    </>
+                  )}
+                  <button
+                    type="button"
+                    onClick={isAudioPaused ? resumeAudio : pauseAudio}
+                    className="ml-1 flex items-center justify-center w-7 h-7 rounded-full bg-white/20 hover:bg-white/30 transition-colors"
+                    aria-label={isAudioPaused ? 'Retomar áudio' : 'Pausar áudio'}
+                  >
+                    {isAudioPaused
+                      ? <PlayArrowIcon sx={{ fontSize: 16 }} />
+                      : <PauseIcon sx={{ fontSize: 16 }} />
+                    }
+                  </button>
                 </div>
               )}
               {isRecording && !isPaused && (

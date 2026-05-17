@@ -19,6 +19,7 @@ export function useSimulation() {
   const [audioUrl, setAudioUrl] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isSpeaking, setIsSpeaking] = useState(false);
+  const [isAudioPaused, setIsAudioPaused] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [warning, setWarning] = useState<WarningPayload | null>(null);
   const [remainingSecs, setRemainingSecs] = useState<number | null>(null);
@@ -68,9 +69,10 @@ export function useSimulation() {
       const audio = new Audio(url);
       audioRef.current = audio;
       setAudioUrl(url);
+      setIsAudioPaused(false);
 
-      audio.onended = () => setIsSpeaking(false);
-      audio.onerror = () => setIsSpeaking(false);
+      audio.onended = () => { setIsSpeaking(false); setIsAudioPaused(false); };
+      audio.onerror = () => { setIsSpeaking(false); setIsAudioPaused(false); };
       audio.play();
     } catch {
       setIsSpeaking(false);
@@ -164,6 +166,22 @@ export function useSimulation() {
     [simulationId, synthesizeAndPlay],
   );
 
+  const pauseAudio = useCallback(() => {
+    if (audioRef.current && !audioRef.current.paused) {
+      audioRef.current.pause();
+      setIsAudioPaused(true);
+      setIsSpeaking(false);
+    }
+  }, []);
+
+  const resumeAudio = useCallback(() => {
+    if (audioRef.current && audioRef.current.paused && audioRef.current.src) {
+      audioRef.current.play().catch(() => {});
+      setIsAudioPaused(false);
+      setIsSpeaking(true);
+    }
+  }, []);
+
   const stop = useCallback(() => {
     if (socketRef.current && simulationId) {
       socketRef.current.emit('simulation:stop', { simulationId });
@@ -190,6 +208,7 @@ export function useSimulation() {
     setRemainingSecs(null);
     setReportId(null);
     setIsSpeaking(false);
+    setIsAudioPaused(false);
   }, [audioUrl, disconnectSocket]);
 
   return {
@@ -199,6 +218,7 @@ export function useSimulation() {
     audioUrl,
     isLoading,
     isSpeaking,
+    isAudioPaused,
     error,
     warning,
     remainingSecs,
@@ -207,5 +227,7 @@ export function useSimulation() {
     sendChat,
     stop,
     reset,
+    pauseAudio,
+    resumeAudio,
   };
 }
