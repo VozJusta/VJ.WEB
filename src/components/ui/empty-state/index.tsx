@@ -7,6 +7,7 @@ import type { EmptyStateProps } from "./empty-state.types";
 export function EmptyState({
   illustration,
   illustrationAlt,
+  illustrationSvg,
   title,
   description,
   action,
@@ -16,15 +17,17 @@ export function EmptyState({
       className="flex flex-col items-center justify-center px-6 py-16 text-center"
       aria-labelledby="empty-state-title"
     >
-      <figure className="mb-8">
-        <Image
-          src={illustration}
-          alt={illustrationAlt}
-          width={200}
-          height={200}
-          className="h-48 w-48 object-contain opacity-90"
-          priority
-        />
+      <figure className="mb-8 flex items-center justify-center h-48 w-48">
+        {illustrationSvg ?? (illustration ? (
+          <Image
+            src={illustration}
+            alt={illustrationAlt ?? ""}
+            width={200}
+            height={200}
+            className="h-48 w-48 object-contain opacity-90"
+            priority
+          />
+        ) : null)}
       </figure>
 
       <header className="mb-4 max-w-md space-y-2">
