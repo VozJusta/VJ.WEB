@@ -1,0 +1,478 @@
+{
+  "common": {
+    "back": "Volver",
+    "save": "Guardar",
+    "cancel": "Cancelar",
+    "confirm": "Confirmar",
+    "loading": "Cargando...",
+    "error": "Error",
+    "success": "Éxito",
+    "send": "Enviar",
+    "close": "Cerrar",
+    "yes": "Sí",
+    "no": "No",
+    "or": "O",
+    "and": "y",
+    "of": "de",
+    "in": "en",
+    "search": "Buscar",
+    "filter": "Filtrar",
+    "download": "Descargar",
+    "downloading": "Descargando...",
+    "upload": "Subir archivo",
+    "seeAll": "Ver todos",
+    "seeMore": "Ver Más",
+    "goBack": "Volver",
+    "tryAgain": "Inténtelo de nuevo.",
+    "unexpectedError": "Ocurrió un error inesperado. Inténtelo de nuevo.",
+    "serverError": "Error del servidor. Inténtelo más tarde.",
+    "noData": "No se encontraron datos.",
+    "required": "Obligatorio",
+    "optional": "Opcional",
+    "processing": "Procesando...",
+    "done": "Hecho"
+  },
+  "nav": {
+    "home": "Inicio",
+    "dashboard": "Panel",
+    "cases": "Mis Casos",
+    "lawyers": "Abogados",
+    "simulator": "Simulador",
+    "documents": "Documentos",
+    "settings": "Configuración",
+    "profile": "Perfil",
+    "logout": "Cerrar sesión",
+    "notifications": "Notificaciones"
+  },
+  "auth": {
+    "email": "CORREO ELECTRÓNICO",
+    "emailPlaceholder": "correo@ejemplo.com",
+    "password": "CONTRASEÑA",
+    "passwordPlaceholder": "••••••••",
+    "showPassword": "Mostrar contraseña",
+    "hidePassword": "Ocultar contraseña",
+    "fullName": "NOMBRE COMPLETO",
+    "fullNamePlaceholder": "Ej: Juan García",
+    "cpfCnpj": "CPF/CNPJ",
+    "cpfCnpjPlaceholder": "000.000.000-00",
+    "phone": "TELÉFONO",
+    "phonePlaceholder": "(00) 00000-0000",
+    "acceptTerms": "He leído y acepto los",
+    "termsOfUse": "Términos de Uso",
+    "alreadyHaveAccount": "¿Ya tienes una cuenta?",
+    "signIn": "Iniciar sesión",
+    "dontHaveAccount": "¿Aún no tienes cuenta?",
+    "signUp": "Registrarse",
+    "passwordStrength": {
+      "title": "Seguridad de la contraseña",
+      "weak": "DÉBIL",
+      "medium": "MEDIA",
+      "strong": "FUERTE",
+      "minChars": "Mínimo 8 caracteres",
+      "uppercase": "Una letra mayúscula",
+      "symbol": "Un símbolo especial"
+    },
+    "google": "Entrar con Google",
+    "orWith": "O entrar con"
+  },
+  "login": {
+    "title": "Entrar en VozJusta",
+    "subtitle": "Accede a tu cuenta para continuar",
+    "heroTitle": "Bienvenido de vuelta",
+    "heroSubtitle": "Accede a tu cuenta para continuar tu jornada legal con la claridad y tecnología que mereces.",
+    "rememberMe": "Recordarme",
+    "forgotPassword": "Olvidé mi contraseña",
+    "submit": "Iniciar sesión",
+    "successTitle": "¡Código enviado!",
+    "successDesc": "Verifica tu correo para completar el acceso.",
+    "errorTitle": "Error al iniciar sesión",
+    "errorFieldsDesc": "Verifica los campos destacados e inténtalo de nuevo.",
+    "errorGenericDesc": "No fue posible iniciar sesión. Inténtalo de nuevo."
+  },
+  "citizenSignup": {
+    "title": "Crea tu cuenta",
+    "subtitle": "Completa tus datos para acceder a la plataforma.",
+    "heroTitle": "Regístrate en VozJusta",
+    "heroSubtitle": "La claridad que el derecho exige, la voz que necesitas. Conectamos ciudadanos con la justicia de forma transparente y tecnológica.",
+    "submit": "Registrarse",
+    "successTitle": "¡Cuenta creada con éxito!",
+    "successDesc": "Enviamos un código a tu correo para completar el acceso.",
+    "errorTitle": "Error al registrarse",
+    "errorFieldsDesc": "Verifica los campos destacados e inténtalo de nuevo."
+  },
+  "lawyerSignup": {
+    "title": "Crea tu cuenta profesional",
+    "subtitle": "Completa los datos de tu licencia OAB para continuar.",
+    "heroTitle": "Expande tu práctica con VozJusta",
+    "heroSubtitle": "Conectamos profesionales del derecho a una red de oportunidades y herramientas de alto rendimiento para tu práctica jurídica.",
+    "fullName": "NOMBRE COMPLETO (SEGÚN OAB)",
+    "fullNamePlaceholder": "Ej: Dr. Roberto García",
+    "phone": "TELÉFONO/CELULAR",
+    "phonePlaceholder": "(11) 99999-9999",
+    "oabNumber": "NÚMERO OAB",
+    "oabNumberPlaceholder": "123456",
+    "oabState": "ESTADO",
+    "oabStatePlaceholder": "Selecciona el estado",
+    "specialty": "ESPECIALIDAD",
+    "specialtyPlaceholder": "Selecciona tu especialidad",
+    "submit": "Registrarse",
+    "successTitle": "¡Cuenta creada con éxito!",
+    "successDesc": "Enviamos un código a tu correo para completar el acceso.",
+    "errorTitle": "Error al registrarse",
+    "errorFieldsDesc": "Verifica los campos destacados e inténtalo de nuevo."
+  },
+  "verification": {
+    "back": "Volver",
+    "codeExpires": "El código expira en",
+    "email": {
+      "title": "Verificación de Correo",
+      "description": "Enviamos un código de verificación a",
+      "buttonText": "Verificar Correo",
+      "successTitle": "¡Correo verificado!",
+      "successDesc": "Tu correo fue verificado con éxito.",
+      "errorTitle": "Error de verificación",
+      "errorDesc": "No fue posible verificar el correo."
+    },
+    "sessionInvalid": "Sesión de verificación inválida. Por favor reinicia el proceso de registro."
+  },
+  "forgotPassword": {
+    "title": "¿Olvidaste tu contraseña?",
+    "subtitle": "¡No te preocupes! Ingresa tu correo registrado para recibir las instrucciones de recuperación.",
+    "emailPlaceholder": "tu@correo.com",
+    "submit": "Enviar Código",
+    "backToLogin": "Volver al inicio de sesión",
+    "errorTitle": "Error en el formulario",
+    "errorDesc": "Verifica el correo ingresado.",
+    "failedTitle": "Error al enviar el código",
+    "copyright": "© 2024 Voz Justa. Todos los derechos reservados."
+  },
+  "resetPassword": {
+    "title": "Nueva contraseña",
+    "subtitle": "Crea una nueva contraseña segura para proteger tu cuenta.",
+    "newPassword": "NUEVA CONTRASEÑA",
+    "confirmPassword": "CONFIRMAR NUEVA CONTRASEÑA",
+    "strengthLabel": "Seguridad de la contraseña",
+    "submit": "Restablecer contraseña",
+    "backToLogin": "Volver al inicio de sesión",
+    "sessionInvalid": "Sesión inválida",
+    "sessionInvalidDesc": "Por favor reinicia el proceso de recuperación de contraseña.",
+    "successTitle": "¡Contraseña restablecida con éxito!",
+    "successDesc": "Serás redirigido al inicio de sesión.",
+    "errorTitle": "Error al restablecer la contraseña",
+    "errorFieldsDesc": "Verifica los campos destacados e inténtalo de nuevo.",
+    "errorGenericDesc": "No fue posible restablecer la contraseña. Inténtalo de nuevo."
+  },
+  "landing": {
+    "hero": {
+      "title": "La justicia no tiene que ser difícil.",
+      "titleHighlight": "Nosotros te lo traducimos.",
+      "subtitle": "Usa nuestra IA para entender tus derechos, organizar pruebas y conectarte con el abogado ideal. Sin jerga legal, sin barreras.",
+      "citizenCta": "Soy ciudadano",
+      "lawyerCta": "Soy abogado"
+    },
+    "features": {
+      "title": "Funcionalidades",
+      "access": {
+        "title": "Acceso a la Justicia",
+        "desc": "Expresa en lenguaje natural. Nuestra IA traduce tu historia a términos jurídicos precisos, sin que necesites conocer una sola ley."
+      },
+      "digital": {
+        "title": "Digital First",
+        "desc": "Diagnóstico instantáneo y organización de pruebas. Recibe una hoja de ruta clara y accionable en segundos, no semanas."
+      },
+      "efficiency": {
+        "title": "Eficiencia Profesional",
+        "desc": "Conexión directa con abogados especialistas. Reciben tu caso estructurado, acelerando el inicio de tu defensa."
+      }
+    },
+    "pricing": {
+      "title": "Elige tu plan",
+      "toggleLabel": "Elegir tipo de plan",
+      "citizen": "Ciudadano",
+      "lawyer": "Abogado"
+    },
+    "faq": {
+      "title": "Preguntas Frecuentes",
+      "subtitle": "Resuelve tus dudas sobre cómo nuestra tecnología puede ayudarte a resolver problemas legales de forma rápida y segura."
+    },
+    "simulator": {
+      "ctaAria": "Acceder al simulador de tribunal con IA"
+    }
+  },
+  "dashboard": {
+    "greeting": "¡Hola, {{name}}!",
+    "welcomeSubtitle": "Bienvenido a tu panel legal. ¿En qué podemos ayudarte hoy?",
+    "quickActions": {
+      "title": "Acciones Rápidas",
+      "newCase": {
+        "title": "¿Nuevo Problema Legal?",
+        "desc": "Nuestros especialistas están listos para analizar tu caso ahora mismo con ayuda de inteligencia jurídica.",
+        "cta": "Reportar Nuevo Caso"
+      },
+      "simulator": {
+        "title": "Simulador de Audiencia",
+        "desc": "Prepárate emocional y técnicamente entrenando tu testimonio con nuestra IA personalizada.",
+        "cta": "Comenzar entrenamiento"
+      }
+    },
+    "cases": {
+      "title": "Mis Casos",
+      "seeAll": "Ver todos los casos",
+      "empty": "No se encontraron casos.",
+      "newCase": "Nuevo Caso",
+      "backToDashboard": "Volver al panel",
+      "createFirst": "Crear Primer Caso",
+      "emptyTitle": "Aún no tienes casos registrados",
+      "emptyDesc": "Comienza creando tu primer caso legal. Nuestro equipo de inteligencia artificial está listo para asistirte en todo el proceso.",
+      "listLabel": "Lista de casos",
+      "seeMore": "Ver Más Casos"
+    }
+  },
+  "caseDetail": {
+    "back": "Volver a Mis Casos",
+    "protocol": "Protocolo",
+    "currentStatus": "Estado Actual",
+    "status": {
+      "inAnalysis": "En Análisis",
+      "completed": "Completado",
+      "pending": "Pendiente",
+      "archived": "Archivado"
+    },
+    "simplifiedSummary": "Resumen Simplificado",
+    "legalAnalysis": "Análisis Legal",
+    "originalReport": "Relato Original",
+    "evidence": "Evidencias",
+    "evidenceCount_one": "{{count}} archivo",
+    "evidenceCount_other": "{{count}} archivos",
+    "evidenceLabel": "Evidencia {{index}}",
+    "responsibleLawyer": "Abogado Responsable",
+    "lawyerEmail": "Correo:",
+    "lawyerPhone": "Teléfono:",
+    "sendToLawyer": "Enviar a Abogado",
+    "downloadReport": "Descargar Informe",
+    "downloading": "Descargando..."
+  },
+  "newCase": {
+    "title": "Reportar Nuevo Caso",
+    "backToCases": "Volver a Mis Casos",
+    "selectCategory": "Selecciona una categoría",
+    "categories": {
+      "labor": "Laboral",
+      "laborDesc": "Problemas laborales o despidos",
+      "consumer": "Consumidor",
+      "consumerDesc": "Compras, servicios o cobros indebidos",
+      "other": "Otros",
+      "otherDesc": "Familia, inmuebles u otros temas"
+    },
+    "tellYourStory": "Cuenta tu historia",
+    "recording": "Grabando...",
+    "descriptionPlaceholder": "Describe lo que pasó con tus propias palabras...",
+    "hint": "Tu descripción será procesada con cifrado de extremo a extremo. • Presiona Ctrl+Enter para enviar",
+    "analyzing": "Iniciando análisis...",
+    "waiting": "Esperando relato...",
+    "startAnalysis": "Iniciar Análisis con IA"
+  },
+  "analysisComplete": {
+    "aiProcessing": "Procesamiento IA",
+    "completed": "100% Completado",
+    "title": "Análisis de IA finalizado",
+    "desc": "Nuestra IA procesó tu relato y documentos con éxito. Tu diagnóstico legal está listo para ver.",
+    "category": "Categoría",
+    "status": "Estado",
+    "generated": "Generado",
+    "downloadReport": "Descargar Informe Completo",
+    "lawyersList": "Lista de abogados socios",
+    "goHome": "Ir a la página de inicio",
+    "disclaimer": "El análisis automatizado no reemplaza el asesoramiento legal humano."
+  },
+  "aiChat": {
+    "waiting": "Esperando tu respuesta para continuar el análisis...",
+    "analysisComplete": "¡Análisis Completado!",
+    "analysisCompleteDesc": "Nuestra IA procesó tu relato con éxito. Mira el resultado completo abajo.",
+    "seeAnalysis": "Ver Análisis Completo",
+    "typing": "La IA está escribiendo",
+    "inProgress": "Análisis en Progreso",
+    "loading": "Cargando...",
+    "done": "Análisis Completado ✓"
+  },
+  "lawyers": {
+    "title": "Especialistas Encontrados",
+    "empty": "No se encontraron abogados.",
+    "sendCase": "Enviar Caso",
+    "sendCaseConfirmTitle": "¿Enviar caso a este abogado?",
+    "sendCaseConfirmDesc": "El abogado recibirá una notificación con los detalles de tu caso para revisión.",
+    "sendCaseSuccess": "¡Caso enviado con éxito!",
+    "sendCaseError": "Error al enviar caso.",
+    "sendCaseConflict": "Ya enviaste este caso a este abogado.",
+    "rating": "Calificación",
+    "specialization": "Especialización",
+    "oab": "OAB"
+  },
+  "documents": {
+    "title": "Gestión de documentos",
+    "recentFiles": "Archivos Recientes",
+    "seeAll": "Ver todos",
+    "allDocuments": "Todos los documentos",
+    "back": "Volver a documentos",
+    "listLabel": "Lista de documentos recientes",
+    "allListLabel": "Lista completa de documentos",
+    "fileInfo": "Información del archivo"
+  },
+  "settings": {
+    "title": "Configuración",
+    "appPreferences": "Preferencias de la App",
+    "language": "Idioma",
+    "languageValue": "Español",
+    "security": "Seguridad",
+    "changePassword": "Cambiar Contraseña",
+    "information": "Información",
+    "termsOfUse": "Términos de Uso",
+    "account": "Cuenta",
+    "deleteAccount": "Eliminar Cuenta",
+    "deleteAccountTitle": "Eliminar cuenta",
+    "deleteAccountDesc": "Esta acción es permanente e irreversible. Todos tus datos serán eliminados. Confirma tu contraseña para continuar.",
+    "currentPassword": "Tu contraseña actual",
+    "version": "Versión 2.4.0 (Build 88)",
+    "support": "Contactar soporte",
+    "supportSubtitle": "Soporte 24/7 disponible",
+    "deleteErrorTitle": "Error al eliminar cuenta",
+    "deleteErrorDesc": "Inténtalo de nuevo."
+  },
+  "privacySettings": {
+    "title": "Privacidad y Seguridad",
+    "subtitle": "Controla tus preferencias de privacidad y protege tus datos según los estándares de seguridad LGPD. Tu seguridad es nuestra prioridad fundamental.",
+    "accessSettings": "CONFIGURACIÓN DE ACCESO",
+    "sharing": {
+      "title": "Compartir",
+      "desc": "Permite que abogados socios vean tus documentos básicos para pre-análisis legal."
+    },
+    "manageDocuments": {
+      "title": "Gestionar Documentos",
+      "desc": "Accesos y permisos individuales"
+    },
+    "activeProtection": "PROTECCIÓN ACTIVA",
+    "encryption": {
+      "title": "Cifrado de Extremo a Extremo",
+      "desc": "Tus datos están protegidos por cifrado AES-256 en reposo y TLS en tránsito. Solo tú y quienes autorices tienen acceso a tu información."
+    },
+    "dangerZone": "ZONA CRÍTICA",
+    "danger": {
+      "title": "Zona de Peligro",
+      "desc": "Al eliminar tu cuenta, todos tus datos y documentos serán eliminados permanentemente de nuestros servidores. Esta acción es irreversible según LGPD RNF07.",
+      "button": "ELIMINAR CUENTA",
+      "modalTitle": "Eliminar cuenta permanentemente",
+      "modalDesc": "Esta acción es irreversible. Todos tus datos, documentos e historial serán eliminados permanentemente de nuestros servidores de acuerdo con la LGPD.",
+      "confirmPassword": "CONFIRMA TU CONTRASEÑA",
+      "cancelButton": "Cancelar",
+      "confirmButton": "Eliminar cuenta",
+      "successTitle": "Cuenta eliminada",
+      "successDesc": "Tus datos han sido eliminados permanentemente.",
+      "errorTitle": "Error al eliminar cuenta"
+    }
+  },
+  "simulator": {
+    "config": {
+      "title": "Configuración de la Audiencia Simulada",
+      "subtitle": "Personaliza tu entrenamiento eligiendo el perfil del Juez IA",
+      "judgeName": "Nombre del Juez",
+      "judgeNamePlaceholder": "Ej: Dr. García o Juez Instructor",
+      "judgeNameHint": "¿Cómo deseas llamar a la autoridad en la simulación?",
+      "personality": "Personalidad del Juez",
+      "personalities": {
+        "calm": { "label": "Calmado", "desc": "Mantiene un ritmo constante y fomenta el diálogo paciente durante la audiencia." },
+        "aggressive": { "label": "Agresivo", "desc": "Cuestiona argumentos rápidamente y exige precisión rápida en las respuestas." },
+        "impartial": { "label": "Imparcial", "desc": "Sigue estrictamente las reglas procesales sin mostrar ningún sesgo." },
+        "empathetic": { "label": "Empático", "desc": "Se enfoca en el elemento humano del caso y muestra sensibilidad hacia los testimonios." },
+        "pragmatic": { "label": "Pragmático", "desc": "Valora la eficiencia, las respuestas directas y evita demoras procesales." },
+        "researcher": { "label": "Investigador", "desc": "Profundiza en precedentes legales y detalles técnicos complejos." }
+      },
+      "resetDefault": "Restaurar Predeterminado",
+      "tip": {
+        "title": "Consejo de Entrenamiento",
+        "desc": "Recomendamos comenzar con el perfil Imparcial para dominar el procedimiento básico. Para desafíos avanzados de argumentación oral, prueba el perfil Agresivo."
+      },
+      "start": "Iniciar Simulación",
+      "nameRequired": "Ingresa el nombre del juez para iniciar la simulación",
+      "nameRequiredTitle": "Nombre del juez requerido",
+      "nameRequiredDesc": "Define un nombre para el juez antes de iniciar."
+    },
+    "session": {
+      "processing": "Procesando...",
+      "judgeSpeaking": "El juez está hablando...",
+      "audioPaused": "Audio pausado",
+      "pauseAudio": "Pausar audio",
+      "resumeAudio": "Reanudar audio",
+      "stopRecording": "Detener grabación",
+      "startRecording": "Grabar audio",
+      "pauseRecording": "Pausar grabación",
+      "resumeRecording": "Reanudar grabación",
+      "transcribing": "Transcribiendo...",
+      "yourSpeech": "Tu discurso",
+      "endSession": "Finalizar y Ver Feedback",
+      "sessionEnded": "Audiencia finalizada — envío de audio desactivado",
+      "paused": "Pausado"
+    },
+    "feedback": {
+      "aiProcessing": "Procesamiento IA",
+      "completed": "100% Completado",
+      "title": "Simulación finalizada",
+      "desc": "Nuestra IA procesó la simulación con éxito. Tu informe está listo para descargar.",
+      "status": "Estado",
+      "statusValue": "Completada",
+      "downloadPdf": "Descargar Informe PDF",
+      "goHome": "Ir a la página de inicio",
+      "disclaimer": "El análisis automatizado no reemplaza el asesoramiento legal humano."
+    }
+  },
+  "comingSoon": {
+    "badge": "Próximamente",
+    "title": "Algo increíble está en camino",
+    "subtitle": "Esta funcionalidad está siendo desarrollada cuidadosamente para garantizarte la mejor experiencia. Estará disponible pronto.",
+    "feature1": "Pago seguro",
+    "feature2": "Soporte dedicado",
+    "feature3": "Siempre disponible",
+    "backHome": "Volver al inicio",
+    "login": "Iniciar sesión"
+  },
+  "profile": {
+    "title": "Mi Perfil",
+    "editPhoto": "Editar foto",
+    "uploadingPhoto": "Subiendo foto...",
+    "name": "NOMBRE",
+    "phone": "TELÉFONO",
+    "email": "CORREO ELECTRÓNICO",
+    "plan": "PLAN ACTUAL",
+    "saveChanges": "Guardar Cambios",
+    "saving": "Guardando...",
+    "successTitle": "Perfil actualizado",
+    "successDesc": "Tu información ha sido guardada.",
+    "errorTitle": "Error al actualizar",
+    "avatarError": "Error al subir foto de perfil"
+  },
+  "errors": {
+    "fullNameRequired": "El nombre completo es obligatorio",
+    "fullNameMin": "El nombre debe tener al menos 3 caracteres",
+    "fullNameMax": "El nombre es demasiado largo",
+    "fullNameLetters": "El nombre debe contener solo letras",
+    "cpfCnpjRequired": "CPF/CNPJ es obligatorio",
+    "cpfCnpjInvalid": "CPF/CNPJ inválido. Use el formato 000.000.000-00 o 00.000.000/0000-00",
+    "phoneRequired": "El teléfono es obligatorio",
+    "phoneInvalid": "Teléfono inválido. Use el formato (00) 00000-0000",
+    "emailRequired": "El correo es obligatorio",
+    "emailInvalid": "Correo inválido",
+    "emailMax": "El correo es demasiado largo",
+    "passwordMin": "La contraseña debe tener al menos 8 caracteres",
+    "passwordUppercase": "La contraseña debe contener al menos una letra mayúscula",
+    "passwordSymbol": "La contraseña debe contener al menos un símbolo",
+    "termsRequired": "Debes aceptar los términos de uso",
+    "oabRequired": "El número OAB es obligatorio",
+    "oabInvalid": "El número OAB debe contener solo dígitos",
+    "oabStateRequired": "El estado es obligatorio",
+    "oabStateLength": "El estado debe tener 2 caracteres",
+    "specialtyRequired": "La especialidad es obligatoria",
+    "specialtyMin": "La especialidad debe tener al menos 3 caracteres",
+    "specialtyMax": "La especialidad es demasiado larga",
+    "codeRequired": "El código es obligatorio",
+    "codeLength": "El código debe tener 6 dígitos"
+  }
+}

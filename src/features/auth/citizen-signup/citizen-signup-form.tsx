@@ -4,6 +4,7 @@ import { FormEvent, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { ZodError } from "zod";
+import { useTranslation } from "react-i18next";
 import {
     AlternateEmail,
     Badge,
@@ -70,6 +71,7 @@ const formatPhone = (value: string) => {
 };
 
 export function CitizenSignupForm() {
+    const { t } = useTranslation();
     const router = useRouter();
     const isSubmittingRef = useRef(false);
     const [showPassword, setShowPassword] = useState(false);
@@ -87,10 +89,10 @@ export function CitizenSignupForm() {
     const strengthPercent = (strengthScore / passwordChecks.length) * 100;
 
     const strengthConfig = {
-        0: { label: "FRACA", color: "text-red-400", barColor: "bg-red-400" },
-        1: { label: "FRACA", color: "text-red-400", barColor: "bg-red-400" },
-        2: { label: "MÉDIA", color: "text-yellow-400", barColor: "bg-yellow-400" },
-        3: { label: "FORTE", color: "text-emerald-400", barColor: "bg-emerald-400" },
+        0: { label: t("auth.passwordStrength.weak"), color: "text-red-400", barColor: "bg-red-400" },
+        1: { label: t("auth.passwordStrength.weak"), color: "text-red-400", barColor: "bg-red-400" },
+        2: { label: t("auth.passwordStrength.medium"), color: "text-yellow-400", barColor: "bg-yellow-400" },
+        3: { label: t("auth.passwordStrength.strong"), color: "text-emerald-400", barColor: "bg-emerald-400" },
     }[strengthScore] || { label: "", color: "text-white/45", barColor: "bg-white/10" };
 
     const hasPasswordInput = formState.password.length > 0;
@@ -139,8 +141,8 @@ export function CitizenSignupForm() {
                         }
 
             toast({
-                title: "Cadastro realizado com sucesso!",
-                description: "Enviamos um código para seu e-mail para concluir o acesso.",
+                title: t("citizenSignup.successTitle"),
+                description: t("citizenSignup.successDesc"),
                 variant: "success",
             });
 
@@ -159,20 +161,20 @@ export function CitizenSignupForm() {
                 setErrors(fieldErrors);
 
                 toast({
-                    title: "Erro no cadastro",
-                    description: "Verifique os campos destacados e tente novamente.",
+                    title: t("citizenSignup.errorTitle"),
+                    description: t("citizenSignup.errorFieldsDesc"),
                     variant: "error",
                 });
             } else if (error instanceof AuthServiceError) {
                 toast({
-                    title: "Erro no cadastro",
+                    title: t("citizenSignup.errorTitle"),
                     description: error.message,
                     variant: "error",
                 });
             } else {
                 toast({
-                    title: "Erro no cadastro",
-                    description: "Ocorreu um erro inesperado. Tente novamente.",
+                    title: t("citizenSignup.errorTitle"),
+                    description: t("common.unexpectedError"),
                     variant: "error",
                 });
             }
@@ -185,9 +187,9 @@ export function CitizenSignupForm() {
     return (
         <section className="mx-auto w-full max-w-xl rounded-3xl border border-white/8 bg-[#071735]/80 p-6 shadow-[0_20px_80px_rgba(0,0,0,0.25)] backdrop-blur-sm sm:p-8 lg:mx-0">
             <div className="space-y-2">
-                <h2 className="text-4xl font-bold tracking-tight text-white">Crie sua conta</h2>
+                <h2 className="text-4xl font-bold tracking-tight text-white">{t("citizenSignup.title")}</h2>
                 <p className="text-base text-white/60">
-                    Preencha seus dados para acessar a plataforma.
+                    {t("citizenSignup.subtitle")}
                 </p>
             </div>
 
@@ -205,8 +207,8 @@ export function CitizenSignupForm() {
                                 fullName: event.target.value,
                             }))
                         }
-                        label="NOME COMPLETO"
-                        placeholder="Ex: João Silva"
+                        label={t("auth.fullName")}
+                        placeholder={t("auth.fullNamePlaceholder")}
                         leftIcon={<PersonOutline fontSize="small" aria-hidden="true" />}
                         error={errors.fullName}
                         containerClassName="space-y-2"
@@ -226,8 +228,8 @@ export function CitizenSignupForm() {
                                     cpf: formatCpfCnpj(event.target.value),
                                 }))
                             }
-                            label="CPF/CNPJ"
-                            placeholder="000.000.000-00"
+                            label={t("auth.cpfCnpj")}
+                            placeholder={t("auth.cpfCnpjPlaceholder")}
                             leftIcon={<Badge fontSize="small" aria-hidden="true" />}
                             error={errors.cpf}
                             containerClassName="space-y-2"
@@ -246,8 +248,8 @@ export function CitizenSignupForm() {
                                     phone: formatPhone(event.target.value),
                                 }))
                             }
-                            label="TELEFONE"
-                            placeholder="(00) 00000-0000"
+                            label={t("auth.phone")}
+                            placeholder={t("auth.phonePlaceholder")}
                             leftIcon={<Phone fontSize="small" aria-hidden="true" />}
                             error={errors.phone}
                             containerClassName="space-y-2"
@@ -267,8 +269,8 @@ export function CitizenSignupForm() {
                                 email: event.target.value,
                             }))
                         }
-                        label="E-MAIL"
-                        placeholder="email@exemplo.com.br"
+                        label={t("auth.email")}
+                        placeholder={t("auth.emailPlaceholder")}
                         leftIcon={<AlternateEmail fontSize="small" aria-hidden="true" />}
                         error={errors.email}
                         containerClassName="space-y-2"
@@ -287,13 +289,13 @@ export function CitizenSignupForm() {
                                 password: event.target.value,
                             }))
                         }
-                        label="SENHA DE ACESSO"
-                        placeholder="••••••••"
+                        label={t("auth.password")}
+                        placeholder={t("auth.passwordPlaceholder")}
                         leftIcon={<LockOutline fontSize="small" aria-hidden="true" />}
                         rightIcon={
                             <button
                                 type="button"
-                                aria-label={showPassword ? "Ocultar senha" : "Mostrar senha"}
+                                aria-label={showPassword ? t("auth.hidePassword") : t("auth.showPassword")}
                                 aria-pressed={showPassword}
                                 onClick={() => setShowPassword((current) => !current)}
                                 className="inline-flex text-white/60 transition-colors hover:text-white"
@@ -314,7 +316,7 @@ export function CitizenSignupForm() {
                         <section className="rounded-xl border border-white/10 bg-[#05112A] px-4 py-3">
                             <header className="mb-2 flex items-center justify-between">
                                 <h3 className="text-xs font-semibold uppercase tracking-[0.12em] text-white/55">
-                                    Segurança da senha
+                                    {t("auth.passwordStrength.title")}
                                 </h3>
                                 <p className={cn("text-xs font-semibold", strengthConfig.color)}>
                                     {strengthConfig.label}
@@ -363,9 +365,9 @@ export function CitizenSignupForm() {
                         }
                         error={errors.acceptedTerms}
                     >
-                        Li e concordo com os{" "}
+                        {t("auth.acceptTerms")}{" "}
                         <Link href="/termos" className="text-primary underline hover:text-primary/80">
-                            Termos de Uso
+                            {t("auth.termsOfUse")}
                         </Link>.
                     </Checkbox>
 
@@ -377,13 +379,13 @@ export function CitizenSignupForm() {
                         loading={isSubmitting}
                         className="mt-2 rounded-xl"
                     >
-                        Cadastrar
+                        {t("citizenSignup.submit")}
                     </Button>
 
                     <p className="text-center text-sm text-white/45">
-                        Já possui registro?{" "}
+                        {t("auth.alreadyHaveAccount")}{" "}
                         <Link href="/login" className="font-semibold text-primary hover:text-primary/80">
-                            Fazer Login
+                            {t("auth.signIn")}
                         </Link>
                     </p>
                 </fieldset>
