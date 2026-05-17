@@ -124,7 +124,9 @@ export function LoginForm() {
     setIsGoogleLoading(true);
     setUserRole(role);
 
-    const googleAuthUrl = `${API.BASE_URL}${API.ENDPOINTS.AUTH.GOOGLE}?state=${role}`;
+    const callbackUrl = `${window.location.origin}/auth/callback`;
+    const state = `${role}|${callbackUrl}`;
+    const googleAuthUrl = `${API.BASE_URL}${API.ENDPOINTS.AUTH.GOOGLE}?state=${encodeURIComponent(state)}`;
     window.location.href = googleAuthUrl;
   };
 
