@@ -10,7 +10,6 @@ import {
   LockOutline,
   Visibility,
   VisibilityOff,
-  WorkOutline,
   CheckRounded,
   CloseRounded,
 } from "@mui/icons-material";
@@ -21,7 +20,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { useToast } from "@/components/ui/toast/toast-provider";
 import { cn } from "@/lib/utils";
 import { authService, AuthServiceError } from "@/services/auth.service";
-import { passwordChecks, brazilianStates } from "./constants";
+import { passwordChecks, brazilianStates, specializationOptions } from "./constants";
 import { lawyerSignupSchema } from "./lawyer-signup.schema";
 import { useRouter } from "next/navigation";
 
@@ -327,10 +326,9 @@ export function LawyerSignupForm() {
             />
           </section>
 
-          <Input
+          <Select
             id="specialty"
             name="specialty"
-            autoComplete="off"
             value={formState.specialty}
             onChange={(event) =>
               setFormState((current) => ({
@@ -339,11 +337,11 @@ export function LawyerSignupForm() {
               }))
             }
             label="ESPECIALIDADE"
-            placeholder="Ex: Direito Civil"
-            leftIcon={<WorkOutline fontSize="small" aria-hidden="true" />}
+            options={[...specializationOptions]}
+            placeholder="Selecione sua especialidade"
             error={errors.specialty}
             containerClassName="space-y-2"
-            className="h-12 rounded-xl border-white/10 bg-[#05112A] text-sm text-white placeholder:text-white/35 focus:ring-primary"
+            className="h-12 rounded-xl w-full border-white/10 bg-[#05112A] text-sm text-white placeholder:text-white/35 focus:ring-primary"
           />
 
           <Input
