@@ -47,12 +47,14 @@ export function SimulatorSession() {
   const [transcription, setTranscription] = useState('');
   const [elapsedSeconds, setElapsedSeconds] = useState(0);
   const [isTranscribing, setIsTranscribing] = useState(false);
+  // Tracks manual termination so audio is blocked even before WebSocket confirms
+  const [isManuallyEnded, setIsManuallyEnded] = useState(false);
 
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const chunksRef = useRef<Blob[]>([]);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
-  const isSessionEnded = status === 'Completed' || status === 'TimedOut';
+  const isSessionEnded = status === 'Completed' || status === 'TimedOut' || isManuallyEnded;
 
   // Stop active recording when session ends
   useEffect(() => {
@@ -153,12 +155,17 @@ export function SimulatorSession() {
   };
 
   const handleEndSession = () => {
+    setIsManuallyEnded(true);
     if (isRecording) {
       mediaRecorderRef.current?.stop();
       setIsRecording(false);
+      setIsPaused(false);
     }
     stop();
-    router.push('/dashboard/simulador/feedback');
+    const path = reportId
+      ? `/dashboard/simulador/feedback?reportId=${reportId}`
+      : '/dashboard/simulador/feedback';
+    router.push(path);
   };
 
   const canRecord = !isLoading && !isSpeaking && !isTranscribing && !isSessionEnded;
@@ -182,8 +189,8 @@ export function SimulatorSession() {
 
       <section className="flex flex-1 flex-col gap-4 p-4 md:p-6">
         {/* Judge video area */}
-        <article className="relative overflow-hidden rounded-2xl bg-linear-to-br from-teal-600 to-teal-800 shadow-2xl max-h-64">
-          <div className="aspect-video w-full max-h-64 overflow-hidden">
+        <article className="relative overflow-hidden rounded-2xl bg-linear-to-br from-teal-600 to-teal-800 shadow-2xl max-h-44">
+          <div className="aspect-video w-full max-h-44 overflow-hidden">
             <div className="flex h-full items-end justify-center p-4">
               {isLoading && (
                 <div className="flex items-center gap-2 rounded-full bg-black/40 px-4 py-2 text-sm text-white">
