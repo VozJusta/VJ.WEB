@@ -4,6 +4,7 @@ import { useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useAuth } from '@/hooks/useAuth';
 import { authStorage } from '@/lib/auth';
+import type { GoogleAuthResponse } from '@/types/auth.types';
 
 function parseRole(roleStr: unknown): 'citizen' | 'lawyer' {
   if (typeof roleStr !== 'string') return 'citizen';
@@ -21,7 +22,7 @@ export function GoogleAuthHandler() {
     const accessToken = searchParams.get('access_token');
     const xSecurityToken = searchParams.get('x-security-token') || searchParams.get('token');
 
-    let data: Record<string, unknown> | null = null;
+    let data: Partial<GoogleAuthResponse> & Record<string, unknown> | null = null;
 
     if (authData) {
       try {
@@ -33,12 +34,12 @@ export function GoogleAuthHandler() {
       data = {
         access_token: accessToken,
         refresh_token: searchParams.get('refresh_token') ?? '',
-        role: searchParams.get('role') ?? 'citizen',
+        role: parseRole(searchParams.get('role')),
         email: searchParams.get('email') ?? '',
         full_name: searchParams.get('full_name') ?? '',
       };
     } else if (xSecurityToken) {
-      data = { securityToken: xSecurityToken, role: searchParams.get('role') ?? 'citizen' };
+      data = { securityToken: xSecurityToken, role: parseRole(searchParams.get('role')) };
     }
 
     if (!data) return;
@@ -48,7 +49,7 @@ export function GoogleAuthHandler() {
         authStorage.setTokens(data.access_token as string, data.refresh_token as string);
       }
 
-      login(data);
+      login(data as GoogleAuthResponse);
 
       const role = parseRole(data.role);
       authStorage.setUserRole(role);
