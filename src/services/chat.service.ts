@@ -64,6 +64,14 @@ export const chatService = {
     });
     if (!response.ok) throw new Error('Erro ao transcrever áudio');
     const data = await response.json();
-    return data.transcription ?? data.text ?? data.result ?? '';
+    return (
+      data.transcription ??
+      data.transcript ??
+      data.text ??
+      data.result ??
+      data.content ??
+      data.message ??
+      ''
+    );
   },
 };
