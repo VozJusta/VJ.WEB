@@ -3,11 +3,11 @@ import { NavItem } from "./header.types";
 export const headerNavigation: NavItem[] = [
   {
     label: "Funcionalidades",
-    href: "#features-section",
+    href: "/#features-section",
   },
   {
     label: "Planos",
-    href: "#plans-section",
+    href: "/#plans-section",
   },
   {
     label: "Contato",

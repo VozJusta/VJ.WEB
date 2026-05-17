@@ -1,34 +1,53 @@
 "use client";
 
-import { useState } from "react";
-import {
-  SaveRounded,
-  LockOutlined,
-  DeleteOutlineRounded,
-  EditRounded,
-} from "@mui/icons-material";
+import { useEffect, useState } from "react";
+import Image from "next/image";
+import { SaveRounded, LockOutlined, EditRounded, PersonRounded } from "@mui/icons-material";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useAuthStore } from "@/store/auth.store";
+import { userService } from "@/services/user.service";
+import { useToast } from "@/components/ui/toast/toast-provider";
 import { formatCPF, formatPhone } from "@/lib/status";
 
 export function ProfileFeature() {
   const user = useAuthStore((s) => s.user);
+  const { toast } = useToast();
 
   const [fullName, setFullName] = useState(user?.fullName ?? "");
   const [email, setEmail] = useState(user?.email ?? "");
   const [cpf, setCpf] = useState("");
   const [phone, setPhone] = useState("");
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
 
+  useEffect(() => {
+    userService.getProfile().then((profile) => {
+      if (profile.cpf) setCpf(formatCPF(profile.cpf));
+      if (profile.phone) setPhone(formatPhone(profile.phone));
+      if (profile.full_name) setFullName(profile.full_name);
+      if (profile.email) setEmail(profile.email);
+      if (profile.avatar_image) setAvatarUrl(profile.avatar_image);
+    }).catch(() => {});
+  }, []);
+
   const handleSave = async () => {
     setSaving(true);
-    await new Promise((r) => setTimeout(r, 800));
-    setSaving(false);
-    setSaved(true);
-    setTimeout(() => setSaved(false), 2500);
+    try {
+      await userService.updateProfile({ full_name: fullName, phone: phone.replace(/\D/g, "") });
+      setSaved(true);
+      setTimeout(() => setSaved(false), 2500);
+    } catch (err) {
+      toast({
+        title: "Erro ao salvar perfil",
+        description: err instanceof Error ? err.message : "Tente novamente.",
+        variant: "error",
+      });
+    } finally {
+      setSaving(false);
+    }
   };
 
   const displayName = user?.fullName ?? "Usuário";
@@ -45,9 +64,17 @@ export function ProfileFeature() {
         <div className="relative">
           <div className="w-24 h-24 rounded-full p-0.5 bg-linear-to-br from-[#2585F4] to-[#1565C0] shadow-[0_0_24px_rgba(37,133,244,0.35)]">
             <div className="w-full h-full rounded-full bg-[#111c30] overflow-hidden flex items-center justify-center">
-              <span className="text-2xl font-bold text-white select-none">
-                {initials}
-              </span>
+              {avatarUrl ? (
+                <Image
+                  src={avatarUrl}
+                  alt={`Foto de ${displayName}`}
+                  width={96}
+                  height={96}
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <span className="text-2xl font-bold text-white select-none">{initials}</span>
+              )}
             </div>
           </div>
 
@@ -87,6 +114,7 @@ export function ProfileFeature() {
           inputMode="numeric"
           autoComplete="off"
           placeholder="000.000.000-00"
+          disabled
         />
         <Input
           id="profile-email"
@@ -95,6 +123,7 @@ export function ProfileFeature() {
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           autoComplete="email"
+          disabled
         />
         <Input
           id="profile-phone"
@@ -125,25 +154,15 @@ export function ProfileFeature() {
         </Button>
       </section>
 
-      <div className="w-full grid grid-cols-2 gap-3">
+      <div className="w-full">
         <Button
           variant="outline"
           size="md"
           fullWidth
           leftIcon={<LockOutlined fontSize="small" aria-hidden />}
-          href="/redefinir-senha"
+          href="/dashboard/configuracoes/alterar-senha"
         >
           Alterar Senha
-        </Button>
-
-        <Button
-          variant="danger"
-          size="md"
-          fullWidth
-          leftIcon={<DeleteOutlineRounded fontSize="small" aria-hidden />}
-          className="bg-transparent border border-[#1B2233] text-red-400 hover:bg-red-500/10 hover:border-red-500/40 shadow-none"
-        >
-          Excluir Conta
         </Button>
       </div>
     </div>

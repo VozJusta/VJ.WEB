@@ -47,7 +47,11 @@ export const lawyersService = {
     });
     if (!response.ok) {
       const err = await response.json().catch(() => ({}));
-      throw new Error(err.message || 'Erro ao enviar solicitação');
+      const message = (err as Record<string, string>).message || 'Erro ao enviar solicitação';
+      if (response.status === 409) {
+        throw new Error(`409: ${message}`);
+      }
+      throw new Error(message);
     }
   },
 };

@@ -30,14 +30,20 @@ export function NotificationsList() {
 
   if (error) {
     return (
-      <p className="text-sm text-red-400">{error}</p>
+      <EmptyState
+        illustration="/notification-illustration.png"
+        illustrationAlt="Nenhuma notificação"
+        title="Não foi possível carregar"
+        description="Ocorreu um erro ao buscar suas notificações. Verifique sua conexão e tente novamente."
+        action={{ label: "Tentar novamente", onClick: () => window.location.reload() }}
+      />
     );
   }
 
   if (notifications.length === 0) {
     return (
       <EmptyState
-        illustration="/illustrations/notification-illustration.png"
+        illustration="/notification-illustration.png"
         illustrationAlt="Nenhuma notificação"
         title="Tudo limpo por aqui!"
         description="Você não tem nenhuma notificação nova no momento. Avisaremos assim que algo importante acontecer."

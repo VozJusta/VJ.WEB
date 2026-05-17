@@ -19,6 +19,9 @@
     --status-pending: #3b82f6;
     --status-pending-bg: rgba(59, 130, 246, 0.12);
 
+  --radius-default: 1rem;
+  --radius-pill: 9999px;
+
   --sidebar-width: 15rem;
   --sidebar-collapsed-width: 4.5rem;
   --sidebar-current-width: var(--sidebar-width);

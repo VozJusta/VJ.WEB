@@ -7,6 +7,8 @@ export interface GoogleAuthResponse {
   email: string;
   full_name: string;
   loggedWithGoogle: boolean;
+  access_token?: string;
+  refresh_token?: string;
 }
 
 export interface AuthenticateResponse {

@@ -8,30 +8,34 @@ import { authStorage } from '@/lib/auth';
 export function GoogleAuthHandler() {
   const searchParams = useSearchParams();
   const router = useRouter();
-  const { login, isAuthenticated } = useAuth();
+  const { login } = useAuth();
 
   useEffect(() => {
     const authData = searchParams.get('authData');
+    if (!authData) return;
 
-    if (authData && !isAuthenticated) {
-      try {
-        const decodedData = JSON.parse(atob(authData));
-        login(decodedData);
+    try {
+      const decodedData = JSON.parse(atob(authData));
 
-        const rawRole = typeof decodedData.role === 'string'
-          ? decodedData.role.split('|')[0].trim().toLowerCase()
-          : 'citizen';
-        const role = rawRole === 'lawyer' ? 'lawyer' : 'citizen';
-        authStorage.setUserRole(role);
-
-        // Replace URL to remove authData param, then go to correct dashboard
-        const home = role === 'lawyer' ? '/advogado' : '/dashboard';
-        router.replace(home);
-      } catch {
-        // malformed authData — stay on current page
+      if (decodedData.access_token && decodedData.refresh_token) {
+        authStorage.setTokens(decodedData.access_token, decodedData.refresh_token);
       }
+
+      login(decodedData);
+
+      const rawRole = typeof decodedData.role === 'string'
+        ? decodedData.role.split('|')[0].trim().toLowerCase()
+        : 'citizen';
+      const role = rawRole === 'lawyer' ? 'lawyer' : 'citizen';
+      authStorage.setUserRole(role);
+
+      const home = role === 'lawyer' ? '/advogado' : '/dashboard';
+      router.replace(home);
+    } catch {
+      // malformed authData — stay on current page
     }
-  }, [searchParams, login, isAuthenticated, router]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchParams]);
 
   return null;
 }

@@ -22,12 +22,14 @@ export function HeroSection() {
 
       <div className="mt-8 flex flex-wrap justify-center gap-4">
         <Button
+          href="/onBoarding/cidadao"
           size="lg"
           className="rounded-full px-8 text-lg shadow-lg hover:shadow-xl shadow-primary/20 transition-all duration-300 hover:-translate-y-0.5"
         >
           Sou cidadão
         </Button>
         <Button
+          href="/onBoarding/advogado"
           variant="secondary"
           size="lg"
           className="rounded-full bg-[#171717] px-8 text-lg text-white hover:bg-[#2a2a2a] ring-1 ring-white/10 transition-all duration-300 hover:-translate-y-0.5 dark:bg-white/10 dark:hover:bg-white/20"

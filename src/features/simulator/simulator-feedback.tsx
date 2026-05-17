@@ -5,7 +5,6 @@ import { Button } from '@/components/ui/button';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import DownloadIcon from '@mui/icons-material/Download';
 import HomeIcon from '@mui/icons-material/Home';
-import GavelIcon from '@mui/icons-material/Gavel';
 import TrendingUpIcon from '@mui/icons-material/TrendingUp';
 import { simulationService } from '@/services/simulation.service';
 import { useState } from 'react';
@@ -66,14 +65,6 @@ export function SimulatorFeedback() {
             </p>
 
             <div className="mb-8 flex w-full max-w-lg flex-wrap justify-center gap-4">
-              <div className="flex items-center gap-2 rounded-xl border border-(--border-subtle) bg-surface px-4 py-3">
-                <GavelIcon className="text-primary" sx={{ fontSize: 20 }} />
-                <div className="text-left">
-                  <p className="text-xs uppercase tracking-wide text-text-muted">Tipo</p>
-                  <p className="text-sm font-semibold text-foreground">Audiência Simulada</p>
-                </div>
-              </div>
-
               <div className="flex items-center gap-2 rounded-xl border border-(--border-subtle) bg-surface px-4 py-3">
                 <TrendingUpIcon className="text-emerald-400" sx={{ fontSize: 20 }} />
                 <div className="text-left">

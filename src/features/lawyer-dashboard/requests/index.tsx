@@ -101,7 +101,7 @@ export function RequestsList() {
     return (
       <section className="w-full" aria-label="Solicitações">
         <EmptyState
-          illustration="/illustrations/empty-cases-illustration.png"
+          illustration="/empty-cases-illustration.png"
           illustrationAlt="Nenhuma solicitação encontrada"
           title="Você ainda não tem solicitações"
           description="Quando cidadãos enviarem propostas de casos, elas aparecerão aqui para você revisar."
@@ -126,7 +126,7 @@ export function RequestsList() {
           aria-label={`Solicitações ${activeFilter === "all" ? "todas" : activeFilter}`}
         >
           <EmptyState
-            illustration="/illustrations/empty-cases-illustration.png"
+            illustration="/empty-cases-illustration.png"
             illustrationAlt="Nenhuma solicitação encontrada"
             title={`Nenhuma solicitação ${activeFilter === "pending" ? "pendente" : activeFilter === "accepted" ? "aceita" : "recusada"}`}
             description="Não há solicitações nesta categoria no momento."

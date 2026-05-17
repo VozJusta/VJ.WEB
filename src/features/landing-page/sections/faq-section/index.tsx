@@ -6,7 +6,7 @@ export function FaqSection({ className = "" }: FaqSectionProps) {
   return (
     <section
       id="faq-section"
-      className={`flex flex-col gap-12 ${className} pb-12`}
+      className={`flex flex-col gap-12 ${className} py-20`}
       aria-labelledby="faq-heading"
     >
       <div className="flex flex-col items-center gap-4">
