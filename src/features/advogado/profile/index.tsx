@@ -1,5 +1,220 @@
 "use client";
 
+import { useEffect, useRef, useState } from "react";
+import Image from "next/image";
+import { SaveRounded, LockOutlined, EditRounded } from "@mui/icons-material";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { useAuthStore } from "@/store/auth.store";
+import { userService } from "@/services/user.service";
+import { useToast } from "@/components/ui/toast/toast-provider";
+import { formatCPF, formatPhone } from "@/lib/status";
+
+export function LawyerDashboardProfileFeature() {
+  const user = useAuthStore((s) => s.user);
+  const setUser = useAuthStore((s) => s.setUser);
+  const { toast } = useToast();
+
+  const [fullName, setFullName] = useState(user?.fullName ?? "");
+  const [email, setEmail] = useState(user?.email ?? "");
+  const [cpf, setCpf] = useState("");
+  const [phone, setPhone] = useState("");
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
+  const [saving, setSaving] = useState(false);
+  const [saved, setSaved] = useState(false);
+  const [uploadingAvatar, setUploadingAvatar] = useState(false);
+  const avatarInputRef = useRef<HTMLInputElement>(null);
+
+  const handleAvatarClick = () => {
+    avatarInputRef.current?.click();
+  };
+
+  const handleAvatarChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploadingAvatar(true);
+    try {
+      const result = await userService.uploadAvatar(file);
+      if (result.avatar_image) setAvatarUrl(result.avatar_image);
+      else setAvatarUrl(URL.createObjectURL(file));
+      toast({ title: "Foto atualizada!", variant: "success" });
+    } catch (err) {
+      toast({
+        title: "Erro ao enviar foto",
+        description: err instanceof Error ? err.message : "Tente novamente.",
+        variant: "error",
+      });
+    } finally {
+      setUploadingAvatar(false);
+      if (avatarInputRef.current) avatarInputRef.current.value = "";
+    }
+  };
+
+  useEffect(() => {
+    userService.getProfile().then((profile) => {
+      if (profile.cpf) setCpf(formatCPF(profile.cpf));
+      if (profile.phone) setPhone(formatPhone(profile.phone));
+      if (profile.full_name) setFullName(profile.full_name);
+      if (profile.email) setEmail(profile.email);
+      if (profile.avatar_image) setAvatarUrl(profile.avatar_image);
+    }).catch(() => {});
+  }, []);
+
+  const handleSave = async () => {
+    setSaving(true);
+    try {
+      await userService.updateProfile({ full_name: fullName, phone: phone.replace(/\D/g, "") });
+      if (user) {
+        setUser({ ...user, fullName });
+      }
+      setSaved(true);
+      setTimeout(() => setSaved(false), 2500);
+    } catch (err) {
+      toast({
+        title: "Erro ao salvar perfil",
+        description: err instanceof Error ? err.message : "Tente novamente.",
+        variant: "error",
+      });
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const displayName = user?.fullName ?? "Advogado";
+  const initials = displayName
+    .split(" ")
+    .slice(0, 2)
+    .map((n) => n[0])
+    .join("")
+    .toUpperCase();
+
+  return (
+    <div className="flex flex-col items-center gap-6 w-full max-w-2xl mx-auto px-4 py-6 md:px-0 md:py-8">
+      <div className="flex flex-col items-center gap-3">
+        <div className="relative">
+          <div className="w-24 h-24 rounded-full p-0.5 bg-linear-to-br from-[#2585F4] to-[#1565C0] shadow-[0_0_24px_rgba(37,133,244,0.35)]">
+            <div className="w-full h-full rounded-full bg-[#111c30] overflow-hidden flex items-center justify-center">
+              {avatarUrl ? (
+                <Image
+                  src={avatarUrl}
+                  alt={`Foto de ${displayName}`}
+                  width={96}
+                  height={96}
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <span className="text-2xl font-bold text-white select-none">{initials}</span>
+              )}
+            </div>
+          </div>
+
+          <input
+            ref={avatarInputRef}
+            type="file"
+            accept="image/*"
+            className="hidden"
+            aria-hidden="true"
+            onChange={handleAvatarChange}
+          />
+          <button
+            type="button"
+            aria-label="Alterar foto de perfil"
+            onClick={handleAvatarClick}
+            disabled={uploadingAvatar}
+            className="absolute bottom-0 right-0 flex items-center justify-center w-7 h-7 rounded-full bg-[#2585F4] border-2 border-[#0d1526] text-white hover:bg-[#1978E5] transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2585F4] focus-visible:ring-offset-2 focus-visible:ring-offset-[#0d1526] disabled:opacity-60"
+          >
+            <EditRounded sx={{ fontSize: 14 }} aria-hidden />
+          </button>
+        </div>
+
+        <div className="flex flex-col items-center gap-2">
+          <h1 className="text-2xl font-bold text-white tracking-tight">
+            {displayName}
+          </h1>
+          <Badge text="Advogado" variant="blue" />
+        </div>
+      </div>
+
+      <section
+        className="w-full rounded-2xl bg-[#0C1326] border border-[#1B2233] p-6 flex flex-col gap-5"
+        aria-label="Dados do perfil"
+      >
+        <Input
+          id="profile-fullname"
+          label="Nome Completo"
+          value={fullName}
+          onChange={(e) => setFullName(e.target.value)}
+          autoComplete="name"
+        />
+        <Input
+          id="profile-cpf"
+          label="CPF"
+          value={cpf}
+          onChange={(e) => setCpf(formatCPF(e.target.value))}
+          inputMode="numeric"
+          autoComplete="off"
+          placeholder="000.000.000-00"
+          disabled
+        />
+        <Input
+          id="profile-email"
+          label="E-mail"
+          type="email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          autoComplete="email"
+          disabled
+        />
+        <Input
+          id="profile-phone"
+          label="Telefone"
+          type="tel"
+          value={phone}
+          onChange={(e) => setPhone(formatPhone(e.target.value))}
+          autoComplete="tel"
+          placeholder="(00) 00000-0000"
+        />
+
+        <Button
+          variant="primary"
+          size="lg"
+          fullWidth
+          loading={saving}
+          onClick={handleSave}
+          rightIcon={
+            saved ? undefined : <SaveRounded fontSize="small" aria-hidden />
+          }
+          className={
+            saved
+              ? "bg-green-600 hover:bg-green-600 shadow-[0_4px_15px_rgba(34,197,94,0.35)]"
+              : ""
+          }
+        >
+          {saved ? "Alterações salvas!" : "Salvar alterações"}
+        </Button>
+      </section>
+
+      <div className="w-full">
+        <Button
+          variant="outline"
+          size="md"
+          fullWidth
+          leftIcon={<LockOutlined fontSize="small" aria-hidden />}
+          href="/advogado/configuracoes/alterar-senha"
+        >
+          Alterar Senha
+        </Button>
+      </div>
+    </div>
+  );
+}
+
+/*
+ * ─── OLD IMPLEMENTATION (commented out — to be restored/redesigned later) ───
+ *
+"use client";
+
 import Image from "next/image";
 import { useMemo, useState } from "react";
 import {
@@ -76,294 +291,8 @@ export function LawyerDashboardProfileFeature() {
 
   return (
     <div className="space-y-6">
-      <header>
-        <h1 className="text-3xl font-bold tracking-tight text-foreground">
-          Perfil Profissional
-        </h1>
-        <p className="mt-2 text-base text-foreground-muted">
-          Gerencie suas informações e preferências do perfil.
-        </p>
-      </header>
-
-      <section className="rounded-3xl border border-(--border-subtle) bg-surface-elevated p-6 md:p-8">
-        <div className="flex flex-col gap-6 md:flex-row md:items-center">
-          <div className="flex items-start gap-5">
-            <div className="relative">
-              <div className="h-18 w-18 md:h-22 md:w-22 overflow-hidden rounded-full border border-(--border-subtle) bg-foreground/5">
-                {user.avatarUrl ? (
-                  <Image
-                    src={user.avatarUrl}
-                    alt={`Foto de ${profile.name}`}
-                    width={96}
-                    height={96}
-                    className="h-full w-full object-cover"
-                  />
-                ) : (
-                  <div className="flex h-full w-full items-center justify-center">
-                    <span className="text-lg font-bold text-foreground">
-                      {initials}
-                    </span>
-                  </div>
-                )}
-              </div>
-
-              <button
-                type="button"
-                aria-label="Editar foto do perfil"
-                className="absolute -bottom-1 -right-1 inline-flex h-8 w-8 items-center justify-center rounded-full border border-(--border-subtle) bg-surface text-text-secondary hover:bg-foreground/5"
-              >
-                <EditRounded sx={{ fontSize: 16 }} aria-hidden />
-              </button>
-            </div>
-
-            <div className="min-w-0">
-              <div className="flex flex-wrap items-center gap-3">
-                <h2 className="text-xl md:text-2xl font-bold tracking-tight text-foreground">
-                  {profile.name}
-                </h2>
-                <Badge text={profile.availabilityLabel} variant="green" />
-              </div>
-
-              <p className="mt-2 text-sm md:text-base text-text-secondary">
-                {profile.headline}
-              </p>
-
-              <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-text-secondary">
-                <span className="inline-flex items-center gap-1.5">
-                  <LocationOnRounded sx={{ fontSize: 18 }} aria-hidden />
-                  {profile.location}
-                </span>
-
-                <span className="inline-flex items-center gap-1.5">
-                  <CalendarTodayRounded sx={{ fontSize: 18 }} aria-hidden />
-                  {profile.yearsOfExperience} anos de Experiência
-                </span>
-
-                <span className="inline-flex items-center gap-1.5">
-                  <StarRounded sx={{ fontSize: 18 }} className="text-yellow-400" aria-hidden />
-                  {profile.rating} ({profile.totalReviews} avaliações)
-                </span>
-              </div>
-            </div>
-          </div>
-
-          <div className="flex-1" />
-
-          <div className="flex items-center gap-2 md:self-start">
-            <Button variant="ghost" size="sm">
-              Editar
-            </Button>
-          </div>
-        </div>
-      </section>
-
-      <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
-        <section className="rounded-3xl border border-[#1B2233] bg-[#0d1526] p-6 lg:col-span-2">
-          <header className="flex items-start justify-between gap-4">
-            <div className="flex items-start gap-4">
-              <span className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-[#2585F4]/15 text-[#2585F4] shrink-0">
-                <VerifiedRounded fontSize="small" aria-hidden />
-              </span>
-              <div>
-                <h3 className="text-base font-semibold text-white">Dados da OAB</h3>
-                <p className="text-sm text-white/50">Registro Profissional</p>
-              </div>
-            </div>
-
-            <Badge text={profile.oab.validatedLabel} variant="green" />
-          </header>
-
-          <div className="mt-6 space-y-5">
-            <div>
-              <p className="text-xs font-semibold uppercase tracking-wider text-white/35">
-                Número de inscrição
-              </p>
-              <div className="mt-2 rounded-xl border border-[#1B2233] bg-[#0a0f1a]/40 px-4 py-3">
-                <p className="text-sm font-semibold text-white">
-                  {profile.oab.number}
-                </p>
-              </div>
-            </div>
-
-            <div>
-              <p className="text-xs font-semibold uppercase tracking-wider text-white/35">
-                Seccional
-              </p>
-              <p className="mt-2 text-sm font-medium text-white">
-                {profile.oab.section}
-              </p>
-            </div>
-
-            <div>
-              <p className="text-xs font-semibold uppercase tracking-wider text-white/35">
-                Status na Ordem
-              </p>
-              <p className="mt-2 text-sm font-medium text-white">
-                {profile.oab.status}
-              </p>
-            </div>
-          </div>
-        </section>
-
-        <section className="rounded-2xl border border-(--border-subtle) bg-surface-elevated p-6">
-          <header className="flex items-start justify-between gap-4">
-            <div>
-              <h3 className="text-lg font-semibold tracking-tight text-foreground">
-                Áreas de Atuação
-              </h3>
-              <p className="text-sm text-text-secondary">Especialidades visíveis</p>
-            </div>
-
-            <Button variant="ghost" size="sm">
-              Editar
-            </Button>
-          </header>
-
-          <div className="mt-4 flex flex-wrap gap-2">
-            {profile.practiceAreas.map((area) => (
-              <span
-                key={area}
-                className="inline-flex items-center rounded-full border border-(--border-subtle) bg-surface px-3 py-1 text-xs font-medium text-foreground"
-              >
-                {area}
-              </span>
-            ))}
-
-            <button
-              type="button"
-              className="inline-flex items-center rounded-full border border-(--border-subtle) bg-surface px-3 py-1 text-xs font-medium text-text-secondary hover:bg-foreground/5"
-            >
-              + Adicionar
-            </button>
-          </div>
-
-          <div className="mt-6">
-            <p className="text-sm font-semibold text-foreground">Idiomas de Atendimento</p>
-            <div className="mt-2 flex flex-wrap gap-2">
-              {profile.languages.map((lang) => (
-                <span
-                  key={lang}
-                  className="inline-flex items-center rounded-full border border-(--border-subtle) bg-surface px-3 py-1 text-xs font-medium text-text-secondary"
-                >
-                  {lang}
-                </span>
-              ))}
-            </div>
-          </div>
-        </section>
-      </div>
-
-      <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
-        <section className="relative overflow-hidden rounded-3xl border border-blue-500/20 bg-[radial-gradient(circle_at_15%_20%,rgba(37,133,244,0.22)_0%,rgba(13,21,38,1)_55%)] p-8 lg:col-span-2">
-          <header className="flex items-start justify-between gap-6">
-            <div className="flex items-start gap-5">
-              <span className="inline-flex h-14 w-14 items-center justify-center rounded-2xl bg-[#2585F4] text-white">
-                <DiamondOutlined sx={{ fontSize: 28 }} aria-hidden />
-              </span>
-
-              <div className="min-w-0">
-                <h3 className="text-2xl font-bold tracking-tight text-white">
-                  {profile.plan.name}
-                </h3>
-                <p className="mt-1 text-base text-white/70">Assinatura Ativa</p>
-              </div>
-            </div>
-
-            <span className="inline-flex items-center justify-center rounded-xl bg-white/10 px-4 py-2 text-sm font-semibold text-white">
-              {profile.plan.status}
-            </span>
-          </header>
-
-          <ul className="mt-8 space-y-6" role="list">
-            {profile.plan.benefits.map((benefit) => (
-              <li key={benefit} className="flex items-center gap-4">
-                <span className="inline-flex h-7 w-7 items-center justify-center rounded-full border border-[#2585F4]/35 bg-[#2585F4]/10 text-[#2585F4]">
-                  <CheckCircleOutlined sx={{ fontSize: 20 }} aria-hidden />
-                </span>
-                <span className="text-lg text-white/80">{benefit}</span>
-              </li>
-            ))}
-          </ul>
-
-          <div className="mt-10 h-px w-full bg-blue-500/20" aria-hidden="true" />
-
-          <footer className="mt-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-            <p className="text-base text-white/45">
-              Renovação em <span className="font-semibold text-white/80">{profile.plan.renewal}</span>
-            </p>
-            <a
-              href="/advogado/configuracoes"
-              className="text-base font-semibold uppercase tracking-wide text-[#2585F4] hover:text-[#2585F4]/80 transition-colors"
-            >
-              Gerenciar Plano
-            </a>
-          </footer>
-        </section>
-
-        <section className="rounded-2xl border border-(--border-subtle) bg-surface-elevated p-6">
-          <header className="flex items-start gap-3">
-            <span className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-foreground/5 text-text-secondary">
-              <ShieldRounded fontSize="small" aria-hidden />
-            </span>
-            <div>
-              <h3 className="text-lg font-semibold tracking-tight text-foreground">
-                Segurança e LGPD
-              </h3>
-              <p className="text-sm text-text-secondary">Privacidade e controle</p>
-            </div>
-          </header>
-
-          <div className="mt-5 space-y-4">
-            <div className="flex items-center justify-between gap-4 rounded-xl border border-(--border-subtle) bg-surface p-4">
-              <div className="min-w-0">
-                <p className="text-sm font-semibold text-foreground">
-                  Autenticação em 2 Fatores
-                </p>
-                <p className="text-xs text-text-secondary">
-                  Proteção extra para sua conta
-                </p>
-              </div>
-              <Toggle
-                checked={twoFactorEnabled}
-                onChange={setTwoFactorEnabled}
-                aria-label="Autenticação em 2 fatores"
-              />
-            </div>
-
-            <div className="flex items-center justify-between gap-4 rounded-xl border border-(--border-subtle) bg-surface p-4">
-              <div className="min-w-0">
-                <p className="text-sm font-semibold text-foreground">
-                  Visibilidade do Perfil
-                </p>
-                <p className="text-xs text-text-secondary">
-                  Seu perfil aparece nas buscas
-                </p>
-              </div>
-              <Toggle
-                checked={profileVisible}
-                onChange={setProfileVisible}
-                aria-label="Visibilidade do perfil"
-              />
-            </div>
-
-            <div className="pt-1">
-              <Button
-                variant="ghost"
-                size="sm"
-                href="/advogado/configuracoes"
-                leftIcon={<LockRounded fontSize="small" aria-hidden />}
-              >
-                Ver Histórico de Acessos
-              </Button>
-            </div>
-          </div>
-        </section>
-      </div>
-
-      <div className="sr-only" aria-live="polite">
-        {twoFactorEnabled ? "2FA ativado" : "2FA desativado"}
-        {profileVisible ? "Perfil visível" : "Perfil oculto"}
-      </div>
+      ...full old JSX omitted for brevity — see git history...
     </div>
   );
 }
+*/
