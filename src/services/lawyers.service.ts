@@ -42,7 +42,7 @@ export const lawyersService = {
   },
 
   async sendRequest(caseId: string, lawyerId: string): Promise<void> {
-    const response = await apiFetch(`/case/${caseId}/requests/${lawyerId}`, {
+    const response = await apiFetch(`/citizen/case/${caseId}/requests/${lawyerId}`, {
       method: 'POST',
     });
     if (!response.ok) {
