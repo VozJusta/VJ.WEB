@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import {
   ArrowBackRounded,
   CheckRounded,
@@ -16,23 +16,48 @@ import { useLawyerCaseDetail } from "@/hooks/useLawyerCaseDetail";
 import { useLawyerRequests } from "@/hooks/useLawyerRequests";
 import { useReportDownload } from "@/hooks/useReportDownload";
 import { getCategoryLabel } from "@/lib/status";
+import { useToast } from "@/components/ui/toast/toast-provider";
+import { useState } from "react";
 
 interface RequestDetailFeatureProps {
   requestId: string;
 }
 
 export function RequestDetailFeature({ requestId }: RequestDetailFeatureProps) {
+  const router = useRouter();
   const searchParams = useSearchParams();
   const caseId = searchParams.get("caseId") ?? "";
   const reportId = searchParams.get("reportId") ?? "";
   const statusParam = searchParams.get("status") ?? "Pending";
+  const { toast } = useToast();
+  const [currentStatus, setCurrentStatus] = useState(statusParam);
 
   const { report, isLoading, error } = useLawyerCaseDetail(caseId);
   const { accept, reject } = useLawyerRequests();
   const { downloadPdf, isDownloading } = useReportDownload();
 
+  const handleAccept = async () => {
+    try {
+      await accept(requestId);
+      setCurrentStatus("accepted");
+      toast({ title: "Caso aceito!", description: "O cidadão será notificado.", variant: "success" });
+    } catch {
+      toast({ title: "Erro ao aceitar caso", description: "Tente novamente.", variant: "error" });
+    }
+  };
+
+  const handleReject = async () => {
+    try {
+      await reject(requestId);
+      setCurrentStatus("refused");
+      toast({ title: "Caso recusado", description: "O cidadão será notificado.", variant: "error" });
+    } catch {
+      toast({ title: "Erro ao recusar caso", description: "Tente novamente.", variant: "error" });
+    }
+  };
+
   const protocol = `#${requestId.slice(0, 8).toUpperCase()}`;
-  const status = statusParam.toLowerCase();
+  const status = currentStatus.toLowerCase();
 
   if (isLoading) {
     return (
@@ -78,7 +103,7 @@ export function RequestDetailFeature({ requestId }: RequestDetailFeatureProps) {
               variant="outline"
               size="md"
               leftIcon={<CloseRounded sx={{ fontSize: 20 }} aria-hidden />}
-              onClick={() => reject(requestId)}
+              onClick={handleReject}
               className="flex-1 border-red-500/20 text-red-400 hover:border-red-500/40 hover:bg-red-500/10 sm:flex-none"
             >
               Recusar
@@ -87,7 +112,7 @@ export function RequestDetailFeature({ requestId }: RequestDetailFeatureProps) {
               variant="primary"
               size="md"
               leftIcon={<CheckRounded sx={{ fontSize: 20 }} aria-hidden />}
-              onClick={() => accept(requestId)}
+              onClick={handleAccept}
               className="flex-1 sm:flex-none"
             >
               Aceitar Caso
@@ -113,7 +138,7 @@ export function RequestDetailFeature({ requestId }: RequestDetailFeatureProps) {
               <h2 className="text-xs font-semibold uppercase tracking-widest text-text-muted mb-3">
                 Resumo Simplificado
               </h2>
-              <p className="text-sm text-foreground leading-relaxed">{report.simplified_explanation}</p>
+              <p className="text-sm text-foreground leading-relaxed whitespace-pre-wrap">{report.simplified_explanation}</p>
             </div>
           )}
 
@@ -122,7 +147,7 @@ export function RequestDetailFeature({ requestId }: RequestDetailFeatureProps) {
               <h2 className="text-xs font-semibold uppercase tracking-widest text-text-muted mb-3">
                 Análise Jurídica
               </h2>
-              <p className="text-sm text-foreground leading-relaxed">{report.legal_analysis}</p>
+              <p className="text-sm text-foreground leading-relaxed whitespace-pre-wrap">{report.legal_analysis}</p>
             </div>
           )}
 
@@ -131,7 +156,7 @@ export function RequestDetailFeature({ requestId }: RequestDetailFeatureProps) {
               <h2 className="text-xs font-semibold uppercase tracking-widest text-text-muted mb-3">
                 Relato do Cidadão
               </h2>
-              <blockquote className="text-sm text-text-secondary leading-relaxed italic">
+              <blockquote className="text-sm text-text-secondary leading-relaxed italic whitespace-pre-wrap">
                 {report.transcription}
               </blockquote>
             </div>
