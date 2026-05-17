@@ -58,7 +58,7 @@ export function CasesSection() {
             <li key={report.id}>
               <CaseCard
                 id={report.id}
-                title={report.title || getCategoryLabel(report.category_detected) || 'Caso'}
+                title={getCategoryLabel(report.category_detected)}
                 status={statusMap(report.status)}
                 updatedLabel={new Date(report.created_at).toLocaleDateString('pt-BR')}
                 protocol={`#${report.id.slice(0, 8).toUpperCase()}`}

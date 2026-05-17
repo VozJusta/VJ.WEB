@@ -52,12 +52,8 @@ export function ChatInput({
   };
 
   return (
-    <div
-      className={cn(
-        "sticky bottom-0 border-t border-(--border-subtle) bg-surface/95 backdrop-blur-sm",
-        "px-6 py-4",
-      )}
-    >
+<>
+
       {isRecording && (
         <div className="mb-2 flex items-center gap-2 px-1">
           <span className="relative flex h-2 w-2">
@@ -80,7 +76,7 @@ export function ChatInput({
           isRecording
             ? "border-red-500/50 bg-red-500/5"
             : "border-(--border-subtle) focus-within:border-(--border-default) focus-within:bg-surface",
-        )}
+          )}
       >
         {onVoiceRecord && (
           <button
@@ -140,6 +136,6 @@ export function ChatInput({
           <SendRounded fontSize="small" aria-hidden="true" />
         </button>
       </div>
-    </div>
+  </>
   );
 }

@@ -36,13 +36,13 @@ export function NotificationsList() {
     </svg>
   );
 
-  if (error) {
+  if (notifications.length === 0 && !isLoading) {
     return (
       <EmptyState
         illustrationSvg={NotificationSvg}
-        title="Não foi possível carregar"
-        description="Ocorreu um erro ao buscar suas notificações. Verifique sua conexão e tente novamente."
-        action={{ label: "Tentar novamente", onClick: () => window.location.reload() }}
+        title="Tudo limpo por aqui!"
+        description="Você não tem nenhuma notificação nova no momento. Avisaremos assim que algo importante acontecer."
+        action={{ label: "Limpar tudo", onClick: deleteAll, disabled: true }}
       />
     );
   }

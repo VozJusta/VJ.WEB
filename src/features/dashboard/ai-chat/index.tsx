@@ -91,39 +91,7 @@ export function AIChatFeature({ conversationId, caseId }: AIChatFeatureProps) {
 
   return (
     <div className="flex h-full min-h-screen flex-col">
-      <header
-        className="sticky top-16 z-20 border-b border-(--border-subtle) bg-surface/95 backdrop-blur-sm px-6 py-4"
-        aria-label="Progresso da análise"
-      >
-        <div className="flex items-center justify-between">
-          <h2 className="text-xs font-semibold uppercase tracking-widest text-text-muted">
-            {stage}
-          </h2>
-          <span className="text-xs font-semibold uppercase tracking-widest text-primary">
-            {progress}% Concluído
-          </span>
-        </div>
-        <div
-          className="mt-2 h-1 overflow-hidden rounded-full bg-surface-elevated"
-          role="progressbar"
-          aria-valuenow={progress}
-          aria-valuemin={0}
-          aria-valuemax={100}
-          aria-label={`Progresso da análise: ${progress}%`}
-        >
-          <div
-            className="relative h-full overflow-hidden rounded-full bg-primary transition-all duration-500"
-            style={{ width: `${progress}%` }}
-          >
-            {progress < 100 && (
-              <span
-                aria-hidden
-                className="absolute inset-0 -translate-x-full animate-[shimmer_1.5s_infinite] bg-white/20"
-              />
-            )}
-          </div>
-        </div>
-      </header>
+      
 
       <main className="flex-1 overflow-y-auto px-6 py-8">
         <div className="mx-auto flex max-w-4xl flex-col gap-6">
