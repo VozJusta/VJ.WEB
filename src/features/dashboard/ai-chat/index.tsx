@@ -112,9 +112,16 @@ export function AIChatFeature({ conversationId, caseId }: AIChatFeatureProps) {
           aria-label={`Progresso da análise: ${progress}%`}
         >
           <div
-            className={`h-full bg-primary transition-all duration-500${progress < 100 ? ' relative overflow-hidden after:absolute after:inset-0 after:bg-white/20 after:animate-pulse' : ''}`}
+            className="relative h-full overflow-hidden rounded-full bg-primary transition-all duration-500"
             style={{ width: `${progress}%` }}
-          />
+          >
+            {progress < 100 && (
+              <span
+                aria-hidden
+                className="absolute inset-0 -translate-x-full animate-[shimmer_1.5s_infinite] bg-white/20"
+              />
+            )}
+          </div>
         </div>
       </header>
 
