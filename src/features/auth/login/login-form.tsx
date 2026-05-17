@@ -238,15 +238,10 @@ export function LoginForm() {
             Entrar
           </Button>
 
-          <div className="relative">
-            <div className="absolute inset-0 flex items-center" aria-hidden="true">
-              <div className="w-full border-t border-white/10" />
-            </div>
-            <div className="relative flex justify-center text-sm">
-              <span className="bg-[#071735] px-4 text-white/45 uppercase tracking-wide">
-                Ou entre com
-              </span>
-            </div>
+          <div className="flex items-center gap-3" aria-hidden="true">
+            <div className="flex-1 border-t border-white/10" />
+            <span className="text-xs text-white/40 uppercase tracking-wider">Ou entre com</span>
+            <div className="flex-1 border-t border-white/10" />
           </div>
 
           <Button
