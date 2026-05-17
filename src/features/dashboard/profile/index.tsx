@@ -64,7 +64,7 @@ export function ProfileFeature() {
   const handleSave = async () => {
     setSaving(true);
     try {
-      await userService.updateProfile({ full_name: fullName, phone: phone.replace(/\D/g, "") });
+      await userService.updateProfile({ fullName, phone: phone.replace(/\D/g, "") });
       // Sync new name into the Zustand auth store so the header/sidebar reflect the change immediately
       if (user) {
         setUser({ ...user, fullName });

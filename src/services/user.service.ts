@@ -51,12 +51,15 @@ export const userService = {
     return response.json();
   },
 
-  async updateProfile(data: { full_name?: string; phone?: string }): Promise<void> {
+  async updateProfile(data: { fullName?: string; phone?: string }): Promise<void> {
     const response = await apiFetch('/profile', {
       method: 'PUT',
       body: JSON.stringify(data),
     });
-    if (!response.ok) throw new Error('Falha ao atualizar perfil');
+    if (!response.ok) {
+      const body = await response.json().catch(() => ({}));
+      throw new Error((body as Record<string, string>).message || 'Falha ao atualizar perfil');
+    }
   },
 
   async uploadAvatar(file: File): Promise<{ avatar_image?: string }> {
