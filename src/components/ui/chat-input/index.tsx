@@ -36,9 +36,18 @@ export function ChatInput({
     }
   };
 
+  // Refocus textarea when loading finishes (so user can type next message right away)
+  useEffect(() => {
+    if (!disabled) {
+      textareaRef.current?.focus();
+    }
+  }, [disabled]);
+
   const handleSend = () => {
     if (value.trim() && !disabled) {
       onSend();
+      // Restore focus so the user can type the next message immediately
+      setTimeout(() => textareaRef.current?.focus(), 0);
     }
   };
 
