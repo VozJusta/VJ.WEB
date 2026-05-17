@@ -1,8 +1,7 @@
 import Link from "next/link";
 import type { Metadata } from "next";
-import logo from "@/assets/logo/logo+name.svg";
 import Image from "next/image";
-
+import logo from "@/assets/logo/logo+name.svg";
 
 export const metadata: Metadata = {
   title: "Em Breve | Voz Justa",
@@ -22,7 +21,7 @@ export default function ComingSoonPage() {
         }}
       />
 
-      <Image l />
+      <Image src={logo} alt="VozJusta" width={200} height={200} priority className="mb-3"/>
       {/* Illustration */}
       <div
         className="mb-8 flex h-32 w-32 items-center justify-center rounded-full bg-[#2585F4]/10 ring-1 ring-[#2585F4]/20"
@@ -65,7 +64,7 @@ export default function ComingSoonPage() {
         {/* Feature highlights */}
         <div className="mb-10 grid grid-cols-3 gap-3">
           {[
-            { label: "Pagamento seguro", },
+            { label: "Pagamento seguro" },
             { label: "Suporte dedicado" },
             { label: "Sempre disponível" },
           ].map((item) => (
