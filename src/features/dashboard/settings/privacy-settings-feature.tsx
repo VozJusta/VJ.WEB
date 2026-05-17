@@ -6,17 +6,45 @@ import {
   FolderOpenRounded,
   ShieldRounded,
   ErrorRounded,
+  LockOutline,
+  WarningAmberRounded,
 } from "@mui/icons-material";
 import { Toggle } from "@/components/ui/toggle";
 import { PrivacyCard } from "@/components/ui/privacy-card";
 import { PrivacySettingCard } from "@/components/ui/privacy-setting-card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { useToast } from "@/components/ui/toast/toast-provider";
+import { userService } from "@/services/user.service";
+import { authStorage } from "@/lib/auth";
 
 export function PrivacySettingsFeature() {
   const router = useRouter();
+  const { toast } = useToast();
   const [documentSharing, setDocumentSharing] = useState(true);
+  const [showModal, setShowModal] = useState(false);
+  const [password, setPassword] = useState("");
+  const [isDeleting, setIsDeleting] = useState(false);
 
-  const handleDeleteAccount = () => {
-    router.push("/dashboard/configuracoes");
+  const handleDeleteAccount = async () => {
+    if (!password.trim()) return;
+    setIsDeleting(true);
+    try {
+      await userService.deleteAccount(password);
+      toast({ title: "Conta excluída", description: "Seus dados foram removidos permanentemente.", variant: "success" });
+      authStorage.logout();
+      router.push("/login");
+    } catch (err) {
+      toast({
+        title: "Erro ao excluir conta",
+        description: err instanceof Error ? err.message : "Tente novamente.",
+        variant: "error",
+      });
+    } finally {
+      setIsDeleting(false);
+      setShowModal(false);
+      setPassword("");
+    }
   };
 
   return (
@@ -94,13 +122,71 @@ export function PrivacySettingsFeature() {
           </div>
 
           <button
-            onClick={handleDeleteAccount}
+            onClick={() => setShowModal(true)}
             className="w-full px-4 py-3 rounded-xl bg-red-500 hover:bg-red-600 text-white font-semibold text-sm transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0D1B2E]"
           >
             EXCLUIR CONTA
           </button>
         </div>
       </section>
+
+      {showModal && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm px-4"
+          onClick={() => { if (!isDeleting) { setShowModal(false); setPassword(""); } }}
+        >
+          <div
+            className="w-full max-w-md rounded-2xl bg-[#111c30] border border-red-500/20 p-6 flex flex-col gap-5"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center gap-3">
+              <span className="flex items-center justify-center w-10 h-10 rounded-full bg-red-500/15">
+                <WarningAmberRounded className="text-red-400" />
+              </span>
+              <h2 className="text-lg font-bold text-white">Excluir conta permanentemente</h2>
+            </div>
+
+            <p className="text-sm text-white/60 leading-relaxed">
+              Esta ação é <strong className="text-white">irreversível</strong>. Todos os seus dados, documentos e histórico serão permanentemente excluídos de nossos servidores conforme a LGPD.
+            </p>
+
+            <Input
+              id="delete-password"
+              type="password"
+              label="CONFIRME SUA SENHA"
+              placeholder="••••••••"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              leftIcon={<LockOutline fontSize="small" aria-hidden />}
+              containerClassName="space-y-2"
+              className="h-12 rounded-xl border-white/10 bg-[#05112A] text-sm text-white placeholder:text-white/35"
+            />
+
+            <div className="flex gap-3">
+              <Button
+                variant="ghost"
+                size="md"
+                fullWidth
+                onClick={() => { setShowModal(false); setPassword(""); }}
+                disabled={isDeleting}
+                className="border border-[#1B2233] text-white/70 hover:text-white hover:bg-white/8"
+              >
+                Cancelar
+              </Button>
+              <Button
+                size="md"
+                fullWidth
+                loading={isDeleting}
+                disabled={!password.trim() || isDeleting}
+                onClick={handleDeleteAccount}
+                className="bg-red-500 hover:bg-red-600 text-white border-transparent"
+              >
+                Excluir conta
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
