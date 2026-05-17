@@ -12,6 +12,8 @@ import {
     LockOutline,
     Visibility,
     VisibilityOff,
+    CheckRounded,
+    CloseRounded,
 } from "@mui/icons-material";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -333,10 +335,14 @@ export function CitizenSignupForm() {
                                     <li
                                         key={check.id}
                                         className={cn(
-                                            "text-xs",
+                                            "flex items-center gap-1 text-xs",
                                             checkResults[index] ? strengthConfig.color : "text-white/45",
                                         )}
                                     >
+                                        {checkResults[index]
+                                            ? <CheckRounded sx={{ fontSize: 12 }} aria-hidden />
+                                            : <CloseRounded sx={{ fontSize: 12 }} aria-hidden />
+                                        }
                                         {check.label}
                                     </li>
                                 ))}
