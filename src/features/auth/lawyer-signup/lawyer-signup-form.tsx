@@ -11,6 +11,8 @@ import {
   Visibility,
   VisibilityOff,
   WorkOutline,
+  CheckRounded,
+  CloseRounded,
 } from "@mui/icons-material";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -172,10 +174,21 @@ export function LawyerSignupForm() {
           }
         });
         setErrors(fieldErrors);
-        
         toast({
           title: "Erro no cadastro",
           description: "Verifique os campos destacados e tente novamente.",
+          variant: "error",
+        });
+      } else if (error instanceof AuthServiceError) {
+        toast({
+          title: "Erro no cadastro",
+          description: error.message,
+          variant: "error",
+        });
+      } else {
+        toast({
+          title: "Erro no cadastro",
+          description: "Ocorreu um erro inesperado. Tente novamente.",
           variant: "error",
         });
       }
@@ -395,10 +408,14 @@ export function LawyerSignupForm() {
                     <li
                       key={check.id}
                       className={cn(
-                        "text-xs",
+                        "flex items-center gap-1 text-xs",
                         checkResults[index] ? strengthConfig.color : "text-white/45",
                       )}
                     >
+                      {checkResults[index]
+                        ? <CheckRounded sx={{ fontSize: 12 }} aria-hidden />
+                        : <CloseRounded sx={{ fontSize: 12 }} aria-hidden />
+                      }
                       {check.label}
                     </li>
                   ))}
