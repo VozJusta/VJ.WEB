@@ -1,15 +1,17 @@
 "use client";
 
-import { SearchRounded, NotificationsNoneRounded, MenuRounded } from "@mui/icons-material";
+import { NotificationsNoneRounded, MenuRounded } from "@mui/icons-material";
 import Image from "next/image";
 import Link from "next/link";
 import { DynamicBreadcrumb } from "./dynamic-breadcrumb";
+import { SearchCommand } from "./search-command";
 import { cn } from "@/lib/utils";
 import { useNotificationsStore } from "@/store/notifications.store";
 import type { DashboardHeaderProps } from "./dashboard-header.types";
 
 export function DashboardHeader({ user, onMenuToggle, notificationsHref = "/dashboard/notificacoes" }: DashboardHeaderProps) {
   const unreadCount = useNotificationsStore((s) => s.unreadCount);
+  const profileHref = user.role === "Advogado" ? "/advogado/perfil" : "/dashboard/perfil";
 
   return (
     <header
@@ -41,28 +43,7 @@ export function DashboardHeader({ user, onMenuToggle, notificationsHref = "/dash
       </div>
 
       <div className="flex flex-1 items-center justify-end gap-3">
-        <form
-          role="search"
-          action="/dashboard/busca"
-          className="hidden md:flex items-center gap-2 rounded-xl border border-(--border-subtle) bg-white/5 px-3 py-2 text-sm transition-colors hover:border-(--border-subtle-hover) focus-within:border-(--primary)/40 focus-within:bg-white/8 w-56"
-        >
-          <SearchRounded
-            fontSize="small"
-            className="shrink-0 text-text-muted"
-            aria-hidden="true"
-          />
-          <label htmlFor="dashboard-search" className="sr-only">
-            Pesquisar
-          </label>
-          <input
-            id="dashboard-search"
-            type="search"
-            name="q"
-            placeholder="Pesquisar..."
-            autoComplete="off"
-            className="flex-1 bg-transparent text-foreground placeholder:text-text-muted outline-none min-w-0"
-          />
-        </form>
+        <SearchCommand />
 
         <Link
           href={notificationsHref}
@@ -79,7 +60,7 @@ export function DashboardHeader({ user, onMenuToggle, notificationsHref = "/dash
         </Link>
 
         <Link
-          href="/dashboard/perfil"
+          href={profileHref}
           className="flex items-center gap-2.5 rounded-xl border border-(--border-subtle) bg-white/5 px-3 py-2 transition-colors hover:border-(--border-subtle-hover) hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
           aria-label={`Perfil de ${user.name}`}
         >
