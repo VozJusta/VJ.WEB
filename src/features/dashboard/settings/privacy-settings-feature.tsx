@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import {
   FolderOpenRounded,
   ShieldRounded,
@@ -11,15 +12,11 @@ import { PrivacyCard } from "@/components/ui/privacy-card";
 import { PrivacySettingCard } from "@/components/ui/privacy-setting-card";
 
 export function PrivacySettingsFeature() {
+  const router = useRouter();
   const [documentSharing, setDocumentSharing] = useState(true);
 
   const handleDeleteAccount = () => {
-    if (
-      window.confirm(
-        "Tem certeza que deseja excluir sua conta? Esta ação não pode ser desfeita."
-      )
-    ) {
-    }
+    router.push("/dashboard/configuracoes");
   };
 
   return (
