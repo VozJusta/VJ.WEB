@@ -51,8 +51,17 @@ export function CasesList({ initialCases = [] }: CasesListProps) {
         </header>
 
         <EmptyState
-          illustration="/empty-cases-illustration.png"
-          illustrationAlt="Nenhum caso encontrado"
+          illustrationSvg={
+            <svg viewBox="0 0 200 200" className="h-40 w-40 opacity-70" aria-hidden="true" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="100" cy="100" r="80" fill="#1B2233" />
+              <rect x="60" y="55" width="80" height="100" rx="8" fill="#2585F4" opacity="0.25"/>
+              <rect x="72" y="75" width="56" height="8" rx="4" fill="#2585F4" opacity="0.7"/>
+              <rect x="72" y="93" width="44" height="8" rx="4" fill="#2585F4" opacity="0.5"/>
+              <rect x="72" y="111" width="36" height="8" rx="4" fill="#2585F4" opacity="0.35"/>
+              <circle cx="140" cy="140" r="20" fill="#0d1526" stroke="#2585F4" strokeWidth="2"/>
+              <path d="M133 140h14M140 133v14" stroke="#2585F4" strokeWidth="2.5" strokeLinecap="round"/>
+            </svg>
+          }
           title="Você ainda não tem casos cadastrados"
           description="Comece criando seu primeiro caso jurídico. Nossa equipe de inteligência artificial está pronta para te auxiliar em todo o processo."
           action={{

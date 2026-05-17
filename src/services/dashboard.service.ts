@@ -4,6 +4,7 @@ import { apiFetch } from '@/lib/api-client';
 
 export interface ReportCard {
   id: string;
+  caseId?: string;
   title?: string;
   category_detected: string;
   status: string;
@@ -27,6 +28,7 @@ export interface GetReportsResponse {
 
 export interface DetailsReport {
   id: string;
+  caseId?: string;
   transcription: string;
   simplified_explanation: string;
   legal_analysis: string;

@@ -30,13 +30,13 @@ export interface LawyersListResponse {
 
 export const lawyersService = {
   async getList(page = 1, pageSize = 10): Promise<LawyersListResponse> {
-    const response = await apiFetch(`/lawyers?page=${page}&pageSize=${pageSize}`);
+    const response = await apiFetch(`/citizen/lawyers?page=${page}&pageSize=${pageSize}`);
     if (!response.ok) throw new Error('Erro ao buscar advogados');
     return response.json();
   },
 
   async getById(lawyerId: string): Promise<LawyerDetail> {
-    const response = await apiFetch(`/lawyers/${lawyerId}`);
+    const response = await apiFetch(`/citizen/lawyers/${lawyerId}`);
     if (!response.ok) throw new Error('Advogado não encontrado');
     return response.json();
   },

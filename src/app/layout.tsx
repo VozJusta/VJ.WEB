@@ -4,6 +4,7 @@ import "./globals.css";
 import Header from "@/components/layout/header";
 import { ToastProvider } from "@/components/ui/toast/toast-provider";
 import { AuthProvider } from "@/contexts/auth-context";
+import { I18nProvider } from "@/providers/i18n-provider";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -21,11 +22,13 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="pt-BR">
       <body className={`${inter.variable} ${inter.className} antialiased`}>
-        <AuthProvider>
-          <ToastProvider>{children}</ToastProvider>
-        </AuthProvider>
+        <I18nProvider>
+          <AuthProvider>
+            <ToastProvider>{children}</ToastProvider>
+          </AuthProvider>
+        </I18nProvider>
       </body>
     </html>
   );

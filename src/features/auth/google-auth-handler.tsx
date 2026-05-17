@@ -4,6 +4,13 @@ import { useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useAuth } from '@/hooks/useAuth';
 import { authStorage } from '@/lib/auth';
+import type { GoogleAuthResponse } from '@/types/auth.types';
+
+function parseRole(roleStr: unknown): 'citizen' | 'lawyer' {
+  if (typeof roleStr !== 'string') return 'citizen';
+  const raw = roleStr.split('|')[0].trim().toLowerCase();
+  return raw === 'lawyer' ? 'lawyer' : 'citizen';
+}
 
 export function GoogleAuthHandler() {
   const searchParams = useSearchParams();
@@ -12,27 +19,45 @@ export function GoogleAuthHandler() {
 
   useEffect(() => {
     const authData = searchParams.get('authData');
-    if (!authData) return;
+    const accessToken = searchParams.get('access_token');
+    const xSecurityToken = searchParams.get('x-security-token') || searchParams.get('token');
+
+    let data: Partial<GoogleAuthResponse> & Record<string, unknown> | null = null;
+
+    if (authData) {
+      try {
+        data = JSON.parse(atob(authData));
+      } catch {
+        // malformed base64 — ignore
+      }
+    } else if (accessToken) {
+      data = {
+        access_token: accessToken,
+        refresh_token: searchParams.get('refresh_token') ?? '',
+        role: parseRole(searchParams.get('role')),
+        email: searchParams.get('email') ?? '',
+        full_name: searchParams.get('full_name') ?? '',
+      };
+    } else if (xSecurityToken) {
+      data = { securityToken: xSecurityToken, role: parseRole(searchParams.get('role')) };
+    }
+
+    if (!data) return;
 
     try {
-      const decodedData = JSON.parse(atob(authData));
-
-      if (decodedData.access_token && decodedData.refresh_token) {
-        authStorage.setTokens(decodedData.access_token, decodedData.refresh_token);
+      if (data.access_token && data.refresh_token) {
+        authStorage.setTokens(data.access_token as string, data.refresh_token as string);
       }
 
-      login(decodedData);
+      login(data as GoogleAuthResponse);
 
-      const rawRole = typeof decodedData.role === 'string'
-        ? decodedData.role.split('|')[0].trim().toLowerCase()
-        : 'citizen';
-      const role = rawRole === 'lawyer' ? 'lawyer' : 'citizen';
+      const role = parseRole(data.role);
       authStorage.setUserRole(role);
 
       const home = role === 'lawyer' ? '/advogado' : '/dashboard';
       router.replace(home);
     } catch {
-      // malformed authData — stay on current page
+      // malformed auth data — stay on current page
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchParams]);

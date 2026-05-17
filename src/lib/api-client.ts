@@ -2,6 +2,19 @@ import { authStorage } from './auth';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL!;
 
+function forceLogout(): void {
+  authStorage.logout();
+  // Clear persisted Zustand auth store so the next page load starts clean
+  if (typeof window !== 'undefined') {
+    try {
+      localStorage.removeItem('auth-store');
+    } catch {
+      // storage unavailable
+    }
+    window.location.href = '/login';
+  }
+}
+
 let isRefreshing = false;
 let failedQueue: Array<{
   resolve: (token: string) => void;
@@ -78,8 +91,7 @@ export async function apiFetch(
   } catch (err) {
     processQueue(err as Error, null);
     isRefreshing = false;
-    authStorage.logout();
-    if (typeof window !== 'undefined') window.location.href = '/login';
+    forceLogout();
     throw err;
   }
 }

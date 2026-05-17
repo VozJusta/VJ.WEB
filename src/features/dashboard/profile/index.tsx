@@ -1,8 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
-import { SaveRounded, LockOutlined, EditRounded, PersonRounded } from "@mui/icons-material";
+import { SaveRounded, LockOutlined, EditRounded } from "@mui/icons-material";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -13,6 +13,7 @@ import { formatCPF, formatPhone } from "@/lib/status";
 
 export function ProfileFeature() {
   const user = useAuthStore((s) => s.user);
+  const setUser = useAuthStore((s) => s.setUser);
   const { toast } = useToast();
 
   const [fullName, setFullName] = useState(user?.fullName ?? "");
@@ -22,6 +23,33 @@ export function ProfileFeature() {
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
+  const [uploadingAvatar, setUploadingAvatar] = useState(false);
+  const avatarInputRef = useRef<HTMLInputElement>(null);
+
+  const handleAvatarClick = () => {
+    avatarInputRef.current?.click();
+  };
+
+  const handleAvatarChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploadingAvatar(true);
+    try {
+      const result = await userService.uploadAvatar(file);
+      if (result.avatar_image) setAvatarUrl(result.avatar_image);
+      else setAvatarUrl(URL.createObjectURL(file));
+      toast({ title: "Foto atualizada!", variant: "success" });
+    } catch (err) {
+      toast({
+        title: "Erro ao enviar foto",
+        description: err instanceof Error ? err.message : "Tente novamente.",
+        variant: "error",
+      });
+    } finally {
+      setUploadingAvatar(false);
+      if (avatarInputRef.current) avatarInputRef.current.value = "";
+    }
+  };
 
   useEffect(() => {
     userService.getProfile().then((profile) => {
@@ -37,6 +65,10 @@ export function ProfileFeature() {
     setSaving(true);
     try {
       await userService.updateProfile({ full_name: fullName, phone: phone.replace(/\D/g, "") });
+      // Sync new name into the Zustand auth store so the header/sidebar reflect the change immediately
+      if (user) {
+        setUser({ ...user, fullName });
+      }
       setSaved(true);
       setTimeout(() => setSaved(false), 2500);
     } catch (err) {
@@ -78,10 +110,20 @@ export function ProfileFeature() {
             </div>
           </div>
 
+          <input
+            ref={avatarInputRef}
+            type="file"
+            accept="image/*"
+            className="hidden"
+            aria-hidden="true"
+            onChange={handleAvatarChange}
+          />
           <button
             type="button"
             aria-label="Alterar foto de perfil"
-            className="absolute bottom-0 right-0 flex items-center justify-center w-7 h-7 rounded-full bg-[#2585F4] border-2 border-[#0d1526] text-white hover:bg-[#1978E5] transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2585F4] focus-visible:ring-offset-2 focus-visible:ring-offset-[#0d1526]"
+            onClick={handleAvatarClick}
+            disabled={uploadingAvatar}
+            className="absolute bottom-0 right-0 flex items-center justify-center w-7 h-7 rounded-full bg-[#2585F4] border-2 border-[#0d1526] text-white hover:bg-[#1978E5] transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2585F4] focus-visible:ring-offset-2 focus-visible:ring-offset-[#0d1526] disabled:opacity-60"
           >
             <EditRounded sx={{ fontSize: 14 }} aria-hidden />
           </button>

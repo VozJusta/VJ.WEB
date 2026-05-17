@@ -42,7 +42,8 @@ export interface AuthState {
 
 export interface CitizenSignupRequest {
   fullName: string;
-  cpf: string;
+  cpf?: string;
+  cnpj?: string;
   phone: string;
   email: string;
   password: string;
@@ -57,16 +58,22 @@ export interface CitizenSignupResponse {
   securityToken?: string;
 }
 
-export interface LawyerSignupRequest extends CitizenSignupRequest {
-  oab: string;
-  uf: string;
-  specialty: string;
+export interface LawyerSignupRequest {
+  fullName: string;
+  cpf?: string;
+  cnpj?: string;
+  phone: string;
+  email: string;
+  password: string;
+  oabNumber: string;
+  oabState: string;
+  specialization: string;
 }
 
 export interface LawyerSignupResponse extends CitizenSignupResponse {
-  oab: string;
-  uf: string;
-  specialty: string;
+  oabNumber: string;
+  oabState: string;
+  specialization: string;
 }
 
 export interface SendEmailVerificationResponse {

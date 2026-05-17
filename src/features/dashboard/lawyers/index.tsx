@@ -10,19 +10,23 @@ export function LawyersListFeature() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const caseId = searchParams.get("caseId") ?? "";
+  const reportId = searchParams.get("reportId") ?? "";
   const { lawyers, isLoading, error } = useLawyersList();
 
   const handleBack = () => router.back();
 
   const handleViewLawyerDetails = (lawyerId: string) => {
-    const query = caseId ? `?caseId=${caseId}` : "";
+    const params = new URLSearchParams();
+    if (caseId) params.set("caseId", caseId);
+    if (reportId) params.set("reportId", reportId);
+    const query = params.toString() ? `?${params.toString()}` : "";
     router.push(`/dashboard/advogados/${lawyerId}${query}`);
   };
 
   const sortedLawyers = [...lawyers].sort((a, b) => (b.rating ?? 0) - (a.rating ?? 0));
 
   return (
-    <div className="flex flex-col gap-4 w-full max-w-5xl mx-auto px-4 py-2 md:px-6 md:py-4">
+    <div className="flex flex-col gap-3 w-full max-w-5xl mx-auto px-4 py-1 md:px-6 md:py-2">
       <header className="flex items-center gap-3">
         <button
           type="button"

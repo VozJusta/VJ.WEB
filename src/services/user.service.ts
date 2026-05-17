@@ -53,10 +53,21 @@ export const userService = {
 
   async updateProfile(data: { full_name?: string; phone?: string }): Promise<void> {
     const response = await apiFetch('/profile', {
-      method: 'PATCH',
+      method: 'PUT',
       body: JSON.stringify(data),
     });
     if (!response.ok) throw new Error('Falha ao atualizar perfil');
+  },
+
+  async uploadAvatar(file: File): Promise<{ avatar_image?: string }> {
+    const formData = new FormData();
+    formData.append('file', file);
+    const response = await apiFetch('/profile/avatar', {
+      method: 'PATCH',
+      body: formData,
+    });
+    if (!response.ok) throw new Error('Falha ao enviar foto de perfil');
+    return response.json().catch(() => ({}));
   },
 
   async changePassword(currentPassword: string, newPassword: string): Promise<void> {

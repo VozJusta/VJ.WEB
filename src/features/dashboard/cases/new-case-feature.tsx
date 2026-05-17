@@ -66,7 +66,13 @@ export function NewCaseFeature() {
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const chunksRef = useRef<Blob[]>([]);
-  const { startAnalysis, isLoading, conversationId, caseId, error } = useChat();
+  const { startAnalysis, isLoading, conversationId, caseId, error, clearChat } = useChat();
+
+  // Always start fresh so a second case doesn't inherit state from a previous session
+  useEffect(() => {
+    clearChat();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   useEffect(() => {
     if (isRecording) {

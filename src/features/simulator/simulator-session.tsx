@@ -11,6 +11,7 @@ import ExitToAppIcon from '@mui/icons-material/ExitToApp';
 import { useSimulation } from '@/hooks/useSimulation';
 import type { SimulationPersonality } from '@/services/simulation.service';
 import { chatService } from '@/services/chat.service';
+import { useTranslation } from 'react-i18next';
 
 const PERSONALITY_MAP: Record<string, SimulationPersonality> = {
   calm: 'Calm',
@@ -22,6 +23,7 @@ const PERSONALITY_MAP: Record<string, SimulationPersonality> = {
 };
 
 export function SimulatorSession() {
+  const { t } = useTranslation();
   const router = useRouter();
   const searchParams = useSearchParams();
   const personalityParam = searchParams.get('personality') ?? 'impartial';
@@ -32,6 +34,7 @@ export function SimulatorSession() {
     aiResponse,
     isLoading,
     isSpeaking,
+    isAudioPaused,
     error,
     warning,
     remainingSecs,
@@ -40,6 +43,8 @@ export function SimulatorSession() {
     sendChat,
     stop,
     reset,
+    pauseAudio,
+    resumeAudio,
   } = useSimulation();
 
   const [isRecording, setIsRecording] = useState(false);
@@ -47,12 +52,14 @@ export function SimulatorSession() {
   const [transcription, setTranscription] = useState('');
   const [elapsedSeconds, setElapsedSeconds] = useState(0);
   const [isTranscribing, setIsTranscribing] = useState(false);
+  // Tracks manual termination so audio is blocked even before WebSocket confirms
+  const [isManuallyEnded, setIsManuallyEnded] = useState(false);
 
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const chunksRef = useRef<Blob[]>([]);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
-  const isSessionEnded = status === 'Completed' || status === 'TimedOut';
+  const isSessionEnded = status === 'Completed' || status === 'TimedOut' || isManuallyEnded;
 
   // Stop active recording when session ends
   useEffect(() => {
@@ -153,12 +160,17 @@ export function SimulatorSession() {
   };
 
   const handleEndSession = () => {
+    setIsManuallyEnded(true);
     if (isRecording) {
       mediaRecorderRef.current?.stop();
       setIsRecording(false);
+      setIsPaused(false);
     }
     stop();
-    router.push('/dashboard/simulador/feedback');
+    const path = reportId
+      ? `/dashboard/simulador/feedback?reportId=${reportId}`
+      : '/dashboard/simulador/feedback';
+    router.push(path);
   };
 
   const canRecord = !isLoading && !isSpeaking && !isTranscribing && !isSessionEnded;
@@ -182,22 +194,42 @@ export function SimulatorSession() {
 
       <section className="flex flex-1 flex-col gap-4 p-4 md:p-6">
         {/* Judge video area */}
-        <article className="relative overflow-hidden rounded-2xl bg-linear-to-br from-teal-600 to-teal-800 shadow-2xl max-h-64">
-          <div className="aspect-video w-full max-h-64 overflow-hidden">
+        <article className="relative overflow-hidden rounded-2xl bg-linear-to-br from-teal-600 to-teal-800 shadow-2xl max-h-44">
+          <div className="aspect-video w-full max-h-44 overflow-hidden">
             <div className="flex h-full items-end justify-center p-4">
               {isLoading && (
                 <div className="flex items-center gap-2 rounded-full bg-black/40 px-4 py-2 text-sm text-white">
                   <span className="h-2 w-2 animate-pulse rounded-full bg-blue-400" />
-                  Processando...
+                  {t("simulator.session.processing")}
                 </div>
               )}
-              {isSpeaking && (
+              {(isSpeaking || isAudioPaused) && (
                 <div className="flex items-center gap-2 rounded-full bg-black/40 px-4 py-2 text-sm text-white">
-                  <span className="relative flex h-2 w-2">
-                    <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-green-400 opacity-75" />
-                    <span className="relative inline-flex h-2 w-2 rounded-full bg-green-400" />
-                  </span>
-                  Juiz falando...
+                  {isAudioPaused ? (
+                    <>
+                      <PauseIcon sx={{ fontSize: 14 }} />
+                      <span>{t("simulator.session.audioPaused")}</span>
+                    </>
+                  ) : (
+                    <>
+                      <span className="relative flex h-2 w-2">
+                        <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-green-400 opacity-75" />
+                        <span className="relative inline-flex h-2 w-2 rounded-full bg-green-400" />
+                      </span>
+                      <span>{t("simulator.session.judgeSpeaking")}</span>
+                    </>
+                  )}
+                  <button
+                    type="button"
+                    onClick={isAudioPaused ? resumeAudio : pauseAudio}
+                    className="ml-1 flex items-center justify-center w-7 h-7 rounded-full bg-white/20 hover:bg-white/30 transition-colors"
+                    aria-label={isAudioPaused ? t("simulator.session.resumeAudio") : t("simulator.session.pauseAudio")}
+                  >
+                    {isAudioPaused
+                      ? <PlayArrowIcon sx={{ fontSize: 16 }} />
+                      : <PauseIcon sx={{ fontSize: 16 }} />
+                    }
+                  </button>
                 </div>
               )}
               {isRecording && !isPaused && (
@@ -212,7 +244,7 @@ export function SimulatorSession() {
               {isPaused && (
                 <div className="flex items-center gap-2 rounded-full bg-black/30 px-4 py-2 text-sm text-white backdrop-blur-sm">
                   <PauseIcon sx={{ fontSize: 14 }} />
-                  Pausado
+                  {t("simulator.session.paused")}
                 </div>
               )}
             </div>
@@ -236,7 +268,7 @@ export function SimulatorSession() {
               <div className="mb-1.5 flex items-center gap-2">
                 <div className={`h-2 w-2 rounded-full ${isTranscribing ? 'animate-pulse bg-blue-500' : 'bg-green-500'}`} />
                 <span className="text-xs font-medium uppercase tracking-wide text-blue-400">
-                  {isTranscribing ? 'Transcrevendo...' : 'Sua fala'}
+                  {isTranscribing ? t("simulator.session.transcribing") : t("simulator.session.yourSpeech")}
                 </span>
               </div>
               {transcription && (
@@ -253,7 +285,7 @@ export function SimulatorSession() {
                 type="button"
                 onClick={handleTogglePause}
                 className="flex h-14 w-14 items-center justify-center rounded-full bg-white text-gray-900 shadow-lg transition-all hover:scale-105 cursor-pointer"
-                aria-label={isPaused ? 'Retomar gravação' : 'Pausar gravação'}
+                aria-label={isPaused ? t("simulator.session.resumeRecording") : t("simulator.session.pauseRecording")}
               >
                 {isPaused ? <PlayArrowIcon fontSize="large" /> : <PauseIcon fontSize="large" />}
               </button>
@@ -265,14 +297,14 @@ export function SimulatorSession() {
               onClick={isRecording ? handleStopRecording : handleStartRecording}
               disabled={!canRecord && !isRecording}
               className="flex h-14 w-14 items-center justify-center rounded-full bg-[#2585F4] text-white shadow-[0_4px_16px_rgba(37,133,244,0.45)] transition-all hover:bg-[#1978E5] disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
-              aria-label={isRecording ? 'Parar gravação' : 'Gravar áudio'}
+              aria-label={isRecording ? t("simulator.session.stopRecording") : t("simulator.session.startRecording")}
             >
               {isRecording ? <StopIcon /> : <MicIcon />}
             </button>
           </div>
 
           {isSessionEnded && (
-            <p className="mt-3 text-center text-xs text-white/50">Audiência encerrada — envio de áudio desativado</p>
+            <p className="mt-3 text-center text-xs text-white/50">{t("simulator.session.sessionEnded")}</p>
           )}
         </article>
 
@@ -283,7 +315,7 @@ export function SimulatorSession() {
             onClick={handleEndSession}
             rightIcon={<ExitToAppIcon />}
           >
-            Encerrar e Ver Feedback
+            {t("simulator.session.endSession")}
           </Button>
         </div>
       </section>

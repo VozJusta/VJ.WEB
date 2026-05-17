@@ -10,7 +10,8 @@ import {
   LockOutline,
   Visibility,
   VisibilityOff,
-  WorkOutline,
+  CheckRounded,
+  CloseRounded,
 } from "@mui/icons-material";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -19,9 +20,10 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { useToast } from "@/components/ui/toast/toast-provider";
 import { cn } from "@/lib/utils";
 import { authService, AuthServiceError } from "@/services/auth.service";
-import { passwordChecks, brazilianStates } from "./constants";
+import { passwordChecks, brazilianStates, specializationOptions } from "./constants";
 import { lawyerSignupSchema } from "./lawyer-signup.schema";
 import { useRouter } from "next/navigation";
+import { useTranslation } from "react-i18next";
 
 type LawyerSignupFormState = {
   fullName: string;
@@ -85,6 +87,7 @@ const formatOabNumber = (value: string) => {
 };
 
 export function LawyerSignupForm() {
+  const { t } = useTranslation();
   const router = useRouter();
   const isSubmittingRef = useRef(false);
   const [showPassword, setShowPassword] = useState(false);
@@ -102,10 +105,10 @@ export function LawyerSignupForm() {
   const strengthPercent = (strengthScore / passwordChecks.length) * 100;
   
   const strengthConfig = {
-    0: { label: "FRACA", color: "text-red-400", barColor: "bg-red-400" },
-    1: { label: "FRACA", color: "text-red-400", barColor: "bg-red-400" },
-    2: { label: "MÉDIA", color: "text-yellow-400", barColor: "bg-yellow-400" },
-    3: { label: "FORTE", color: "text-emerald-400", barColor: "bg-emerald-400" },
+    0: { label: t("auth.passwordStrength.weak"), color: "text-red-400", barColor: "bg-red-400" },
+    1: { label: t("auth.passwordStrength.weak"), color: "text-red-400", barColor: "bg-red-400" },
+    2: { label: t("auth.passwordStrength.medium"), color: "text-yellow-400", barColor: "bg-yellow-400" },
+    3: { label: t("auth.passwordStrength.strong"), color: "text-emerald-400", barColor: "bg-emerald-400" },
   }[strengthScore] || { label: "", color: "text-white/45", barColor: "bg-white/10" };
   
   const hasPasswordInput = formState.password.length > 0;
@@ -127,15 +130,17 @@ export function LawyerSignupForm() {
       const cleanPhone = validatedData.phone?.replace(/\D/g, "") || "";
       const formattedPhone = cleanPhone.replace(/^(\d{2})(\d{5})(\d{4})$/, "$1 $2-$3");
 
+      const rawDigits = validatedData.cpf.replace(/\D/g, "");
+      const isCnpj = rawDigits.length > 11;
       const signupData = {
         fullName: validatedData.fullName,
-        cpf: validatedData.cpf,
+        ...(isCnpj ? { cnpj: validatedData.cpf } : { cpf: validatedData.cpf }),
         phone: formattedPhone,
         email: validatedData.email,
         password: validatedData.password,
-        oab: validatedData.oabNumber,
-        uf: validatedData.oabState,
-        specialty: validatedData.specialty,
+        oabNumber: validatedData.oabNumber,
+        oabState: validatedData.oabState,
+        specialization: validatedData.specialty,
       };
 
       const signupResponse = await authService.signupLawyer(signupData);
@@ -154,8 +159,8 @@ export function LawyerSignupForm() {
       }
 
       toast({
-        title: "Cadastro realizado com sucesso!",
-        description: "Enviamos um código para seu e-mail para concluir o acesso.",
+        title: t("lawyerSignup.successTitle"),
+        description: t("lawyerSignup.successDesc"),
         variant: "success",
       });
       
@@ -172,10 +177,21 @@ export function LawyerSignupForm() {
           }
         });
         setErrors(fieldErrors);
-        
         toast({
-          title: "Erro no cadastro",
-          description: "Verifique os campos destacados e tente novamente.",
+          title: t("lawyerSignup.errorTitle"),
+          description: t("lawyerSignup.errorFieldsDesc"),
+          variant: "error",
+        });
+      } else if (error instanceof AuthServiceError) {
+        toast({
+          title: t("lawyerSignup.errorTitle"),
+          description: error.message,
+          variant: "error",
+        });
+      } else {
+        toast({
+          title: t("lawyerSignup.errorTitle"),
+          description: t("common.unexpectedError"),
           variant: "error",
         });
       }
@@ -188,9 +204,9 @@ export function LawyerSignupForm() {
   return (
     <section className="mx-auto w-full max-w-xl rounded-3xl border border-white/8 bg-[#071735]/80 p-6 shadow-[0_20px_80px_rgba(0,0,0,0.25)] backdrop-blur-sm sm:p-8 lg:mx-0">
       <div className="space-y-2">
-        <h2 className="text-4xl font-bold tracking-tight text-white">Crie sua conta profissional</h2>
+        <h2 className="text-4xl font-bold tracking-tight text-white">{t("lawyerSignup.title")}</h2>
         <p className="text-base text-white/60">
-          Preencha os dados da sua licença OAB para continuar.
+          {t("lawyerSignup.subtitle")}
         </p>
       </div>
 
@@ -208,8 +224,8 @@ export function LawyerSignupForm() {
                 fullName: event.target.value,
               }))
             }
-            label="NOME COMPLETO (CONFORME OAB)"
-            placeholder="Ex: Dr. Roberto Santos"
+            label={t("lawyerSignup.fullName")}
+            placeholder={t("lawyerSignup.fullNamePlaceholder")}
             leftIcon={<PersonOutline fontSize="small" aria-hidden="true" />}
             error={errors.fullName}
             containerClassName="space-y-2"
@@ -267,8 +283,8 @@ export function LawyerSignupForm() {
                 phone: formatPhone(event.target.value),
               }))
             }
-            label="TELEFONE/CELULAR"
-            placeholder="(11) 99999-9999"
+            label={t("lawyerSignup.phone")}
+            placeholder={t("lawyerSignup.phonePlaceholder")}
             error={errors.phone}
             containerClassName="space-y-2"
             className="h-12 rounded-xl border-white/10 bg-[#05112A] text-sm text-white placeholder:text-white/35 focus:ring-primary"
@@ -287,8 +303,8 @@ export function LawyerSignupForm() {
                   oabNumber: formatOabNumber(event.target.value),
                 }))
               }
-              label="NÚMERO OAB"
-              placeholder="123456"
+              label={t("lawyerSignup.oabNumber")}
+              placeholder={t("lawyerSignup.oabNumberPlaceholder")}
               leftIcon={<Gavel fontSize="small" aria-hidden="true" />}
               error={errors.oabNumber}
               containerClassName="space-y-2"
@@ -305,19 +321,18 @@ export function LawyerSignupForm() {
                   oabState: event.target.value,
                 }))
               }
-              label="UF"
+              label={t("lawyerSignup.oabState")}
               options={[...brazilianStates]}
-              placeholder="Selecione o estado"
+              placeholder={t("lawyerSignup.oabStatePlaceholder")}
               error={errors.oabState}
               containerClassName="space-y-2"
               className="h-12 rounded-xl w-full border-white/10 bg-[#05112A] text-sm text-white placeholder:text-white/35 focus:ring-primary"
             />
           </section>
 
-          <Input
+          <Select
             id="specialty"
             name="specialty"
-            autoComplete="off"
             value={formState.specialty}
             onChange={(event) =>
               setFormState((current) => ({
@@ -325,12 +340,12 @@ export function LawyerSignupForm() {
                 specialty: event.target.value,
               }))
             }
-            label="ESPECIALIDADE"
-            placeholder="Ex: Direito Civil"
-            leftIcon={<WorkOutline fontSize="small" aria-hidden="true" />}
+            label={t("lawyerSignup.specialty")}
+            options={[...specializationOptions]}
+            placeholder={t("lawyerSignup.specialtyPlaceholder")}
             error={errors.specialty}
             containerClassName="space-y-2"
-            className="h-12 rounded-xl border-white/10 bg-[#05112A] text-sm text-white placeholder:text-white/35 focus:ring-primary"
+            className="h-12 rounded-xl w-full border-white/10 bg-[#05112A] text-sm text-white placeholder:text-white/35 focus:ring-primary"
           />
 
           <Input
@@ -345,13 +360,13 @@ export function LawyerSignupForm() {
                   password: event.target.value,
                 }))
               }
-              label="SENHA DE ACESSO"
-              placeholder="••••••••"
+              label={t("auth.password")}
+              placeholder={t("auth.passwordPlaceholder")}
               leftIcon={<LockOutline fontSize="small" aria-hidden="true" />}
               rightIcon={
                 <button
                   type="button"
-                  aria-label={showPassword ? "Ocultar senha" : "Mostrar senha"}
+                  aria-label={showPassword ? t("auth.hidePassword") : t("auth.showPassword")}
                   aria-pressed={showPassword}
                   onClick={() => setShowPassword((current) => !current)}
                   className="inline-flex text-white/60 transition-colors hover:text-white"
@@ -372,7 +387,7 @@ export function LawyerSignupForm() {
               <section className="rounded-xl border border-white/10 bg-[#05112A] px-4 py-3">
                 <header className="mb-2 flex items-center justify-between">
                   <h3 className="text-xs font-semibold uppercase tracking-[0.12em] text-white/55">
-                    Segurança da senha
+                    {t("auth.passwordStrength.title")}
                   </h3>
                   <p className={cn("text-xs font-semibold", strengthConfig.color)}>
                     {strengthConfig.label}
@@ -395,10 +410,14 @@ export function LawyerSignupForm() {
                     <li
                       key={check.id}
                       className={cn(
-                        "text-xs",
+                        "flex items-center gap-1 text-xs",
                         checkResults[index] ? strengthConfig.color : "text-white/45",
                       )}
                     >
+                      {checkResults[index]
+                        ? <CheckRounded sx={{ fontSize: 12 }} aria-hidden />
+                        : <CloseRounded sx={{ fontSize: 12 }} aria-hidden />
+                      }
                       {check.label}
                     </li>
                   ))}
@@ -417,9 +436,9 @@ export function LawyerSignupForm() {
             }
             error={errors.acceptedTerms}
           >
-            Li e concordo com os{" "}
+            {t("auth.acceptTerms")}{" "}
             <Link href="/termos" className="text-primary underline hover:text-primary/80">
-              Termos de Uso
+              {t("auth.termsOfUse")}
             </Link>.
           </Checkbox>
 
@@ -431,13 +450,13 @@ export function LawyerSignupForm() {
             loading={isSubmitting}
             className="mt-2 rounded-xl"
           >
-            Cadastrar
+            {t("lawyerSignup.submit")}
           </Button>
 
           <p className="text-center text-sm text-white/45">
-            Já possui registro?{" "}
+            {t("auth.alreadyHaveAccount")}{" "}
             <Link href="/login" className="font-semibold text-primary hover:text-primary/80">
-              Fazer Login
+              {t("auth.signIn")}
             </Link>
           </p>
         </fieldset>

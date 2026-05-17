@@ -11,11 +11,16 @@
     --surface-elevated: #141b24;
     --surface-hover: #182030;
     --border-subtle: #1B2233;
+    --border-subtle-hover: #2a3348;
     --border-default: #1B2233;
     --text-secondary: #64748b;
     --text-muted: #475569;
     --nav-active-bg: rgba(37, 133, 244, 0.15);
     --nav-active-border: rgba(37, 133, 244, 0.4);
+    --status-analysis: #f59e0b;
+    --status-analysis-bg: rgba(245, 158, 11, 0.12);
+    --status-concluded: #10b981;
+    --status-concluded-bg: rgba(16, 185, 129, 0.12);
     --status-pending: #3b82f6;
     --status-pending-bg: rgba(59, 130, 246, 0.12);
 
@@ -73,6 +78,16 @@ body {
 @keyframes wave-bar {
   0%, 100% { transform: scaleY(0.2); }
   50% { transform: scaleY(1); }
+}
+
+@keyframes shimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(300%); }
+}
+
+@keyframes analyzing-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
 }
 
 @keyframes logo-reveal {
