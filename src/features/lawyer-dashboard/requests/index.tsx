@@ -97,12 +97,21 @@ export function RequestsList() {
     return <p className="text-sm text-red-400">{error}</p>;
   }
 
+  const RequestsSvg = (
+    <svg viewBox="0 0 200 200" className="h-40 w-40 opacity-70" aria-hidden="true" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="100" cy="100" r="80" fill="#1B2233" />
+      <rect x="60" y="55" width="80" height="100" rx="8" fill="#2585F4" opacity="0.25"/>
+      <rect x="72" y="75" width="56" height="8" rx="4" fill="#2585F4" opacity="0.7"/>
+      <rect x="72" y="93" width="44" height="8" rx="4" fill="#2585F4" opacity="0.5"/>
+      <rect x="72" y="111" width="36" height="8" rx="4" fill="#2585F4" opacity="0.35"/>
+    </svg>
+  );
+
   if (requests.length === 0) {
     return (
       <section className="w-full" aria-label="Solicitações">
         <EmptyState
-          illustration="/empty-cases-illustration.png"
-          illustrationAlt="Nenhuma solicitação encontrada"
+          illustrationSvg={RequestsSvg}
           title="Você ainda não tem solicitações"
           description="Quando cidadãos enviarem propostas de casos, elas aparecerão aqui para você revisar."
         />
@@ -126,8 +135,7 @@ export function RequestsList() {
           aria-label={`Solicitações ${activeFilter === "all" ? "todas" : activeFilter}`}
         >
           <EmptyState
-            illustration="/empty-cases-illustration.png"
-            illustrationAlt="Nenhuma solicitação encontrada"
+            illustrationSvg={RequestsSvg}
             title={`Nenhuma solicitação ${activeFilter === "pending" ? "pendente" : activeFilter === "accepted" ? "aceita" : "recusada"}`}
             description="Não há solicitações nesta categoria no momento."
           />
