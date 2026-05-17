@@ -90,10 +90,8 @@ export function AIChatFeature({ conversationId, caseId }: AIChatFeatureProps) {
   const stage = isFinished ? "Análise Concluída ✓" : isFetchingHistory ? "Carregando..." : "Análise em Andamento";
 
   return (
-    <div className="flex h-full min-h-screen flex-col">
-      
-
-      <main className="flex-1 overflow-y-auto px-6 py-8">
+    <div className="flex flex-col -mx-4 -my-6 md:-mx-6 md:-my-8">
+      <main className="px-4 py-4 md:px-6 md:py-6 pb-2">
         <div className="mx-auto flex max-w-4xl flex-col gap-6">
           {isFetchingHistory && (
             <div className="flex justify-center py-10">
@@ -103,7 +101,7 @@ export function AIChatFeature({ conversationId, caseId }: AIChatFeatureProps) {
 
           {!isFetchingHistory && messages.length === 0 && (
             <section
-              className="flex flex-col items-center justify-center py-16 text-center"
+              className="flex flex-col items-center justify-center py-10 text-center"
               aria-label="Estado inicial do chat"
             >
               <p className="text-sm text-text-muted">
@@ -176,16 +174,21 @@ export function AIChatFeature({ conversationId, caseId }: AIChatFeatureProps) {
         </div>
       </main>
 
-      <ChatInput
-        value={inputValue}
-        onChange={setInputValue}
-        onSend={() => sendMessage(inputValue)}
-        onVoiceRecord={handleVoiceRecord}
-        disabled={isLoading || isFinished || isFetchingHistory}
-        isRecording={isRecording}
-        isTranscribing={isTranscribing}
-        maxHeight={200}
-      />
+      {/* Sticky input — always visible at the bottom of the viewport */}
+      <div className="sticky bottom-0 z-10 border-t border-(--border-subtle) bg-surface px-4 pb-4 pt-3 md:px-6">
+        <div className="mx-auto max-w-4xl">
+          <ChatInput
+            value={inputValue}
+            onChange={setInputValue}
+            onSend={() => sendMessage(inputValue)}
+            onVoiceRecord={handleVoiceRecord}
+            disabled={isLoading || isFinished || isFetchingHistory}
+            isRecording={isRecording}
+            isTranscribing={isTranscribing}
+            maxHeight={160}
+          />
+        </div>
+      </div>
     </div>
   );
 }
