@@ -28,11 +28,18 @@ export function NotificationsList() {
     );
   }
 
+  const NotificationSvg = (
+    <svg viewBox="0 0 200 200" className="h-40 w-40 opacity-70" aria-hidden="true" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="100" cy="100" r="80" fill="#1B2233" />
+      <path d="M100 50c-5.5 0-10 4.5-10 10v5.5C75.5 69.5 65 81.5 65 96v25l-10 10v5h90v-5l-10-10V96c0-14.5-10.5-26.5-25-30.5V60c0-5.5-4.5-10-10-10z" fill="#2585F4" opacity="0.6"/>
+      <path d="M90 146c0 5.5 4.5 10 10 10s10-4.5 10-10H90z" fill="#2585F4" opacity="0.9"/>
+    </svg>
+  );
+
   if (error) {
     return (
       <EmptyState
-        illustration="/notification-illustration.png"
-        illustrationAlt="Nenhuma notificação"
+        illustrationSvg={NotificationSvg}
         title="Não foi possível carregar"
         description="Ocorreu um erro ao buscar suas notificações. Verifique sua conexão e tente novamente."
         action={{ label: "Tentar novamente", onClick: () => window.location.reload() }}
@@ -43,8 +50,7 @@ export function NotificationsList() {
   if (notifications.length === 0) {
     return (
       <EmptyState
-        illustration="/notification-illustration.png"
-        illustrationAlt="Nenhuma notificação"
+        illustrationSvg={NotificationSvg}
         title="Tudo limpo por aqui!"
         description="Você não tem nenhuma notificação nova no momento. Avisaremos assim que algo importante acontecer."
         action={{ label: "Limpar tudo", onClick: deleteAll, disabled: true }}
