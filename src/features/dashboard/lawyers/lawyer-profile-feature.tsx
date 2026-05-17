@@ -78,7 +78,9 @@ export function LawyerProfileFeature({ lawyer, lawyerId }: LawyerProfileFeatureP
               </div>
 
               {lawyer.bio && (
-                <p className="text-sm text-white/70 mb-4">{lawyer.bio}</p>
+                <div className="max-h-32 overflow-y-auto rounded-xl border border-[#1B2233] bg-[#0a0f1a]/60 px-4 py-3 mb-4">
+                  <p className="text-sm text-white/70 leading-relaxed">{lawyer.bio}</p>
+                </div>
               )}
             </div>
           </div>
