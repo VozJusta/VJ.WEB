@@ -128,15 +128,17 @@ export function LawyerSignupForm() {
       const cleanPhone = validatedData.phone?.replace(/\D/g, "") || "";
       const formattedPhone = cleanPhone.replace(/^(\d{2})(\d{5})(\d{4})$/, "$1 $2-$3");
 
+      const rawDigits = validatedData.cpf.replace(/\D/g, "");
+      const isCnpj = rawDigits.length > 11;
       const signupData = {
         fullName: validatedData.fullName,
-        cpf: validatedData.cpf,
+        ...(isCnpj ? { cnpj: validatedData.cpf } : { cpf: validatedData.cpf }),
         phone: formattedPhone,
         email: validatedData.email,
         password: validatedData.password,
-        oab: validatedData.oabNumber,
-        uf: validatedData.oabState,
-        specialty: validatedData.specialty,
+        oabNumber: validatedData.oabNumber,
+        oabState: validatedData.oabState,
+        specialization: validatedData.specialty,
       };
 
       const signupResponse = await authService.signupLawyer(signupData);

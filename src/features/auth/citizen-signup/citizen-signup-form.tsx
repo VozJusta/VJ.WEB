@@ -113,9 +113,11 @@ export function CitizenSignupForm() {
             const cleanPhone = validatedData.phone.replace(/\D/g, "");
             const formattedPhone = cleanPhone.replace(/^(\d{2})(\d{5})(\d{4})$/, "$1 $2-$3");
 
+            const rawDigits = validatedData.cpf.replace(/\D/g, "");
+            const isCnpj = rawDigits.length > 11;
             const signupData = {
                 fullName: validatedData.fullName,
-                cpf: validatedData.cpf,
+                ...(isCnpj ? { cnpj: validatedData.cpf } : { cpf: validatedData.cpf }),
                 phone: formattedPhone,
                 email: validatedData.email,
                 password: validatedData.password,
