@@ -40,7 +40,7 @@ export function AllCasesFeature() {
     status: apiStatusToCard(r.status),
     updatedLabel: new Date(r.created_at).toLocaleDateString("pt-BR"),
     protocol: `#${r.id.slice(0, 8).toUpperCase()}`,
-    href: `/dashboard/casos/${r.id}`,
+    href: r.caseId ? `/dashboard/casos/${r.id}?caseId=${r.caseId}` : `/dashboard/casos/${r.id}`,
   }));
 
   return <CasesList initialCases={cases} />;

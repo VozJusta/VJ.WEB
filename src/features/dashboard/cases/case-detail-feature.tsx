@@ -1,10 +1,12 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowBackRounded, SummarizeRounded, DownloadingRounded } from "@mui/icons-material";
+import { useRouter, useSearchParams } from "next/navigation";
+import { ArrowBackRounded, SummarizeRounded, DownloadingRounded, GavelRounded } from "@mui/icons-material";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useReportDownload } from "@/hooks/useReportDownload";
+import { useChatStore } from "@/store/chat.store";
 import type { DetailsReport } from "@/services/dashboard.service";
 import type { CaseStatus } from "@/components/ui/case-card/case-card.types";
 import { getCategoryLabel } from "@/lib/status";
@@ -57,9 +59,26 @@ interface CaseDetailFeatureProps {
 }
 
 export function CaseDetailFeature({ report, reportId }: CaseDetailFeatureProps) {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const chatStore = useChatStore();
   const caseStatus = apiStatusToCaseStatus(report.status);
   const banner = bannerConfig[caseStatus];
   const { downloadPdf, isDownloading } = useReportDownload();
+
+  const caseId =
+    report.caseId ||
+    searchParams.get("caseId") ||
+    (chatStore.reportId === reportId ? chatStore.caseId : "") ||
+    "";
+
+  const canSendToLawyer = !report.lawyer && caseStatus !== "archived" && !!caseId;
+
+  const handleSendToLawyer = () => {
+    const params = new URLSearchParams({ reportId });
+    if (caseId) params.set("caseId", caseId);
+    router.push(`/dashboard/advogados?${params.toString()}`);
+  };
 
   const protocol = `#${reportId.slice(0, 8).toUpperCase()}`;
 
@@ -212,7 +231,18 @@ export function CaseDetailFeature({ report, reportId }: CaseDetailFeatureProps) 
         </section>
       )}
 
-      <div className="fixed bottom-6 right-6 z-10">
+      <div className="fixed bottom-6 right-6 z-10 flex flex-col gap-2 items-end">
+        {canSendToLawyer && (
+          <Button
+            variant="outline"
+            size="md"
+            leftIcon={<GavelRounded fontSize="small" aria-hidden />}
+            onClick={handleSendToLawyer}
+            className="border-[#2585F4]/40 text-[#2585F4] hover:bg-[#2585F4]/10 shadow-[0_8px_32px_rgba(0,0,0,0.3)]"
+          >
+            Enviar para Advogado
+          </Button>
+        )}
         <Button
           variant="primary"
           size="md"

@@ -10,12 +10,16 @@ export function LawyersListFeature() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const caseId = searchParams.get("caseId") ?? "";
+  const reportId = searchParams.get("reportId") ?? "";
   const { lawyers, isLoading, error } = useLawyersList();
 
   const handleBack = () => router.back();
 
   const handleViewLawyerDetails = (lawyerId: string) => {
-    const query = caseId ? `?caseId=${caseId}` : "";
+    const params = new URLSearchParams();
+    if (caseId) params.set("caseId", caseId);
+    if (reportId) params.set("reportId", reportId);
+    const query = params.toString() ? `?${params.toString()}` : "";
     router.push(`/dashboard/advogados/${lawyerId}${query}`);
   };
 

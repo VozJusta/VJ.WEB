@@ -23,7 +23,7 @@ export function LawyerProfileFeature({ lawyer, lawyerId }: LawyerProfileFeatureP
   const searchParams = useSearchParams();
   const chatStore = useChatStore();
   const caseId = searchParams.get("caseId") || chatStore.caseId || "";
-  const reportId = chatStore.reportId || "";
+  const reportId = searchParams.get("reportId") || chatStore.reportId || "";
 
   const handleContact = () => {
     const params = new URLSearchParams();
