@@ -1,7 +1,6 @@
 "use client";
 
 import { FormEvent, useState, useEffect, useCallback } from "react";
-import Link from "next/link";
 import { ZodError } from "zod";
 import { VerifiedUserOutlined, ArrowBack } from "@mui/icons-material";
 import { Button } from "@/components/ui/button";
@@ -21,64 +20,19 @@ interface VerificationFormProps {
 export function VerificationForm({ config, onVerified, onBack }: VerificationFormProps) {
   const [code, setCode] = useState("");
   const [error, setError] = useState("");
-  const [isSendingCode, setIsSendingCode] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [timeLeft, setTimeLeft] = useState(config.expirationTime || 300);
-  const [canResend, setCanResend] = useState(false);
   const { toast } = useToast();
-  const { setTokens, setAuthenticated } = useAuthStore();
+  const { setTokens } = useAuthStore();
 
   const messages = verificationMessages[config.type];
   const flowType = config.flowType || "signup";
 
-  const sendCode = useCallback(async () => {
-    setIsSendingCode(true);
-
-    try {
-      if (flowType === "reset") {
-        await authService.sendForgotPasswordEmail({ email: config.contact });
-      } else {
-        const pendingToken = sessionStorage.getItem("pending_verification_token") || "";
-        const fallbackToken = localStorage.getItem("x-security-token") || "";
-        const primaryToken = pendingToken || fallbackToken;
-
-        await authService.sendEmailVerificationCode(config.contact, primaryToken || undefined);
-      }
-
-      setCanResend(false);
-      setTimeLeft(config.expirationTime || 900);
-      return true;
-    } catch (sendError) {
-      const description = sendError instanceof AuthServiceError
-        ? sendError.message
-        : "Não foi possível enviar o código. Tente novamente.";
-
-      toast({
-        title: "Erro no envio",
-        description,
-        variant: "error",
-      });
-      setCanResend(true);
-      return false;
-    } finally {
-      setIsSendingCode(false);
-    }
-  }, [config.contact, config.expirationTime, toast]);
-
-  const [hasSentInitialCode, setHasSentInitialCode] = useState(false);
-
-  
-
   useEffect(() => {
-    if (timeLeft <= 0) {
-      setCanResend(true);
-      return;
-    }
-
+    if (timeLeft <= 0) return;
     const timer = setInterval(() => {
       setTimeLeft((prev) => prev - 1);
     }, 1000);
-
     return () => clearInterval(timer);
   }, [timeLeft]);
 
@@ -175,21 +129,6 @@ export function VerificationForm({ config, onVerified, onBack }: VerificationFor
     }
   };
 
-  const handleResend = async () => {
-    setCode("");
-    setError("");
-    
-    const sent = await sendCode();
-
-    if (sent) {
-      toast({
-        title: "Código reenviado",
-        description: `Um novo código foi enviado para ${config.contact}`,
-        variant: "success",
-      });
-    }
-  };
-
   return (
     <section className="mx-auto flex min-h-screen w-full max-w-lg items-center justify-center px-4 py-8 sm:px-6 sm:py-12">
       <div className="w-full rounded-2xl sm:rounded-3xl border border-white/8 bg-[#071735]/80 p-6 sm:p-8 shadow-[0_20px_80px_rgba(0,0,0,0.25)] backdrop-blur-sm">
@@ -250,31 +189,11 @@ export function VerificationForm({ config, onVerified, onBack }: VerificationFor
               size="lg"
               fullWidth
               loading={isSubmitting}
-              disabled={code.length !== 6 || isSendingCode} // Removido o check !securityToken para permitir envio e acionar erro apropriado se falhar
+              disabled={code.length !== 6}
               className="rounded-xl text-sm sm:text-base"
             >
               {messages.buttonText}
             </Button>
-
-            <div className="text-center">
-              <p className="text-xs sm:text-sm text-white/45 px-2">
-                {messages.resendMessage}{" "}
-                {canResend ? (
-                  <button
-                    type="button"
-                    onClick={handleResend}
-                    disabled={isSendingCode}
-                    className="font-semibold text-primary hover:text-primary/80 transition-colors disabled:cursor-not-allowed disabled:opacity-60"
-                  >
-                    {isSendingCode ? "Enviando..." : "Reenviar"}
-                  </button>
-                ) : (
-                  <span className="font-semibold text-white/30">
-                    Aguarde {formatTime(timeLeft)}
-                  </span>
-                )}
-              </p>
-            </div>
           </form>
         </div>
       </div>
