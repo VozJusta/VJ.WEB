@@ -4,7 +4,7 @@ export const footerNavigation: FooterColumn[] = [
   {
     title: "EXPLORAR",
     items: [
-      { label: "Início", href: "#hero-section" },
+      { label: "Início", href: "/" },
       { label: "Nosso time", href: "/nosso-time" },
     ],
   },
@@ -12,7 +12,7 @@ export const footerNavigation: FooterColumn[] = [
     title: "SUPORTE",
     items: [
       { label: "Contato", href: "/contato" },
-      { label: "FAQ", href: "#faq-section" },
+      { label: "FAQ", href: "/#faq-section" },
     ],
   },
   {
