@@ -107,7 +107,7 @@ export function CaseDetailFeature({ report, reportId }: CaseDetailFeatureProps) 
           >
             Resumo Simplificado
           </h2>
-          <p className="rounded-2xl border border-[#1B2233] bg-[#111c30] px-6 py-5 text-sm text-white/75 leading-relaxed">
+          <p className="rounded-2xl border border-[#1B2233] bg-[#111c30] px-6 py-5 text-sm text-white/75 leading-relaxed whitespace-pre-wrap">
             {report.simplified_explanation}
           </p>
         </section>
@@ -121,7 +121,7 @@ export function CaseDetailFeature({ report, reportId }: CaseDetailFeatureProps) 
           >
             Análise Jurídica
           </h2>
-          <p className="rounded-2xl border border-[#1B2233] bg-[#111c30] px-6 py-5 text-sm text-white/75 leading-relaxed">
+          <p className="rounded-2xl border border-[#1B2233] bg-[#111c30] px-6 py-5 text-sm text-white/75 leading-relaxed whitespace-pre-wrap">
             {report.legal_analysis}
           </p>
         </section>
@@ -135,7 +135,7 @@ export function CaseDetailFeature({ report, reportId }: CaseDetailFeatureProps) 
           >
             Relato Original
           </h2>
-          <blockquote className="rounded-2xl border border-[#1B2233] bg-[#111c30] px-6 py-5 text-sm text-white/75 leading-relaxed italic">
+          <blockquote className="rounded-2xl border border-[#1B2233] bg-[#111c30] px-6 py-5 text-sm text-white/75 leading-relaxed italic whitespace-pre-wrap">
             {report.transcription}
           </blockquote>
         </section>
