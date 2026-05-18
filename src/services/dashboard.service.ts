@@ -29,6 +29,7 @@ export interface GetReportsResponse {
 export interface DetailsReport {
   id: string;
   caseId?: string;
+  title?: string;
   transcription: string;
   simplified_explanation: string;
   legal_analysis: string;
