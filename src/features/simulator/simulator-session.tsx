@@ -257,10 +257,18 @@ export function SimulatorSession() {
 
         {/* Response area */}
         <article className="rounded-xl bg-gray-900 p-5 shadow-lg">
-          {aiResponse && (
-            <h2 className="mb-3 text-center text-base font-semibold text-white leading-relaxed">
-              &ldquo;{aiResponse}&rdquo;
-            </h2>
+          {(aiResponse || isLoading) && (
+            <div className="rounded-lg border border-gray-700 bg-gray-800 p-3 mb-3">
+              <div className="mb-1.5 flex items-center gap-2">
+                <div className={`h-2 w-2 rounded-full ${isLoading ? 'animate-pulse bg-teal-500' : 'bg-teal-400'}`} />
+                <span className="text-xs font-medium uppercase tracking-wide text-teal-400">
+                  {isLoading ? t("simulator.session.processing") : judgeName}
+                </span>
+              </div>
+              {aiResponse && (
+                <p className="text-sm leading-relaxed text-gray-300">{aiResponse}</p>
+              )}
+            </div>
           )}
 
           {(transcription || isTranscribing) && (
