@@ -155,10 +155,10 @@ export function AIChatFeature({ conversationId, caseId }: AIChatFeatureProps) {
               aria-live="polite"
             >
               <figure
-                className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-primary/20"
+                className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-primary/20"
                 aria-hidden="true"
               >
-                <span className="text-xs font-semibold text-primary">AI</span>
+                <span className="text-sm font-semibold text-primary">AI</span>
               </figure>
               <div className="flex items-center gap-1 rounded-2xl bg-surface-elevated px-4 py-3">
                 <span className="h-2 w-2 animate-bounce rounded-full bg-text-muted [animation-delay:-0.3s]" />
