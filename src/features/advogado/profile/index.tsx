@@ -22,7 +22,6 @@ export function LawyerDashboardProfileFeature() {
   const [phone, setPhone] = useState("");
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
-  const [saved, setSaved] = useState(false);
   const [uploadingAvatar, setUploadingAvatar] = useState(false);
   const avatarInputRef = useRef<HTMLInputElement>(null);
 
@@ -68,8 +67,11 @@ export function LawyerDashboardProfileFeature() {
       if (user) {
         setUser({ ...user, fullName });
       }
-      setSaved(true);
-      setTimeout(() => setSaved(false), 2500);
+      toast({
+        title: "Alterações salvas!",
+        description: "Seu perfil foi atualizado com sucesso.",
+        variant: "success",
+      });
     } catch (err) {
       toast({
         title: "Erro ao salvar perfil",
@@ -181,17 +183,11 @@ export function LawyerDashboardProfileFeature() {
           size="lg"
           fullWidth
           loading={saving}
+          disabled={saving}
           onClick={handleSave}
-          rightIcon={
-            saved ? undefined : <SaveRounded fontSize="small" aria-hidden />
-          }
-          className={
-            saved
-              ? "bg-green-600 hover:bg-green-600 shadow-[0_4px_15px_rgba(34,197,94,0.35)]"
-              : ""
-          }
+          rightIcon={<SaveRounded fontSize="small" aria-hidden />}
         >
-          {saved ? "Alterações salvas!" : "Salvar alterações"}
+          Salvar alterações
         </Button>
       </section>
 

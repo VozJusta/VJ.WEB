@@ -87,11 +87,9 @@ export function AIChatFeature({ conversationId, caseId }: AIChatFeatureProps) {
     }
   };
 
-  const stage = isFinished ? "Análise Concluída ✓" : isFetchingHistory ? "Carregando..." : "Análise em Andamento";
-
   return (
-    <div className="flex flex-col -mx-4 -my-6 md:-mx-6 md:-my-8">
-      <main className="px-4 py-4 md:px-6 md:py-6 pb-2">
+    <div className="flex flex-1 flex-col -mx-4 -my-6 md:-mx-6 md:-my-8">
+      <main className="flex-1 px-4 py-4 md:px-6 md:py-6 pb-2">
         <div className="mx-auto flex max-w-4xl flex-col gap-6">
           {isFetchingHistory && (
             <div className="flex justify-center py-10">
