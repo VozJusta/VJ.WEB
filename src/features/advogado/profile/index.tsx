@@ -5,23 +5,17 @@ import Image from "next/image";
 import {
   SaveRounded,
   EditRounded,
-  LockRounded,
-  ShieldRounded,
   GavelRounded,
   PersonRounded,
-  VisibilityRounded,
-  SecurityRounded,
 } from "@mui/icons-material";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Toggle } from "@/components/ui/toggle";
-import { PrivacySettingCard } from "@/components/ui/privacy-setting-card";
 import { useAuthStore } from "@/store/auth.store";
 import { userService } from "@/services/user.service";
 import { useToast } from "@/components/ui/toast/toast-provider";
-import { formatCPF, formatPhone } from "@/lib/status";
+import { formatCPF, formatPhone, getCategoryLabel } from "@/lib/status";
 
 const OAB_STATES: Record<string, string> = {
   AC: "Acre",
@@ -51,24 +45,6 @@ const OAB_STATES: Record<string, string> = {
   SP: "São Paulo",
   SE: "Sergipe",
   TO: "Tocantins",
-};
-
-const SPECIALIZATION_MAP: Record<string, string> = {
-  Tax: "Direito Tributário",
-  Civil: "Direito Civil",
-  Criminal: "Direito Criminal",
-  Family: "Direito de Família",
-  Labor: "Direito Trabalhista",
-  Consumer: "Direito do Consumidor",
-  RealEstate: "Direito Imobiliário",
-  Corporate: "Direito Empresarial",
-  Administrative: "Direito Administrativo",
-  Digital: "Direito Digital",
-  Environmental: "Direito Ambiental",
-  Constitutional: "Direito Constitucional",
-  Health: "Direito à Saúde",
-  Intellectual: "Propriedade Intelectual",
-  International: "Direito Internacional",
 };
 
 function SectionCard({
@@ -122,9 +98,6 @@ export function LawyerDashboardProfileFeature() {
   const [oabState, setOabState] = useState("");
   const [specialization, setSpecialization] = useState("");
 
-  const [twoFactorEnabled, setTwoFactorEnabled] = useState(false);
-  const [profileVisible, setProfileVisible] = useState(true);
-
   const [saving, setSaving] = useState(false);
   const [uploadingAvatar, setUploadingAvatar] = useState(false);
   const avatarInputRef = useRef<HTMLInputElement>(null);
@@ -170,11 +143,21 @@ export function LawyerDashboardProfileFeature() {
   };
 
   const handleSave = async () => {
+    const phoneDigits = phone.replace(/\D/g, "");
+    if (phoneDigits.length > 0 && phoneDigits.length !== 10 && phoneDigits.length !== 11) {
+      toast({
+        title: "Telefone inválido",
+        description: "Informe um telefone completo com DDD (ex: (11) 99999-9999).",
+        variant: "error",
+      });
+      return;
+    }
+
     setSaving(true);
     try {
       await userService.updateProfile({
         fullName,
-        phone: phone.replace(/\D/g, ""),
+        phone: phoneDigits || undefined,
         bio,
       });
       if (user) setUser({ ...user, fullName });
@@ -206,8 +189,7 @@ export function LawyerDashboardProfileFeature() {
   const oabStateName = oabState
     ? `${OAB_STATES[oabState] ?? oabState} (${oabState})`
     : "—";
-  const specializationLabel =
-    SPECIALIZATION_MAP[specialization] ?? specialization ?? "—";
+  const specializationLabel = specialization ? getCategoryLabel(specialization) : "—";
 
   return (
     <div className="flex flex-col items-center gap-6 w-full max-w-2xl mx-auto px-4 py-6 md:px-0 md:py-8">
@@ -337,52 +319,6 @@ export function LawyerDashboardProfileFeature() {
         <ReadonlyField label="Seccional" value={oabStateName} />
         <ReadonlyField label="Área de Atuação" value={specializationLabel} />
         <ReadonlyField label="Status" value="Regular Ativo" />
-      </SectionCard>
-
-      {/* Segurança e LGPD */}
-      <SectionCard
-        icon={<ShieldRounded fontSize="small" />}
-        title="Segurança e LGPD"
-      >
-        <PrivacySettingCard
-          icon={SecurityRounded}
-          iconColor="blue"
-          title="Autenticação em dois fatores"
-          description="Adiciona uma camada extra de segurança ao seu acesso na plataforma."
-          rightElement={
-            <Toggle
-              checked={twoFactorEnabled}
-              onChange={setTwoFactorEnabled}
-              aria-label="Ativar autenticação em dois fatores"
-            />
-          }
-        />
-
-        <PrivacySettingCard
-          icon={VisibilityRounded}
-          iconColor="green"
-          title="Perfil visível"
-          description="Permite que cidadãos encontrem e visualizem seu perfil na plataforma."
-          rightElement={
-            <Toggle
-              checked={profileVisible}
-              onChange={setProfileVisible}
-              aria-label="Tornar perfil visível"
-            />
-          }
-        />
-
-        <div className="pt-1">
-          <Button
-            variant="outline"
-            size="md"
-            fullWidth
-            leftIcon={<LockRounded fontSize="small" aria-hidden />}
-            href="/advogado/configuracoes/alterar-senha"
-          >
-            Alterar Senha
-          </Button>
-        </div>
       </SectionCard>
     </div>
   );
