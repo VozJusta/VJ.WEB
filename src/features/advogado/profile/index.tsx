@@ -2,14 +2,109 @@
 
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
-import { SaveRounded, LockOutlined, EditRounded } from "@mui/icons-material";
+import {
+  SaveRounded,
+  EditRounded,
+  LockRounded,
+  ShieldRounded,
+  GavelRounded,
+  PersonRounded,
+  VisibilityRounded,
+  SecurityRounded,
+} from "@mui/icons-material";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Toggle } from "@/components/ui/toggle";
+import { PrivacySettingCard } from "@/components/ui/privacy-setting-card";
 import { useAuthStore } from "@/store/auth.store";
 import { userService } from "@/services/user.service";
 import { useToast } from "@/components/ui/toast/toast-provider";
 import { formatCPF, formatPhone } from "@/lib/status";
+
+const OAB_STATES: Record<string, string> = {
+  AC: "Acre",
+  AL: "Alagoas",
+  AP: "Amapá",
+  AM: "Amazonas",
+  BA: "Bahia",
+  CE: "Ceará",
+  DF: "Distrito Federal",
+  ES: "Espírito Santo",
+  GO: "Goiás",
+  MA: "Maranhão",
+  MT: "Mato Grosso",
+  MS: "Mato Grosso do Sul",
+  MG: "Minas Gerais",
+  PA: "Pará",
+  PB: "Paraíba",
+  PR: "Paraná",
+  PE: "Pernambuco",
+  PI: "Piauí",
+  RJ: "Rio de Janeiro",
+  RN: "Rio Grande do Norte",
+  RS: "Rio Grande do Sul",
+  RO: "Rondônia",
+  RR: "Roraima",
+  SC: "Santa Catarina",
+  SP: "São Paulo",
+  SE: "Sergipe",
+  TO: "Tocantins",
+};
+
+const SPECIALIZATION_MAP: Record<string, string> = {
+  Tax: "Direito Tributário",
+  Civil: "Direito Civil",
+  Criminal: "Direito Criminal",
+  Family: "Direito de Família",
+  Labor: "Direito Trabalhista",
+  Consumer: "Direito do Consumidor",
+  RealEstate: "Direito Imobiliário",
+  Corporate: "Direito Empresarial",
+  Administrative: "Direito Administrativo",
+  Digital: "Direito Digital",
+  Environmental: "Direito Ambiental",
+  Constitutional: "Direito Constitucional",
+  Health: "Direito à Saúde",
+  Intellectual: "Propriedade Intelectual",
+  International: "Direito Internacional",
+};
+
+function SectionCard({
+  icon,
+  title,
+  children,
+}: {
+  icon: React.ReactNode;
+  title: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <section className="w-full rounded-2xl bg-[#0C1326] border border-[#1B2233] p-6 flex flex-col gap-5">
+      <div className="flex items-center gap-2.5 pb-1 border-b border-[#1B2233]">
+        <span className="text-[#2585F4]">{icon}</span>
+        <h2 className="text-sm font-semibold text-[#8BA3C7] uppercase tracking-wider">
+          {title}
+        </h2>
+      </div>
+      {children}
+    </section>
+  );
+}
+
+function ReadonlyField({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="flex flex-col gap-1.5">
+      <span className="text-xs font-medium text-[#8BA3C7] uppercase tracking-wide">
+        {label}
+      </span>
+      <div className="w-full rounded-lg bg-[#111c30] border border-[#1B2233] px-4 py-2.5 text-sm text-[#C8D8F0]">
+        {value || "—"}
+      </div>
+    </div>
+  );
+}
 
 export function LawyerDashboardProfileFeature() {
   const user = useAuthStore((s) => s.user);
@@ -17,17 +112,41 @@ export function LawyerDashboardProfileFeature() {
   const { toast } = useToast();
 
   const [fullName, setFullName] = useState(user?.fullName ?? "");
-  const [email, setEmail] = useState(user?.email ?? "");
-  const [cpf, setCpf] = useState("");
+  const [bio, setBio] = useState("");
   const [phone, setPhone] = useState("");
+  const [cpf, setCpf] = useState("");
+  const [email, setEmail] = useState(user?.email ?? "");
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
+
+  const [oabNumber, setOabNumber] = useState("");
+  const [oabState, setOabState] = useState("");
+  const [specialization, setSpecialization] = useState("");
+
+  const [twoFactorEnabled, setTwoFactorEnabled] = useState(false);
+  const [profileVisible, setProfileVisible] = useState(true);
+
   const [saving, setSaving] = useState(false);
   const [uploadingAvatar, setUploadingAvatar] = useState(false);
   const avatarInputRef = useRef<HTMLInputElement>(null);
 
-  const handleAvatarClick = () => {
-    avatarInputRef.current?.click();
-  };
+  useEffect(() => {
+    userService
+      .getProfile()
+      .then((profile) => {
+        if (profile.full_name) setFullName(profile.full_name);
+        if (profile.email) setEmail(profile.email);
+        if (profile.cpf) setCpf(formatCPF(profile.cpf));
+        if (profile.phone) setPhone(formatPhone(profile.phone));
+        if (profile.avatar_image) setAvatarUrl(profile.avatar_image);
+        if (profile.bio) setBio(profile.bio);
+        if (profile.oab_number) setOabNumber(profile.oab_number);
+        if (profile.oab_state) setOabState(profile.oab_state);
+        if (profile.specialization) setSpecialization(profile.specialization);
+      })
+      .catch(() => {});
+  }, []);
+
+  const handleAvatarClick = () => avatarInputRef.current?.click();
 
   const handleAvatarChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -50,23 +169,15 @@ export function LawyerDashboardProfileFeature() {
     }
   };
 
-  useEffect(() => {
-    userService.getProfile().then((profile) => {
-      if (profile.cpf) setCpf(formatCPF(profile.cpf));
-      if (profile.phone) setPhone(formatPhone(profile.phone));
-      if (profile.full_name) setFullName(profile.full_name);
-      if (profile.email) setEmail(profile.email);
-      if (profile.avatar_image) setAvatarUrl(profile.avatar_image);
-    }).catch(() => {});
-  }, []);
-
   const handleSave = async () => {
     setSaving(true);
     try {
-      await userService.updateProfile({ fullName, phone: phone.replace(/\D/g, "") });
-      if (user) {
-        setUser({ ...user, fullName });
-      }
+      await userService.updateProfile({
+        fullName,
+        phone: phone.replace(/\D/g, ""),
+        bio,
+      });
+      if (user) setUser({ ...user, fullName });
       toast({
         title: "Alterações salvas!",
         description: "Seu perfil foi atualizado com sucesso.",
@@ -83,16 +194,24 @@ export function LawyerDashboardProfileFeature() {
     }
   };
 
-  const displayName = user?.fullName ?? "Advogado";
+  const displayName = fullName || user?.fullName || "Advogado";
   const initials = displayName
     .split(" ")
+    .filter(Boolean)
     .slice(0, 2)
     .map((n) => n[0])
     .join("")
     .toUpperCase();
 
+  const oabStateName = oabState
+    ? `${OAB_STATES[oabState] ?? oabState} (${oabState})`
+    : "—";
+  const specializationLabel =
+    SPECIALIZATION_MAP[specialization] ?? specialization ?? "—";
+
   return (
     <div className="flex flex-col items-center gap-6 w-full max-w-2xl mx-auto px-4 py-6 md:px-0 md:py-8">
+      {/* Avatar */}
       <div className="flex flex-col items-center gap-3">
         <div className="relative">
           <div className="w-24 h-24 rounded-full p-0.5 bg-linear-to-br from-[#2585F4] to-[#1565C0] shadow-[0_0_24px_rgba(37,133,244,0.35)]">
@@ -106,7 +225,9 @@ export function LawyerDashboardProfileFeature() {
                   className="w-full h-full object-cover"
                 />
               ) : (
-                <span className="text-2xl font-bold text-white select-none">{initials}</span>
+                <span className="text-2xl font-bold text-white select-none">
+                  {initials}
+                </span>
               )}
             </div>
           </div>
@@ -134,13 +255,17 @@ export function LawyerDashboardProfileFeature() {
           <h1 className="text-2xl font-bold text-white tracking-tight">
             {displayName}
           </h1>
-          <Badge text="Advogado" variant="blue" />
+          <div className="flex items-center gap-2">
+            <Badge text="Advogado" variant="blue" />
+            <Badge text="Regular Ativo" variant="green" />
+          </div>
         </div>
       </div>
 
-      <section
-        className="w-full rounded-2xl bg-[#0C1326] border border-[#1B2233] p-6 flex flex-col gap-5"
-        aria-label="Dados do perfil"
+      {/* Informações Pessoais */}
+      <SectionCard
+        icon={<PersonRounded fontSize="small" />}
+        title="Informações do Perfil"
       >
         <Input
           id="profile-fullname"
@@ -149,25 +274,18 @@ export function LawyerDashboardProfileFeature() {
           onChange={(e) => setFullName(e.target.value)}
           autoComplete="name"
         />
-        <Input
-          id="profile-cpf"
-          label="CPF"
-          value={cpf}
-          onChange={(e) => setCpf(formatCPF(e.target.value))}
-          inputMode="numeric"
-          autoComplete="off"
-          placeholder="000.000.000-00"
-          disabled
+
+        <Textarea
+          id="profile-bio"
+          label="Bio"
+          value={bio}
+          onChange={(e) => setBio(e.target.value)}
+          rows={3}
+          placeholder="Escreva uma breve descrição sobre você..."
+          maxLength={300}
+          showCharCount
         />
-        <Input
-          id="profile-email"
-          label="E-mail"
-          type="email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          autoComplete="email"
-          disabled
-        />
+
         <Input
           id="profile-phone"
           label="Telefone"
@@ -176,6 +294,25 @@ export function LawyerDashboardProfileFeature() {
           onChange={(e) => setPhone(formatPhone(e.target.value))}
           autoComplete="tel"
           placeholder="(00) 00000-0000"
+        />
+
+        <Input
+          id="profile-cpf"
+          label="CPF"
+          value={cpf}
+          inputMode="numeric"
+          autoComplete="off"
+          placeholder="000.000.000-00"
+          disabled
+        />
+
+        <Input
+          id="profile-email"
+          label="E-mail"
+          type="email"
+          value={email}
+          autoComplete="email"
+          disabled
         />
 
         <Button
@@ -189,106 +326,64 @@ export function LawyerDashboardProfileFeature() {
         >
           Salvar alterações
         </Button>
-      </section>
+      </SectionCard>
 
-      <div className="w-full">
-        <Button
-          variant="outline"
-          size="md"
-          fullWidth
-          leftIcon={<LockOutlined fontSize="small" aria-hidden />}
-          href="/advogado/configuracoes/alterar-senha"
-        >
-          Alterar Senha
-        </Button>
-      </div>
+      {/* Dados da OAB */}
+      <SectionCard
+        icon={<GavelRounded fontSize="small" />}
+        title="Dados da OAB"
+      >
+        <ReadonlyField label="Número de Inscrição" value={oabNumber} />
+        <ReadonlyField label="Seccional" value={oabStateName} />
+        <ReadonlyField label="Área de Atuação" value={specializationLabel} />
+        <ReadonlyField label="Status" value="Regular Ativo" />
+      </SectionCard>
+
+      {/* Segurança e LGPD */}
+      <SectionCard
+        icon={<ShieldRounded fontSize="small" />}
+        title="Segurança e LGPD"
+      >
+        <PrivacySettingCard
+          icon={SecurityRounded}
+          iconColor="blue"
+          title="Autenticação em dois fatores"
+          description="Adiciona uma camada extra de segurança ao seu acesso na plataforma."
+          rightElement={
+            <Toggle
+              checked={twoFactorEnabled}
+              onChange={setTwoFactorEnabled}
+              aria-label="Ativar autenticação em dois fatores"
+            />
+          }
+        />
+
+        <PrivacySettingCard
+          icon={VisibilityRounded}
+          iconColor="green"
+          title="Perfil visível"
+          description="Permite que cidadãos encontrem e visualizem seu perfil na plataforma."
+          rightElement={
+            <Toggle
+              checked={profileVisible}
+              onChange={setProfileVisible}
+              aria-label="Tornar perfil visível"
+            />
+          }
+        />
+
+        <div className="pt-1">
+          <Button
+            variant="outline"
+            size="md"
+            fullWidth
+            leftIcon={<LockRounded fontSize="small" aria-hidden />}
+            href="/advogado/configuracoes/alterar-senha"
+          >
+            Alterar Senha
+          </Button>
+        </div>
+      </SectionCard>
     </div>
   );
 }
-
-/*
- * ─── OLD IMPLEMENTATION (commented out — to be restored/redesigned later) ───
- *
-"use client";
-
-import Image from "next/image";
-import { useMemo, useState } from "react";
-import {
-  EditRounded,
-  LocationOnRounded,
-  CalendarTodayRounded,
-  StarRounded,
-  VerifiedRounded,
-  DiamondOutlined,
-  CheckCircleOutlined,
-  ShieldRounded,
-  VisibilityRounded,
-  LockRounded,
-} from "@mui/icons-material";
-import { Badge } from "@/components/ui/badge";
-import { Toggle } from "@/components/ui/toggle";
-import { Button } from "@/components/ui/button";
-import { useAuth } from "@/contexts/auth-context";
-import { useAuthStore } from "@/store/auth.store";
-
-const DEFAULT_AVATAR =
-  "data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='128'%20height='128'%3E%3Crect%20width='128'%20height='128'%20rx='24'%20fill='%23111c30'/%3E%3Cpath%20d='M64%2066c11.05%200%2020-8.95%2020-20S75.05%2026%2064%2026%2044%2034.95%2044%2046s8.95%2020%2020%2020Zm0%2010c-16.57%200-30%209.4-30%2021v5h60v-5c0-11.6-13.43-21-30-21Z'%20fill='%23ffffff'%20fill-opacity='.55'/%3E%3C/svg%3E";
-
-export function LawyerDashboardProfileFeature() {
-  const { user } = useAuth();
-  const storeUser = useAuthStore((s) => s.user);
-
-  const [twoFactorEnabled, setTwoFactorEnabled] = useState(true);
-  const [profileVisible, setProfileVisible] = useState(true);
-
-  const profile = useMemo(() => {
-    return {
-      name: storeUser?.fullName || user.name || "Advogado",
-      headline:
-        "Especialista em Direito Civil e do Consumidor com foco em resoluções ágeis. Advocacia digital humanizada.",
-      location: "São Paulo, SP",
-      yearsOfExperience: 12,
-      rating: 4.9,
-      totalReviews: 124,
-      availabilityLabel: "DISPONÍVEL",
-      oab: {
-        number: "OAB/SP 432.109",
-        section: "São Paulo (SP)",
-        status: "Regular - Ativo",
-        validatedLabel: "VALIDADO",
-      },
-      practiceAreas: [
-        "Direito Civil",
-        "Direito do Consumidor",
-        "Direito Digital",
-        "Família e Sucessões",
-      ],
-      languages: ["Português", "Inglês (Jurídico)"],
-      plan: {
-        name: "Plano Expert",
-        status: "PRO",
-        benefits: [
-          "Destaque nas buscas regionais",
-          "Acesso ilimitado a leads qualificados",
-          "Ferramenta de IA Generativa para Petições",
-        ],
-        renewal: "15/09/2024",
-      },
-    };
-  }, [user.name]);
-
-  const initials = profile.name
-    .split(" ")
-    .filter(Boolean)
-    .slice(0, 2)
-    .map((part) => part[0])
-    .join("")
-    .toUpperCase();
-
-  return (
-    <div className="space-y-6">
-      ...full old JSX omitted for brevity — see git history...
-    </div>
-  );
-}
-*/

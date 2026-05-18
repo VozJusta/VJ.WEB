@@ -11,11 +11,17 @@ export interface MeResponse {
 }
 
 export interface ProfileResponse {
+  id?: string;
   full_name?: string;
   email?: string;
   cpf?: string;
   phone?: string;
   avatar_image?: string;
+  bio?: string;
+  specialization?: string;
+  lawyer_status?: string;
+  oab_number?: string;
+  oab_state?: string;
 }
 
 export const userService = {
@@ -51,7 +57,7 @@ export const userService = {
     return response.json();
   },
 
-  async updateProfile(data: { fullName?: string; phone?: string }): Promise<void> {
+  async updateProfile(data: { fullName?: string; phone?: string; bio?: string }): Promise<void> {
     const response = await apiFetch('/profile', {
       method: 'PUT',
       body: JSON.stringify(data),
