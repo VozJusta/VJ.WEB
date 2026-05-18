@@ -1,10 +1,11 @@
 "use client";
 
-import type { MouseEvent, ReactElement } from "react";
+import { useState, type MouseEvent, type ReactElement } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { useAuthStore } from "@/store/auth.store";
+import { LogoutConfirmModal } from "@/components/modals/logout-confirm-modal";
 import { sidebarMainNav, sidebarBottomNav } from "./sidebar.navigation";
 import type { SidebarNavItem } from "./sidebar.types";
 
@@ -91,8 +92,10 @@ export function SidebarNav({ isOpen, mainNav, bottomNav }: SidebarNavProps): Rea
   const pathname = usePathname();
   const router = useRouter();
   const logout = useAuthStore((state) => state.logout);
+  const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
 
-  const handleLogout = () => {
+  const handleConfirmLogout = () => {
+    setIsLogoutModalOpen(false);
     logout();
     router.replace("/login");
   };
@@ -106,30 +109,38 @@ export function SidebarNav({ isOpen, mainNav, bottomNav }: SidebarNavProps): Rea
   };
 
   return (
-    <nav aria-label="Navegação principal" className="flex flex-1 flex-col justify-between overflow-y-auto px-3 py-4">
-      <ul role="list" className="flex flex-col gap-1">
-        {mainNavItems.map((item) => (
-          <SidebarNavLink
-            key={item.href}
-            item={item}
-            isOpen={isOpen}
-            isActive={isMainNavItemActive(item.href)}
-          />
-        ))}
-      </ul>
+    <>
+      <nav aria-label="Navegação principal" className="flex flex-1 flex-col justify-between overflow-y-auto px-3 py-4">
+        <ul role="list" className="flex flex-col gap-1">
+          {mainNavItems.map((item) => (
+            <SidebarNavLink
+              key={item.href}
+              item={item}
+              isOpen={isOpen}
+              isActive={isMainNavItemActive(item.href)}
+            />
+          ))}
+        </ul>
 
-      <ul role="list" className="flex flex-col gap-1 border-t border-(--border-subtle) pt-4">
-        {bottomNavItems.map((item, index) => (
-          <SidebarNavLink
-            key={item.href}
-            item={item}
-            isOpen={isOpen}
-            isActive={pathname === item.href}
-            isDanger={index === sidebarBottomNav.length - 1}
-            onLogout={item.href === "/sair" ? handleLogout : undefined}
-          />
-        ))}
-      </ul>
-    </nav>
+        <ul role="list" className="flex flex-col gap-1 border-t border-(--border-subtle) pt-4">
+          {bottomNavItems.map((item, index) => (
+            <SidebarNavLink
+              key={item.href}
+              item={item}
+              isOpen={isOpen}
+              isActive={pathname === item.href}
+              isDanger={index === bottomNavItems.length - 1}
+              onLogout={item.href === "/sair" ? () => setIsLogoutModalOpen(true) : undefined}
+            />
+          ))}
+        </ul>
+      </nav>
+
+      <LogoutConfirmModal
+        isOpen={isLogoutModalOpen}
+        onClose={() => setIsLogoutModalOpen(false)}
+        onConfirm={handleConfirmLogout}
+      />
+    </>
   );
 }

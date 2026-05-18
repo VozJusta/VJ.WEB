@@ -123,7 +123,12 @@ function DeleteAccountModal({ onClose, onConfirm, isDeleting }: {
   );
 }
 
-export function SettingsFeature() {
+type SettingsFeatureProps = {
+  /** Base path for settings sub-routes — defaults to the citizen dashboard. */
+  basePath?: string;
+};
+
+export function SettingsFeature({ basePath = "/dashboard/configuracoes" }: SettingsFeatureProps = {}) {
   const router = useRouter();
   const { toast } = useToast();
   const logout = useAuthStore((s) => s.logout);
@@ -184,7 +189,7 @@ export function SettingsFeature() {
             <SettingRow
               icon={LockResetRounded}
               label="Alterar Senha"
-              href="/dashboard/configuracoes/alterar-senha"
+              href={`${basePath}/alterar-senha`}
             />
           </ul>
 

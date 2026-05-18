@@ -35,12 +35,12 @@ export function MessageBubble({
     >
       {isAssistant && (
         <figure
-          className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-primary/20"
+          className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-primary/20"
           aria-label="Avatar Voz Justa AI"
         >
           <AutoAwesomeRounded
-            fontSize="small"
             className="text-primary"
+            sx={{ fontSize: 24 }}
             aria-hidden="true"
           />
         </figure>

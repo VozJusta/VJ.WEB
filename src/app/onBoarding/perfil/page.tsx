@@ -88,16 +88,23 @@ export default function OnboardingPerfilPage() {
           </ul>
 
           <Button
-            size="md"
+            size="lg"
             fullWidth
-            variant="white"
+            variant="primary"
             disabled={!selectedRole}
             rightIcon={<ArrowForward fontSize="small" />}
-            className="rounded-full"
             onClick={handleStartClick}
           >
             Começar agora
           </Button>
+
+          <Link
+            href="/login"
+            className="text-sm text-white/45 hover:text-white/70 transition-colors text-center"
+          >
+            Já tenho uma conta{" "}
+            <span className="font-semibold text-[#2585F4] hover:underline">Entrar</span>
+          </Link>
 
           <p className="text-xs text-white/30 text-center">
             Ao continuar, você concorda com nossos{" "}

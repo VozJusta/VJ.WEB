@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useReportDownload } from "@/hooks/useReportDownload";
 import { useChatStore } from "@/store/chat.store";
+import { useToast } from "@/components/ui/toast/toast-provider";
 import type { DetailsReport } from "@/services/dashboard.service";
 import type { CaseStatus } from "@/components/ui/case-card/case-card.types";
 import { getCategoryLabel } from "@/lib/status";
@@ -62,6 +63,7 @@ export function CaseDetailFeature({ report, reportId }: CaseDetailFeatureProps) 
   const router = useRouter();
   const searchParams = useSearchParams();
   const chatStore = useChatStore();
+  const { toast } = useToast();
   const caseStatus = apiStatusToCaseStatus(report.status);
   const banner = bannerConfig[caseStatus];
   const { downloadPdf, isDownloading } = useReportDownload();
@@ -72,11 +74,19 @@ export function CaseDetailFeature({ report, reportId }: CaseDetailFeatureProps) 
     (chatStore.reportId === reportId ? chatStore.caseId : "") ||
     "";
 
-  const canSendToLawyer = !report.lawyer && caseStatus !== "archived" && !!caseId;
+  // Show the button whenever case is sendable — caseId validation happens on click
+  const canSendToLawyer = !report.lawyer && caseStatus !== "archived";
 
   const handleSendToLawyer = () => {
-    const params = new URLSearchParams({ reportId });
-    if (caseId) params.set("caseId", caseId);
+    if (!caseId) {
+      toast({
+        title: "Caso não identificado",
+        description: "Não foi possível identificar este caso. Acesse-o novamente pela lista de Meus Casos.",
+        variant: "error",
+      });
+      return;
+    }
+    const params = new URLSearchParams({ reportId, caseId });
     router.push(`/dashboard/advogados?${params.toString()}`);
   };
 

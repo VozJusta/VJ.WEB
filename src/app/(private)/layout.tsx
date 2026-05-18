@@ -22,8 +22,11 @@ export default function PrivateLayout({
   useEffect(() => {
     if (!authStorage.hasTokens()) {
       router.replace("/login");
+    } else if (userRole === "lawyer") {
+      // Lawyers must never land on citizen routes
+      router.replace("/advogado");
     }
-  }, [router]);
+  }, [router, userRole]);
 
   useEffect(() => {
     const handleResize = () => {

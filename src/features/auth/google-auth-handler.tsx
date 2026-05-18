@@ -45,8 +45,12 @@ export function GoogleAuthHandler() {
     if (!data) return;
 
     try {
-      if (data.access_token && data.refresh_token) {
-        authStorage.setTokens(data.access_token as string, data.refresh_token as string);
+      // Always persist whatever tokens we received — never gate access_token on refresh_token presence
+      if (data.access_token) {
+        authStorage.setAccessToken(data.access_token as string);
+      }
+      if (data.refresh_token) {
+        authStorage.setRefreshToken(data.refresh_token as string);
       }
 
       login(data as GoogleAuthResponse);

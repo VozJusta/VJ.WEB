@@ -95,7 +95,7 @@ export const authStorage = {
   },
 
   hasTokens(): boolean {
-    return !!(this.getAccessToken() && this.getRefreshToken());
+    return !!this.getAccessToken();
   },
 };
 

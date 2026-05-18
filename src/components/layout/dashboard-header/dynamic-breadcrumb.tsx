@@ -20,6 +20,9 @@ const routeLabelMap: Record<string, string> = {
   feedback: "Feedback",
   enviar: "Enviar Dossiê",
   "alterar-senha": "Alterar Senha",
+  // Lawyer area
+  advogado: "Dashboard",
+  solicitacoes: "Solicitações",
 };
 
 const pageNameMap: Record<string, string> = {
@@ -30,6 +33,12 @@ const pageNameMap: Record<string, string> = {
   "/dashboard/configuracoes": "Configurações",
   "/dashboard/casos": "Meus Casos",
   "/dashboard/casos/novo": "Novo Caso",
+  // Lawyer area
+  "/advogado": "Resumo Geral",
+  "/advogado/solicitacoes": "Solicitações",
+  "/advogado/notificacoes": "Notificações",
+  "/advogado/perfil": "Perfil Profissional",
+  "/advogado/configuracoes": "Configurações",
 };
 
 const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;

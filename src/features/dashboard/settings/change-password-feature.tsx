@@ -16,7 +16,12 @@ const passwordChecks = [
   { id: "symbol", label: "Símbolo", test: (v: string) => /[^\p{L}\p{N}\s]/u.test(v) },
 ] as const;
 
-export function ChangePasswordFeature() {
+type ChangePasswordFeatureProps = {
+  /** Base path returned to after a successful change — defaults to the citizen dashboard. */
+  basePath?: string;
+};
+
+export function ChangePasswordFeature({ basePath = "/dashboard/configuracoes" }: ChangePasswordFeatureProps = {}) {
   const router = useRouter();
   const { toast } = useToast();
   const [currentPassword, setCurrentPassword] = useState("");
@@ -50,7 +55,7 @@ export function ChangePasswordFeature() {
     try {
       await userService.changePassword(currentPassword, newPassword);
       toast({ title: "Senha alterada!", description: "Sua senha foi atualizada com sucesso.", variant: "success" });
-      router.push("/dashboard/configuracoes");
+      router.push(basePath);
     } catch (err) {
       toast({
         title: "Erro ao alterar senha",

@@ -35,10 +35,7 @@ async function refreshAccessToken(): Promise<string> {
 
   const response = await fetch(`${API_URL}/auth/refresh-token`, {
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      refreshToken,
-    },
+    headers: { refreshToken },
   });
 
   if (!response.ok) throw new Error('Refresh failed');
