@@ -194,8 +194,8 @@ export function SimulatorSession() {
 
       <section className="flex flex-1 flex-col gap-4 p-4 md:p-6">
         {/* Judge video area */}
-        <article className="relative overflow-hidden rounded-2xl bg-linear-to-br from-teal-600 to-teal-800 shadow-2xl max-h-44">
-          <div className="aspect-video w-full max-h-44 overflow-hidden">
+        <article className="relative overflow-hidden rounded-2xl bg-linear-to-br from-teal-600 to-teal-800 shadow-2xl max-h-80">
+          <div className="aspect-video w-full max-h-80 overflow-hidden">
             <div className="flex h-full items-end justify-center p-4">
               {isLoading && (
                 <div className="flex items-center gap-2 rounded-full bg-black/40 px-4 py-2 text-sm text-white">
