@@ -88,8 +88,8 @@ export function DashboardHeader({ user, onMenuToggle, notificationsHref = "/dash
             )}
           </figure>
 
-          <div className="hidden md:flex flex-col">
-            <span className="text-sm font-semibold leading-none text-foreground">
+          <div className="hidden md:flex flex-col min-w-0 max-w-40">
+            <span className="text-sm font-semibold leading-none text-foreground truncate">
               {user.name}
             </span>
             <span className="mt-0.5 text-xs font-medium uppercase tracking-widest text-primary">

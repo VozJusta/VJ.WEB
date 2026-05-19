@@ -336,7 +336,68 @@
     "support": "Falar com suporte",
     "supportSubtitle": "Atendimento 24/7 disponível",
     "deleteErrorTitle": "Erro ao excluir conta",
-    "deleteErrorDesc": "Tente novamente."
+    "deleteErrorDesc": "Tente novamente.",
+    "systemSettings": "Configurações do sistema",
+    "languages": {
+      "title": "Selecionar Idioma",
+      "pt": "Português (BR)",
+      "en": "English",
+      "es": "Español"
+    }
+  },
+  "changePassword": {
+    "title": "Alterar Senha",
+    "back": "Voltar",
+    "security": "Segurança da Conta",
+    "securityDesc": "Defina uma nova senha segura",
+    "currentPassword": "Senha Atual",
+    "newPassword": "Nova Senha",
+    "save": "Salvar Nova Senha",
+    "weakTitle": "Senha fraca",
+    "weakDesc": "Sua nova senha não atende aos requisitos mínimos.",
+    "successTitle": "Senha alterada!",
+    "successDesc": "Sua senha foi atualizada com sucesso.",
+    "errorTitle": "Erro ao alterar senha",
+    "errorDesc": "Verifique a senha atual e tente novamente.",
+    "strength": {
+      "title": "Segurança da senha",
+      "weak": "FRACA",
+      "medium": "MÉDIA",
+      "strong": "FORTE",
+      "veryStrong": "MUITO FORTE",
+      "checks": {
+        "length": "8+ caracteres",
+        "uppercase": "Maiúscula",
+        "lowercase": "Minúscula",
+        "symbol": "Símbolo"
+      }
+    }
+  },
+  "lawyerProfile": {
+    "infoSection": "Informações do Perfil",
+    "fullName": "Nome Completo",
+    "bio": "Bio",
+    "bioPlaceholder": "Escreva uma breve descrição sobre você...",
+    "phone": "Telefone",
+    "cpf": "CPF",
+    "email": "E-mail",
+    "saveChanges": "Salvar alterações",
+    "oabSection": "Dados da OAB",
+    "oabNumber": "Número de Inscrição",
+    "oabState": "Seccional",
+    "practiceArea": "Área de Atuação",
+    "status": "Status",
+    "regularActive": "Regular Ativo",
+    "lawyerBadge": "Advogado",
+    "editPhotoAria": "Alterar foto de perfil",
+    "photoUpdatedTitle": "Foto atualizada!",
+    "photoErrorTitle": "Erro ao enviar foto",
+    "savedTitle": "Alterações salvas!",
+    "savedDesc": "Seu perfil foi atualizado com sucesso.",
+    "saveErrorTitle": "Erro ao salvar perfil",
+    "phoneInvalidTitle": "Telefone inválido",
+    "phoneInvalidDesc": "Informe um telefone completo com DDD (ex: (11) 99999-9999).",
+    "tryAgain": "Tente novamente."
   },
   "privacySettings": {
     "title": "Privacidade e Segurança",
