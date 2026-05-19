@@ -336,7 +336,68 @@
     "support": "Contact support",
     "supportSubtitle": "24/7 support available",
     "deleteErrorTitle": "Error deleting account",
-    "deleteErrorDesc": "Please try again."
+    "deleteErrorDesc": "Please try again.",
+    "systemSettings": "System settings",
+    "languages": {
+      "title": "Select Language",
+      "pt": "Português (BR)",
+      "en": "English",
+      "es": "Español"
+    }
+  },
+  "changePassword": {
+    "title": "Change Password",
+    "back": "Back",
+    "security": "Account Security",
+    "securityDesc": "Set a new secure password",
+    "currentPassword": "Current Password",
+    "newPassword": "New Password",
+    "save": "Save New Password",
+    "weakTitle": "Weak password",
+    "weakDesc": "Your new password does not meet the minimum requirements.",
+    "successTitle": "Password changed!",
+    "successDesc": "Your password has been updated successfully.",
+    "errorTitle": "Error changing password",
+    "errorDesc": "Check your current password and try again.",
+    "strength": {
+      "title": "Password strength",
+      "weak": "WEAK",
+      "medium": "MEDIUM",
+      "strong": "STRONG",
+      "veryStrong": "VERY STRONG",
+      "checks": {
+        "length": "8+ characters",
+        "uppercase": "Uppercase",
+        "lowercase": "Lowercase",
+        "symbol": "Symbol"
+      }
+    }
+  },
+  "lawyerProfile": {
+    "infoSection": "Profile Information",
+    "fullName": "Full Name",
+    "bio": "Bio",
+    "bioPlaceholder": "Write a brief description about yourself...",
+    "phone": "Phone",
+    "cpf": "CPF",
+    "email": "E-mail",
+    "saveChanges": "Save changes",
+    "oabSection": "OAB Data",
+    "oabNumber": "Registration Number",
+    "oabState": "Section",
+    "practiceArea": "Practice Area",
+    "status": "Status",
+    "regularActive": "Regular Active",
+    "lawyerBadge": "Lawyer",
+    "editPhotoAria": "Change profile photo",
+    "photoUpdatedTitle": "Photo updated!",
+    "photoErrorTitle": "Error uploading photo",
+    "savedTitle": "Changes saved!",
+    "savedDesc": "Your profile has been updated successfully.",
+    "saveErrorTitle": "Error saving profile",
+    "phoneInvalidTitle": "Invalid phone",
+    "phoneInvalidDesc": "Please enter a complete phone number with area code (e.g. (11) 99999-9999).",
+    "tryAgain": "Please try again."
   },
   "privacySettings": {
     "title": "Privacy and Security",

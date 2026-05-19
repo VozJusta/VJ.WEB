@@ -336,7 +336,68 @@
     "support": "Contactar soporte",
     "supportSubtitle": "Soporte 24/7 disponible",
     "deleteErrorTitle": "Error al eliminar cuenta",
-    "deleteErrorDesc": "Inténtalo de nuevo."
+    "deleteErrorDesc": "Inténtalo de nuevo.",
+    "systemSettings": "Configuración del sistema",
+    "languages": {
+      "title": "Seleccionar Idioma",
+      "pt": "Português (BR)",
+      "en": "English",
+      "es": "Español"
+    }
+  },
+  "changePassword": {
+    "title": "Cambiar Contraseña",
+    "back": "Volver",
+    "security": "Seguridad de la Cuenta",
+    "securityDesc": "Establece una nueva contraseña segura",
+    "currentPassword": "Contraseña Actual",
+    "newPassword": "Nueva Contraseña",
+    "save": "Guardar Nueva Contraseña",
+    "weakTitle": "Contraseña débil",
+    "weakDesc": "Tu nueva contraseña no cumple los requisitos mínimos.",
+    "successTitle": "¡Contraseña cambiada!",
+    "successDesc": "Tu contraseña se ha actualizado con éxito.",
+    "errorTitle": "Error al cambiar la contraseña",
+    "errorDesc": "Verifica tu contraseña actual e inténtalo de nuevo.",
+    "strength": {
+      "title": "Seguridad de la contraseña",
+      "weak": "DÉBIL",
+      "medium": "MEDIA",
+      "strong": "FUERTE",
+      "veryStrong": "MUY FUERTE",
+      "checks": {
+        "length": "8+ caracteres",
+        "uppercase": "Mayúscula",
+        "lowercase": "Minúscula",
+        "symbol": "Símbolo"
+      }
+    }
+  },
+  "lawyerProfile": {
+    "infoSection": "Información del Perfil",
+    "fullName": "Nombre Completo",
+    "bio": "Bio",
+    "bioPlaceholder": "Escribe una breve descripción sobre ti...",
+    "phone": "Teléfono",
+    "cpf": "CPF",
+    "email": "Correo electrónico",
+    "saveChanges": "Guardar cambios",
+    "oabSection": "Datos OAB",
+    "oabNumber": "Número de Inscripción",
+    "oabState": "Seccional",
+    "practiceArea": "Área de Práctica",
+    "status": "Estado",
+    "regularActive": "Regular Activo",
+    "lawyerBadge": "Abogado",
+    "editPhotoAria": "Cambiar foto de perfil",
+    "photoUpdatedTitle": "¡Foto actualizada!",
+    "photoErrorTitle": "Error al subir foto",
+    "savedTitle": "¡Cambios guardados!",
+    "savedDesc": "Tu perfil ha sido actualizado con éxito.",
+    "saveErrorTitle": "Error al guardar perfil",
+    "phoneInvalidTitle": "Teléfono inválido",
+    "phoneInvalidDesc": "Ingresa un teléfono completo con código de área (ej: (11) 99999-9999).",
+    "tryAgain": "Inténtalo de nuevo."
   },
   "privacySettings": {
     "title": "Privacidad y Seguridad",

@@ -2,64 +2,131 @@
 
 import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
-import { ArrowBackRounded, CheckRounded, CloseRounded, LockResetRounded, Visibility, VisibilityOff } from "@mui/icons-material";
+import { useTranslation } from "react-i18next";
+import {
+  ArrowBackRounded,
+  CheckRounded,
+  CloseRounded,
+  LockResetRounded,
+  Visibility,
+  VisibilityOff,
+} from "@mui/icons-material";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { userService } from "@/services/user.service";
 import { useToast } from "@/components/ui/toast/toast-provider";
 import { cn } from "@/lib/utils";
 
-const passwordChecks = [
-  { id: "length", label: "8+ chars", test: (v: string) => v.length >= 8 },
-  { id: "uppercase", label: "Maiúscula", test: (v: string) => /[A-ZÀ-Ý]/.test(v) },
-  { id: "lowercase", label: "Minúscula", test: (v: string) => /[a-zà-ÿ]/.test(v) },
-  { id: "symbol", label: "Símbolo", test: (v: string) => /[^\p{L}\p{N}\s]/u.test(v) },
-] as const;
-
 type ChangePasswordFeatureProps = {
-  /** Base path returned to after a successful change — defaults to the citizen dashboard. */
   basePath?: string;
 };
 
-export function ChangePasswordFeature({ basePath = "/dashboard/configuracoes" }: ChangePasswordFeatureProps = {}) {
+export function ChangePasswordFeature({
+  basePath = "/dashboard/configuracoes",
+}: ChangePasswordFeatureProps = {}) {
   const router = useRouter();
   const { toast } = useToast();
+  const { t } = useTranslation();
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [showCurrent, setShowCurrent] = useState(false);
   const [showNew, setShowNew] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
 
+  const passwordChecks = useMemo(
+    () => [
+      {
+        id: "length",
+        label: t("changePassword.strength.checks.length"),
+        test: (v: string) => v.length >= 8,
+      },
+      {
+        id: "uppercase",
+        label: t("changePassword.strength.checks.uppercase"),
+        test: (v: string) => /[A-ZÀ-Ý]/.test(v),
+      },
+      {
+        id: "lowercase",
+        label: t("changePassword.strength.checks.lowercase"),
+        test: (v: string) => /[a-zà-ÿ]/.test(v),
+      },
+      {
+        id: "symbol",
+        label: t("changePassword.strength.checks.symbol"),
+        test: (v: string) => /[^\p{L}\p{N}\s]/u.test(v),
+      },
+    ],
+    [t],
+  );
+
   const checkResults = useMemo(
     () => passwordChecks.map((c) => c.test(newPassword)),
-    [newPassword],
+    [newPassword, passwordChecks],
   );
   const strengthScore = checkResults.filter(Boolean).length;
   const strengthPercent = (strengthScore / passwordChecks.length) * 100;
-  const strengthConfig = {
-    0: { label: "FRACA", color: "text-red-400", barColor: "bg-red-400" },
-    1: { label: "FRACA", color: "text-red-400", barColor: "bg-red-400" },
-    2: { label: "MÉDIA", color: "text-yellow-400", barColor: "bg-yellow-400" },
-    3: { label: "FORTE", color: "text-emerald-400", barColor: "bg-emerald-400" },
-    4: { label: "MUITO FORTE", color: "text-emerald-400", barColor: "bg-emerald-400" },
-  }[strengthScore] ?? { label: "", color: "text-white/45", barColor: "bg-white/10" };
+
+  const strengthConfig = useMemo(
+    () =>
+      (
+        ({
+          0: {
+            label: t("changePassword.strength.weak"),
+            color: "text-red-400",
+            barColor: "bg-red-400",
+          },
+          1: {
+            label: t("changePassword.strength.weak"),
+            color: "text-red-400",
+            barColor: "bg-red-400",
+          },
+          2: {
+            label: t("changePassword.strength.medium"),
+            color: "text-yellow-400",
+            barColor: "bg-yellow-400",
+          },
+          3: {
+            label: t("changePassword.strength.strong"),
+            color: "text-emerald-400",
+            barColor: "bg-emerald-400",
+          },
+          4: {
+            label: t("changePassword.strength.veryStrong"),
+            color: "text-emerald-400",
+            barColor: "bg-emerald-400",
+          },
+        } as Record<number, { label: string; color: string; barColor: string }>)[
+          strengthScore
+        ] ?? { label: "", color: "text-white/45", barColor: "bg-white/10" }
+      ),
+    [strengthScore, t],
+  );
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!currentPassword.trim() || !newPassword.trim()) return;
     if (strengthScore < 3) {
-      toast({ title: "Senha fraca", description: "Sua nova senha não atende aos requisitos mínimos.", variant: "error" });
+      toast({
+        title: t("changePassword.weakTitle"),
+        description: t("changePassword.weakDesc"),
+        variant: "error",
+      });
       return;
     }
     setIsSaving(true);
     try {
       await userService.changePassword(currentPassword, newPassword);
-      toast({ title: "Senha alterada!", description: "Sua senha foi atualizada com sucesso.", variant: "success" });
+      toast({
+        title: t("changePassword.successTitle"),
+        description: t("changePassword.successDesc"),
+        variant: "success",
+      });
       router.push(basePath);
     } catch (err) {
       toast({
-        title: "Erro ao alterar senha",
-        description: err instanceof Error ? err.message : "Verifique a senha atual e tente novamente.",
+        title: t("changePassword.errorTitle"),
+        description:
+          err instanceof Error ? err.message : t("changePassword.errorDesc"),
         variant: "error",
       });
     } finally {
@@ -73,13 +140,13 @@ export function ChangePasswordFeature({ basePath = "/dashboard/configuracoes" }:
         <button
           type="button"
           onClick={() => router.back()}
-          aria-label="Voltar"
+          aria-label={t("changePassword.back")}
           className="flex items-center justify-center w-9 h-9 rounded-lg text-white/50 hover:text-white hover:bg-white/08 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2585F4]"
         >
           <ArrowBackRounded fontSize="small" aria-hidden />
         </button>
         <h1 className="text-xs font-semibold tracking-widest uppercase text-[#2585F4]">
-          Alterar Senha
+          {t("changePassword.title")}
         </h1>
       </div>
 
@@ -92,15 +159,19 @@ export function ChangePasswordFeature({ basePath = "/dashboard/configuracoes" }:
             <LockResetRounded className="text-[#2585F4]" fontSize="small" />
           </span>
           <div>
-            <p className="text-sm font-semibold text-white">Segurança da Conta</p>
-            <p className="text-xs text-white/45">Defina uma nova senha segura</p>
+            <p className="text-sm font-semibold text-white">
+              {t("changePassword.security")}
+            </p>
+            <p className="text-xs text-white/45">
+              {t("changePassword.securityDesc")}
+            </p>
           </div>
         </div>
 
         <Input
           id="current-password"
           type={showCurrent ? "text" : "password"}
-          label="Senha Atual"
+          label={t("changePassword.currentPassword")}
           value={currentPassword}
           onChange={(e) => setCurrentPassword(e.target.value)}
           placeholder="••••••••"
@@ -108,10 +179,16 @@ export function ChangePasswordFeature({ basePath = "/dashboard/configuracoes" }:
             <button
               type="button"
               onClick={() => setShowCurrent((v) => !v)}
-              aria-label={showCurrent ? "Ocultar senha" : "Mostrar senha"}
+              aria-label={
+                showCurrent ? t("auth.hidePassword") : t("auth.showPassword")
+              }
               className="text-white/40 hover:text-white/70 transition-colors"
             >
-              {showCurrent ? <VisibilityOff fontSize="small" /> : <Visibility fontSize="small" />}
+              {showCurrent ? (
+                <VisibilityOff fontSize="small" />
+              ) : (
+                <Visibility fontSize="small" />
+              )}
             </button>
           }
         />
@@ -119,7 +196,7 @@ export function ChangePasswordFeature({ basePath = "/dashboard/configuracoes" }:
         <Input
           id="new-password"
           type={showNew ? "text" : "password"}
-          label="Nova Senha"
+          label={t("changePassword.newPassword")}
           value={newPassword}
           onChange={(e) => setNewPassword(e.target.value)}
           placeholder="••••••••"
@@ -127,10 +204,16 @@ export function ChangePasswordFeature({ basePath = "/dashboard/configuracoes" }:
             <button
               type="button"
               onClick={() => setShowNew((v) => !v)}
-              aria-label={showNew ? "Ocultar senha" : "Mostrar senha"}
+              aria-label={
+                showNew ? t("auth.hidePassword") : t("auth.showPassword")
+              }
               className="text-white/40 hover:text-white/70 transition-colors"
             >
-              {showNew ? <VisibilityOff fontSize="small" /> : <Visibility fontSize="small" />}
+              {showNew ? (
+                <VisibilityOff fontSize="small" />
+              ) : (
+                <Visibility fontSize="small" />
+              )}
             </button>
           }
         />
@@ -139,7 +222,7 @@ export function ChangePasswordFeature({ basePath = "/dashboard/configuracoes" }:
           <section className="rounded-xl border border-white/10 bg-[#0d1526] px-4 py-3">
             <header className="mb-2 flex items-center justify-between">
               <h3 className="text-xs font-semibold uppercase tracking-[0.12em] text-white/55">
-                Segurança da senha
+                {t("changePassword.strength.title")}
               </h3>
               <p className={cn("text-xs font-semibold", strengthConfig.color)}>
                 {strengthConfig.label}
@@ -148,7 +231,10 @@ export function ChangePasswordFeature({ basePath = "/dashboard/configuracoes" }:
             <p className="h-1.5 rounded-full bg-white/10">
               <span
                 aria-hidden
-                className={cn("block h-full rounded-full transition-all duration-300", strengthConfig.barColor)}
+                className={cn(
+                  "block h-full rounded-full transition-all duration-300",
+                  strengthConfig.barColor,
+                )}
                 style={{ width: `${strengthPercent}%` }}
               />
             </p>
@@ -156,12 +242,18 @@ export function ChangePasswordFeature({ basePath = "/dashboard/configuracoes" }:
               {passwordChecks.map((check, index) => (
                 <li
                   key={check.id}
-                  className={cn("flex items-center gap-1 text-xs", checkResults[index] ? strengthConfig.color : "text-white/45")}
+                  className={cn(
+                    "flex items-center gap-1 text-xs",
+                    checkResults[index]
+                      ? strengthConfig.color
+                      : "text-white/45",
+                  )}
                 >
-                  {checkResults[index]
-                    ? <CheckRounded sx={{ fontSize: 12 }} aria-hidden />
-                    : <CloseRounded sx={{ fontSize: 12 }} aria-hidden />
-                  }
+                  {checkResults[index] ? (
+                    <CheckRounded sx={{ fontSize: 12 }} aria-hidden />
+                  ) : (
+                    <CloseRounded sx={{ fontSize: 12 }} aria-hidden />
+                  )}
                   {check.label}
                 </li>
               ))}
@@ -177,7 +269,7 @@ export function ChangePasswordFeature({ basePath = "/dashboard/configuracoes" }:
           loading={isSaving}
           disabled={!currentPassword.trim() || !newPassword.trim() || isSaving}
         >
-          Salvar Nova Senha
+          {t("changePassword.save")}
         </Button>
       </form>
     </div>

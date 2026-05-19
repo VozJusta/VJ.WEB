@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
+import { useTranslation } from "react-i18next";
 import {
   SaveRounded,
   EditRounded,
@@ -86,6 +87,7 @@ export function LawyerDashboardProfileFeature() {
   const user = useAuthStore((s) => s.user);
   const setUser = useAuthStore((s) => s.setUser);
   const { toast } = useToast();
+  const { t } = useTranslation();
 
   const [fullName, setFullName] = useState(user?.fullName ?? "");
   const [bio, setBio] = useState("");
@@ -129,11 +131,11 @@ export function LawyerDashboardProfileFeature() {
       const result = await userService.uploadAvatar(file);
       if (result.avatar_image) setAvatarUrl(result.avatar_image);
       else setAvatarUrl(URL.createObjectURL(file));
-      toast({ title: "Foto atualizada!", variant: "success" });
+      toast({ title: t("lawyerProfile.photoUpdatedTitle"), variant: "success" });
     } catch (err) {
       toast({
-        title: "Erro ao enviar foto",
-        description: err instanceof Error ? err.message : "Tente novamente.",
+        title: t("lawyerProfile.photoErrorTitle"),
+        description: err instanceof Error ? err.message : t("lawyerProfile.tryAgain"),
         variant: "error",
       });
     } finally {
@@ -146,8 +148,8 @@ export function LawyerDashboardProfileFeature() {
     const phoneDigits = phone.replace(/\D/g, "");
     if (phoneDigits.length > 0 && phoneDigits.length !== 10 && phoneDigits.length !== 11) {
       toast({
-        title: "Telefone inválido",
-        description: "Informe um telefone completo com DDD (ex: (11) 99999-9999).",
+        title: t("lawyerProfile.phoneInvalidTitle"),
+        description: t("lawyerProfile.phoneInvalidDesc"),
         variant: "error",
       });
       return;
@@ -162,14 +164,14 @@ export function LawyerDashboardProfileFeature() {
       });
       if (user) setUser({ ...user, fullName });
       toast({
-        title: "Alterações salvas!",
-        description: "Seu perfil foi atualizado com sucesso.",
+        title: t("lawyerProfile.savedTitle"),
+        description: t("lawyerProfile.savedDesc"),
         variant: "success",
       });
     } catch (err) {
       toast({
-        title: "Erro ao salvar perfil",
-        description: err instanceof Error ? err.message : "Tente novamente.",
+        title: t("lawyerProfile.saveErrorTitle"),
+        description: err instanceof Error ? err.message : t("lawyerProfile.tryAgain"),
         variant: "error",
       });
     } finally {
@@ -177,7 +179,7 @@ export function LawyerDashboardProfileFeature() {
     }
   };
 
-  const displayName = fullName || user?.fullName || "Advogado";
+  const displayName = fullName || user?.fullName || t("lawyerProfile.lawyerBadge");
   const initials = displayName
     .split(" ")
     .filter(Boolean)
@@ -201,7 +203,7 @@ export function LawyerDashboardProfileFeature() {
               {avatarUrl ? (
                 <Image
                   src={avatarUrl}
-                  alt={`Foto de ${displayName}`}
+                  alt={displayName}
                   width={96}
                   height={96}
                   className="w-full h-full object-cover"
@@ -224,7 +226,7 @@ export function LawyerDashboardProfileFeature() {
           />
           <button
             type="button"
-            aria-label="Alterar foto de perfil"
+            aria-label={t("lawyerProfile.editPhotoAria")}
             onClick={handleAvatarClick}
             disabled={uploadingAvatar}
             className="absolute bottom-0 right-0 flex items-center justify-center w-7 h-7 rounded-full bg-[#2585F4] border-2 border-[#0d1526] text-white hover:bg-[#1978E5] transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2585F4] focus-visible:ring-offset-2 focus-visible:ring-offset-[#0d1526] disabled:opacity-60"
@@ -238,20 +240,20 @@ export function LawyerDashboardProfileFeature() {
             {displayName}
           </h1>
           <div className="flex items-center gap-2">
-            <Badge text="Advogado" variant="blue" />
-            <Badge text="Regular Ativo" variant="green" />
+            <Badge text={t("lawyerProfile.lawyerBadge")} variant="blue" />
+            <Badge text={t("lawyerProfile.regularActive")} variant="green" />
           </div>
         </div>
       </div>
 
-      {/* Informações Pessoais */}
+      {/* Informações do Perfil */}
       <SectionCard
         icon={<PersonRounded fontSize="small" />}
-        title="Informações do Perfil"
+        title={t("lawyerProfile.infoSection")}
       >
         <Input
           id="profile-fullname"
-          label="Nome Completo"
+          label={t("lawyerProfile.fullName")}
           value={fullName}
           onChange={(e) => setFullName(e.target.value)}
           autoComplete="name"
@@ -259,18 +261,18 @@ export function LawyerDashboardProfileFeature() {
 
         <Textarea
           id="profile-bio"
-          label="Bio"
+          label={t("lawyerProfile.bio")}
           value={bio}
           onChange={(e) => setBio(e.target.value)}
           rows={3}
-          placeholder="Escreva uma breve descrição sobre você..."
+          placeholder={t("lawyerProfile.bioPlaceholder")}
           maxLength={300}
           showCharCount
         />
 
         <Input
           id="profile-phone"
-          label="Telefone"
+          label={t("lawyerProfile.phone")}
           type="tel"
           value={phone}
           onChange={(e) => setPhone(formatPhone(e.target.value))}
@@ -280,7 +282,7 @@ export function LawyerDashboardProfileFeature() {
 
         <Input
           id="profile-cpf"
-          label="CPF"
+          label={t("lawyerProfile.cpf")}
           value={cpf}
           inputMode="numeric"
           autoComplete="off"
@@ -290,7 +292,7 @@ export function LawyerDashboardProfileFeature() {
 
         <Input
           id="profile-email"
-          label="E-mail"
+          label={t("lawyerProfile.email")}
           type="email"
           value={email}
           autoComplete="email"
@@ -306,19 +308,19 @@ export function LawyerDashboardProfileFeature() {
           onClick={handleSave}
           rightIcon={<SaveRounded fontSize="small" aria-hidden />}
         >
-          Salvar alterações
+          {t("lawyerProfile.saveChanges")}
         </Button>
       </SectionCard>
 
       {/* Dados da OAB */}
       <SectionCard
         icon={<GavelRounded fontSize="small" />}
-        title="Dados da OAB"
+        title={t("lawyerProfile.oabSection")}
       >
-        <ReadonlyField label="Número de Inscrição" value={oabNumber} />
-        <ReadonlyField label="Seccional" value={oabStateName} />
-        <ReadonlyField label="Área de Atuação" value={specializationLabel} />
-        <ReadonlyField label="Status" value="Regular Ativo" />
+        <ReadonlyField label={t("lawyerProfile.oabNumber")} value={oabNumber} />
+        <ReadonlyField label={t("lawyerProfile.oabState")} value={oabStateName} />
+        <ReadonlyField label={t("lawyerProfile.practiceArea")} value={specializationLabel} />
+        <ReadonlyField label={t("lawyerProfile.status")} value={t("lawyerProfile.regularActive")} />
       </SectionCard>
     </div>
   );
