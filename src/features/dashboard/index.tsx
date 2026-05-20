@@ -6,7 +6,7 @@ import { CasesSection } from "./sections/cases-section";
 
 export function DashboardFeature() {
   const user = useAuthStore((s) => s.user);
-  const firstName = user?.fullName?.split(' ')[0] ?? 'Usuário';
+  const firstName = user?.fullName?.split(' ')[0] || 'Usuário';
 
   return (
     <>

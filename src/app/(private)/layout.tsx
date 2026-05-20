@@ -40,7 +40,7 @@ export default function PrivateLayout({
   const roleLabel = userRole === "lawyer" ? "Advogado" : "Cidadão";
 
   const displayUser = {
-    name: user?.fullName ?? "Usuário",
+    name: user?.fullName || "Usuário",
     role: roleLabel,
     avatarUrl: undefined,
   };

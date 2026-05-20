@@ -23,7 +23,7 @@ export function VerificationForm({ config, onVerified, onBack }: VerificationFor
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [timeLeft, setTimeLeft] = useState(config.expirationTime || 300);
   const { toast } = useToast();
-  const { setTokens } = useAuthStore();
+  const { setTokens, setUser } = useAuthStore();
 
   const messages = verificationMessages[config.type];
   const flowType = config.flowType || "signup";
@@ -87,6 +87,15 @@ export function VerificationForm({ config, onVerified, onBack }: VerificationFor
         }
 
         setTokens(tokens.access_token, tokens.refresh_token);
+
+        const pendingName = sessionStorage.getItem("pending_user_name");
+        if (pendingName) {
+          const current = useAuthStore.getState().user;
+          if (current) {
+            setUser({ ...current, fullName: pendingName });
+          }
+          sessionStorage.removeItem("pending_user_name");
+        }
 
         sessionStorage.removeItem("pending_verification_token");
         localStorage.removeItem("x-security-token");
