@@ -1,10 +1,25 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { ListAltRounded, ChevronRightRounded } from "@mui/icons-material";
 import { CaseCard } from "@/components/ui/case-card";
+import { EmptyState } from "@/components/ui/empty-state";
 import { useDashboardCitizen } from "@/hooks/useDashboardCitizen";
 import { getCategoryLabel } from "@/lib/status";
+
+const CasesSvg = (
+  <svg viewBox="0 0 200 200" className="h-40 w-40 opacity-70" aria-hidden="true" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <circle cx="100" cy="100" r="80" fill="#1B2233" />
+    <rect x="55" y="58" width="90" height="110" rx="8" fill="#2585F4" opacity="0.15" stroke="#2585F4" strokeWidth="2" strokeOpacity="0.4"/>
+    <rect x="68" y="76" width="64" height="6" rx="3" fill="#2585F4" opacity="0.5"/>
+    <rect x="68" y="92" width="48" height="6" rx="3" fill="#2585F4" opacity="0.35"/>
+    <rect x="68" y="108" width="56" height="6" rx="3" fill="#2585F4" opacity="0.35"/>
+    <rect x="68" y="124" width="36" height="6" rx="3" fill="#2585F4" opacity="0.25"/>
+    <rect x="72" y="44" width="56" height="24" rx="6" fill="#0C1326" stroke="#2585F4" strokeWidth="2" strokeOpacity="0.5"/>
+    <rect x="84" y="51" width="32" height="5" rx="2.5" fill="#2585F4" opacity="0.6"/>
+  </svg>
+);
 
 function statusMap(apiStatus: string): "analysis" | "concluded" | "pending" | "archived" {
   const s = apiStatus?.toLowerCase();
@@ -16,6 +31,7 @@ function statusMap(apiStatus: string): "analysis" | "concluded" | "pending" | "a
 
 export function CasesSection() {
   const { reports, isLoading, error } = useDashboardCitizen();
+  const router = useRouter();
 
   return (
     <section aria-labelledby="my-cases-heading">
@@ -49,7 +65,12 @@ export function CasesSection() {
       )}
 
       {!isLoading && !error && (reports ?? []).length === 0 && (
-        <p className="text-sm text-text-muted">Nenhum caso encontrado.</p>
+        <EmptyState
+          illustrationSvg={CasesSvg}
+          title="Você ainda não tem casos"
+          description="Comece relatando seu primeiro problema jurídico. Nossa IA está pronta para te auxiliar."
+          action={{ label: "Relatar Novo Caso", onClick: () => router.push("/dashboard/casos/novo") }}
+        />
       )}
 
       {!isLoading && (reports ?? []).length > 0 && (
