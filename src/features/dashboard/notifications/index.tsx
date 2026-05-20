@@ -36,24 +36,12 @@ export function NotificationsList() {
     </svg>
   );
 
-  if (notifications.length === 0 && !isLoading) {
-    return (
-      <EmptyState
-        illustrationSvg={NotificationSvg}
-        title="Tudo limpo por aqui!"
-        description="Você não tem nenhuma notificação nova no momento. Avisaremos assim que algo importante acontecer."
-        action={{ label: "Limpar tudo", onClick: deleteAll, disabled: true }}
-      />
-    );
-  }
-
   if (notifications.length === 0) {
     return (
       <EmptyState
         illustrationSvg={NotificationSvg}
         title="Tudo limpo por aqui!"
         description="Você não tem nenhuma notificação nova no momento. Avisaremos assim que algo importante acontecer."
-        action={{ label: "Limpar tudo", onClick: deleteAll, disabled: true }}
       />
     );
   }

@@ -242,12 +242,13 @@ export function NewCaseFeature() {
               <textarea
                 id="story"
                 value={story}
-                onChange={(e) => setStory(e.target.value)}
+                onChange={(e) => setStory(e.target.value.slice(0, 2000))}
                 onKeyDown={handleKeyDown}
                 placeholder="Descreva o que aconteceu com suas próprias palavras..."
                 rows={7}
+                maxLength={2000}
                 aria-labelledby="story-heading"
-                aria-describedby="story-hint"
+                aria-describedby="story-hint story-char-count"
                 className="w-full px-4 py-3 pr-16 bg-[#0d1526] border border-[#1B2233] rounded-xl text-sm text-white placeholder:text-white/25 resize-none focus:outline-none focus:ring-2 focus:ring-[#2585F4] focus:border-transparent transition-all duration-200"
               />
               <VoiceRecorder
@@ -260,11 +261,23 @@ export function NewCaseFeature() {
           )}
         </div>
 
-        <p id="story-hint" className="mt-2 text-center text-xs text-white/25">
-          Sua descrição será processada com criptografia de ponta a ponta. 
-          <span className="mx-1">•</span>
-          Pressione <kbd className="px-1.5 py-0.5 bg-white/10 rounded text-[10px] font-mono">Ctrl+Enter</kbd> para enviar
-        </p>
+        <div className="mt-2 flex items-center justify-between gap-2">
+          <p id="story-hint" className="text-xs text-white/25">
+            Cifrado ponta a ponta
+            <span className="mx-1">•</span>
+            <kbd className="px-1.5 py-0.5 bg-white/10 rounded text-[10px] font-mono">Ctrl+Enter</kbd> para enviar
+          </p>
+          <p
+            id="story-char-count"
+            aria-live="polite"
+            className={cn(
+              "shrink-0 text-xs tabular-nums select-none",
+              story.length >= 1800 ? "text-yellow-400" : "text-white/25",
+            )}
+          >
+            {story.length}/2000
+          </p>
+        </div>
       </section>
 
       {error && (

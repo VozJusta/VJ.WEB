@@ -29,8 +29,10 @@ export function ChangePasswordFeature({
   const { t } = useTranslation();
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [showCurrent, setShowCurrent] = useState(false);
   const [showNew, setShowNew] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
 
   const passwordChecks = useMemo(
@@ -104,7 +106,15 @@ export function ChangePasswordFeature({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!currentPassword.trim() || !newPassword.trim()) return;
+    if (!currentPassword.trim() || !newPassword.trim() || !confirmPassword.trim()) return;
+    if (newPassword !== confirmPassword) {
+      toast({
+        title: t("changePassword.mismatchTitle"),
+        description: t("changePassword.mismatchDesc"),
+        variant: "error",
+      });
+      return;
+    }
     if (strengthScore < 3) {
       toast({
         title: t("changePassword.weakTitle"),
@@ -261,13 +271,39 @@ export function ChangePasswordFeature({
           </section>
         )}
 
+        <Input
+          id="confirm-password"
+          type={showConfirm ? "text" : "password"}
+          label={t("changePassword.confirmPassword")}
+          value={confirmPassword}
+          onChange={(e) => setConfirmPassword(e.target.value)}
+          placeholder="••••••••"
+          error={confirmPassword.length > 0 && confirmPassword !== newPassword ? t("changePassword.mismatchDesc") : undefined}
+          rightIcon={
+            <button
+              type="button"
+              onClick={() => setShowConfirm((v) => !v)}
+              aria-label={
+                showConfirm ? t("auth.hidePassword") : t("auth.showPassword")
+              }
+              className="text-white/40 hover:text-white/70 transition-colors"
+            >
+              {showConfirm ? (
+                <VisibilityOff fontSize="small" />
+              ) : (
+                <Visibility fontSize="small" />
+              )}
+            </button>
+          }
+        />
+
         <Button
           type="submit"
           variant="primary"
           size="lg"
           fullWidth
           loading={isSaving}
-          disabled={!currentPassword.trim() || !newPassword.trim() || isSaving}
+          disabled={!currentPassword.trim() || !newPassword.trim() || !confirmPassword.trim() || isSaving}
         >
           {t("changePassword.save")}
         </Button>

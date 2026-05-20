@@ -61,7 +61,10 @@ export function CasesSection() {
       )}
 
       {error && (
-        <p className="text-sm text-red-400">{error}</p>
+        <div className="rounded-xl border border-red-500/20 bg-red-500/5 px-4 py-3">
+          <p className="text-sm font-medium text-red-400">Não foi possível carregar seus casos</p>
+          <p className="mt-0.5 text-xs text-red-400/70">Verifique sua conexão e tente recarregar a página.</p>
+        </div>
       )}
 
       {!isLoading && !error && (reports ?? []).length === 0 && (

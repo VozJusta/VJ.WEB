@@ -2,7 +2,7 @@ import { z } from "zod";
 
 const cpfRegex = /^\d{3}\.\d{3}\.\d{3}-\d{2}$/;
 const cnpjRegex = /^\d{2}\.\d{3}\.\d{3}\/\d{4}-\d{2}$/;
-const oabNumberRegex = /^\d{1,6}$/;
+const oabNumberRegex = /^\d{4,6}$/;
 
 export const lawyerSignupSchema = z.object({
   fullName: z
@@ -34,7 +34,7 @@ export const lawyerSignupSchema = z.object({
   oabNumber: z
     .string()
     .min(1, "Número OAB é obrigatório")
-    .regex(oabNumberRegex, "Número OAB deve conter apenas dígitos"),
+    .regex(oabNumberRegex, "Número OAB deve ter entre 4 e 6 dígitos"),
   
   oabState: z
     .string()

@@ -82,14 +82,21 @@ export function SimulatorSession() {
 
   const hasNavigatedRef = useRef(false);
 
+  const buildFeedbackPath = (rId: string | null) => {
+    const params = new URLSearchParams();
+    if (rId) params.set('reportId', rId);
+    params.set('judgeName', judgeName);
+    params.set('personality', personalityParam);
+    params.set('date', new Date().toISOString().slice(0, 10));
+    return `/dashboard/simulador/feedback?${params.toString()}`;
+  };
+
   useEffect(() => {
     if ((status === 'Completed' || status === 'TimedOut') && !hasNavigatedRef.current) {
       hasNavigatedRef.current = true;
-      const path = reportId
-        ? `/dashboard/simulador/feedback?reportId=${reportId}`
-        : '/dashboard/simulador/feedback';
-      router.push(path);
+      router.push(buildFeedbackPath(reportId));
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [status, reportId, router]);
 
   useEffect(() => {
@@ -176,10 +183,7 @@ export function SimulatorSession() {
     setTimeout(() => {
       if (!hasNavigatedRef.current) {
         hasNavigatedRef.current = true;
-        const path = reportId
-          ? `/dashboard/simulador/feedback?reportId=${reportId}`
-          : '/dashboard/simulador/feedback';
-        router.push(path);
+        router.push(buildFeedbackPath(reportId));
       }
     }, 4000);
   };

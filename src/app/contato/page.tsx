@@ -12,7 +12,7 @@ import {
   WhatsApp,
   EmailOutlined,
   LocationOnOutlined,
-  SendOutlined,
+  CheckCircleOutlined,
 } from "@mui/icons-material";
 
 export default function ContatoPage() {
@@ -29,6 +29,7 @@ export default function ContatoPage() {
     Partial<Record<keyof ContactFormData, string>>
   >({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSubmitted, setIsSubmitted] = useState(false);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
@@ -88,6 +89,7 @@ export default function ContatoPage() {
       });
 
       setFormData({ name: "", email: "", subject: "", message: "" });
+      setIsSubmitted(true);
     } catch (error) {
 
       toast({
@@ -124,6 +126,24 @@ export default function ContatoPage() {
 
         <div className="grid grid-cols-1 lg:grid-cols-10 gap-8 lg:gap-12">
           <div className="lg:col-span-7">
+            {isSubmitted ? (
+              <div className="flex flex-col items-center justify-center gap-6 bg-zinc-900/30 border border-zinc-800/50 rounded-2xl p-8 lg:p-10 text-center min-h-80">
+                <CheckCircleOutlined className="text-green-400" sx={{ fontSize: 64 }} />
+                <div>
+                  <h2 className="text-2xl font-bold text-white mb-2">Mensagem enviada!</h2>
+                  <p className="text-zinc-400">
+                    Recebemos sua mensagem e entraremos em contato em breve pelo e-mail informado.
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setIsSubmitted(false)}
+                  className="text-sm text-primary hover:underline"
+                >
+                  Enviar outra mensagem
+                </button>
+              </div>
+            ) : (
             <form
               onSubmit={handleSubmit}
               className="bg-zinc-900/30 border border-zinc-800/50 rounded-2xl p-8 lg:p-10 space-y-6"
@@ -193,6 +213,7 @@ export default function ContatoPage() {
                 Enviar Mensagem
               </Button>
             </form>
+            )}
           </div>
 
           <aside className="lg:col-span-3 space-y-6">
