@@ -90,11 +90,20 @@ export function VerificationForm({ config, onVerified, onBack }: VerificationFor
 
         const pendingName = sessionStorage.getItem("pending_user_name");
         if (pendingName) {
-          const current = useAuthStore.getState().user;
-          if (current) {
-            setUser({ ...current, fullName: pendingName });
-          }
           sessionStorage.removeItem("pending_user_name");
+          const storeState = useAuthStore.getState();
+          if (storeState.user) {
+            // JWT decoded correctly — just override the name
+            setUser({ ...storeState.user, fullName: pendingName });
+          } else {
+            // JWT had no sub — build user from what we know
+            setUser({
+              id: "",
+              email: config.contact.trim().toLowerCase(),
+              fullName: pendingName,
+              role: storeState.userRole ?? "citizen",
+            });
+          }
         }
 
         sessionStorage.removeItem("pending_verification_token");

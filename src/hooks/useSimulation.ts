@@ -27,7 +27,9 @@ export function useSimulation() {
 
   const socketRef = useRef<Socket | null>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
-  // Track pending end event until reportId arrives
+  // Prevents re-emitting simulation:start on WebSocket reconnections
+  const simulationStartedRef = useRef(false);
+  // Holds end status while waiting for simulation:report before navigating
   const pendingEndStatusRef = useRef<SimulationStatus | null>(null);
 
   useEffect(() => {
@@ -40,7 +42,7 @@ export function useSimulation() {
     if (status === 'Completed' || status === 'TimedOut') setRemainingSecs(null);
   }, [status]);
 
-  // Resolve race: apply end status once reportId is received
+  // Apply end status as soon as reportId arrives
   useEffect(() => {
     if (pendingEndStatusRef.current && reportId) {
       setStatus(pendingEndStatusRef.current);
@@ -79,73 +81,89 @@ export function useSimulation() {
     }
   }, []);
 
-  const start = useCallback(
-    async (personality: SimulationPersonality) => {
-      setIsLoading(true);
-      setError(null);
-      pendingEndStatusRef.current = null;
+  const start = useCallback(async (personality: SimulationPersonality) => {
+    setIsLoading(true);
+    setError(null);
+    simulationStartedRef.current = false;
+    pendingEndStatusRef.current = null;
 
-      try {
-        const sim = await simulationService.start(personality);
-        setSimulationId(sim.id);
+    try {
+      // Step 1: create simulation via REST, get simulationId
+      const sim = await simulationService.start(personality);
+      const simId = sim.id;
+      setSimulationId(simId);
+
+      const token = authStorage.getAccessToken();
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL!;
+
+      // Step 2: connect WebSocket — token goes in auth.token without Bearer prefix
+      const socket = io(`${apiUrl}/simulation`, {
+        transports: ['websocket'],
+        reconnection: true,
+        auth: { token: token ?? '' },
+      });
+
+      socketRef.current = socket;
+
+      socket.on('connect', () => {
+        // Guard: only emit simulation:start on first connect, not on reconnections
+        if (!simulationStartedRef.current) {
+          simulationStartedRef.current = true;
+          socket.emit('simulation:start', { simulationId: simId });
+        }
+      });
+
+      socket.on('simulation:started', () => {
+        setIsLoading(false);
         setStatus('InProgress');
+      });
 
-        const token = authStorage.getAccessToken();
-        const apiUrl = process.env.NEXT_PUBLIC_API_URL!;
+      socket.on('simulation:warning', (payload: WarningPayload) => {
+        setWarning(payload);
+        setRemainingSecs(payload.remainingSecs);
+      });
 
-        const socket = io(`${apiUrl}/simulation`, {
-          transports: ['websocket'],
-          auth: { token: token ? `Bearer ${token}` : null },
-        });
+      socket.on('simulation:end', (payload: { simulationId: string; status: string }) => {
+        const endStatus: SimulationStatus =
+          payload.status === 'Completed' ? 'Completed' : 'TimedOut';
 
-        socketRef.current = socket;
-
-        socket.on('connect', () => {
-          socket.emit('simulation:start', {
-            simulationId: sim.id,
-            citizenId: null,
-          });
-        });
-
-        socket.on('simulation:started', () => {
-          setIsLoading(false);
-          setStatus('InProgress');
-        });
-
-        socket.on('simulation:warning', (payload: WarningPayload) => {
-          setWarning(payload);
-          setRemainingSecs(payload.remainingSecs);
-        });
-
-        socket.on('simulation:end', (payload: { status: SimulationStatus }) => {
-          disconnectSocket();
-          // Defer applying the end status until reportId is available
-          pendingEndStatusRef.current = payload.status;
-          // Give 2s for the report event to arrive; if not, apply status anyway
+        // Keep socket alive to receive simulation:report (may arrive after reconnect)
+        if (reportId) {
+          // Report already in state — apply status immediately
+          setStatus(endStatus);
+        } else {
+          // Wait for report; apply status once it arrives or after 3s fallback
+          pendingEndStatusRef.current = endStatus;
           setTimeout(() => {
             if (pendingEndStatusRef.current) {
               setStatus(pendingEndStatusRef.current);
               pendingEndStatusRef.current = null;
             }
-          }, 2000);
-        });
+          }, 3000);
+        }
+      });
 
-        socket.on('simulation:report', (payload: { reportId: string }) => {
-          setReportId(payload.reportId);
-        });
+      socket.on('simulation:report', (payload: { simulationId: string; reportId: string }) => {
+        setReportId(payload.reportId);
+        // reportId state update triggers the effect above to apply pendingEndStatus
+      });
 
-        socket.on('connect_error', () => {
-          setError('Erro de conexão com o servidor de simulação');
-          disconnectSocket();
-          setIsLoading(false);
-        });
-      } catch (err) {
-        setError(err instanceof Error ? err.message : 'Erro ao iniciar simulação');
+      socket.on('simulation:resumed', (payload: { simulationId: string }) => {
+        // Server detected an in-progress simulation on reconnect
+        setSimulationId(payload.simulationId);
+        setStatus('InProgress');
         setIsLoading(false);
-      }
-    },
-    [disconnectSocket],
-  );
+      });
+
+      socket.on('connect_error', () => {
+        setError('Erro de conexão com o servidor de simulação');
+        setIsLoading(false);
+      });
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Erro ao iniciar simulação');
+      setIsLoading(false);
+    }
+  }, []);
 
   const sendChat = useCallback(
     async (text: string) => {
@@ -184,14 +202,15 @@ export function useSimulation() {
 
   const stop = useCallback(() => {
     if (socketRef.current && simulationId) {
+      // Emit stop — server will respond with simulation:end then simulation:report
       socketRef.current.emit('simulation:stop', { simulationId });
     }
-    disconnectSocket();
-    setStatus('Waiting');
-  }, [simulationId, disconnectSocket]);
+    // Socket stays alive to receive simulation:report; cleanup happens in reset()
+  }, [simulationId]);
 
   const reset = useCallback(() => {
     disconnectSocket();
+    simulationStartedRef.current = false;
     pendingEndStatusRef.current = null;
     if (audioRef.current) {
       audioRef.current.pause();

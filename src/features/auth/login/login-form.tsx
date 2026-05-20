@@ -60,6 +60,10 @@ export function LoginForm() {
         fullName: authResponse.full_name,
         role: authResponse.role,
       });
+      // Persist name so verification form can restore it after setTokens() overwrites user
+      if (authResponse.full_name) {
+        sessionStorage.setItem("pending_user_name", authResponse.full_name);
+      }
       authStorage.setUserRole(authResponse.role);
       setAuthenticated(false);
       setError(null);

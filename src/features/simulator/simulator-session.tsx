@@ -80,8 +80,11 @@ export function SimulatorSession() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  const hasNavigatedRef = useRef(false);
+
   useEffect(() => {
-    if (status === 'Completed' || status === 'TimedOut') {
+    if ((status === 'Completed' || status === 'TimedOut') && !hasNavigatedRef.current) {
+      hasNavigatedRef.current = true;
       const path = reportId
         ? `/dashboard/simulador/feedback?reportId=${reportId}`
         : '/dashboard/simulador/feedback';
@@ -166,11 +169,19 @@ export function SimulatorSession() {
       setIsRecording(false);
       setIsPaused(false);
     }
+    // Emit stop — server responds with simulation:end + simulation:report.
+    // Navigation is handled by the status effect above (with hasNavigatedRef guard).
+    // Fallback: if status never changes (e.g. socket error), navigate after 4s.
     stop();
-    const path = reportId
-      ? `/dashboard/simulador/feedback?reportId=${reportId}`
-      : '/dashboard/simulador/feedback';
-    router.push(path);
+    setTimeout(() => {
+      if (!hasNavigatedRef.current) {
+        hasNavigatedRef.current = true;
+        const path = reportId
+          ? `/dashboard/simulador/feedback?reportId=${reportId}`
+          : '/dashboard/simulador/feedback';
+        router.push(path);
+      }
+    }, 4000);
   };
 
   const canRecord = !isLoading && !isSpeaking && !isTranscribing && !isSessionEnded;
