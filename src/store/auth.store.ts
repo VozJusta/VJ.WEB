@@ -3,6 +3,15 @@ import { devtools, persist } from 'zustand/middleware';
 import { authStorage } from '@/lib/auth';
 import type { AuthState, UserRole, AuthResponse } from '@/types/auth.types';
 
+function decodeJwt(token: string): Record<string, unknown> {
+  try {
+    const payload = token.split('.')[1];
+    return JSON.parse(atob(payload.replace(/-/g, '+').replace(/_/g, '/')));
+  } catch {
+    return {};
+  }
+}
+
 interface AuthStore extends AuthState {
   setUserRole: (role: UserRole) => void;
   setLoading: (loading: boolean) => void;
@@ -64,7 +73,19 @@ export const useAuthStore = create<AuthStore>()(
 
         setTokens: (accessToken: string, refreshToken: string) => {
           authStorage.setTokens(accessToken, refreshToken);
-          set({ isAuthenticated: true }, false, 'setTokens');
+          const payload = decodeJwt(accessToken);
+          set({
+            isAuthenticated: true,
+            userRole: (payload.role as UserRole) || null,
+            user: payload.sub
+              ? {
+                  id: payload.sub as string,
+                  email: (payload.email as string) || '',
+                  fullName: (payload.full_name as string) || '',
+                  role: (payload.role as UserRole) || 'citizen',
+                }
+              : null,
+          }, false, 'setTokens');
         },
 
         loginWithGoogle: (response: AuthResponse) =>
