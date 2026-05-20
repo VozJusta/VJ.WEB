@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
+import { useTranslation } from "react-i18next";
 import { ArrowBackRounded, SummarizeRounded, DownloadingRounded, GavelRounded } from "@mui/icons-material";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -20,40 +21,6 @@ function apiStatusToCaseStatus(status: string): CaseStatus {
   return "analysis";
 }
 
-const bannerConfig: Record<
-  CaseStatus,
-  { dot: string; title: string; border: string; bg: string; label: string }
-> = {
-  analysis: {
-    dot: "bg-[#2585F4] animate-[analyzing-pulse_1.4s_ease-in-out_infinite]",
-    title: "text-white",
-    border: "border-[#2585F4]/40",
-    bg: "bg-[#0d1a2e]",
-    label: "Em Análise",
-  },
-  concluded: {
-    dot: "bg-green-400",
-    title: "text-green-400",
-    border: "border-green-500/30",
-    bg: "bg-[#0b1f14]",
-    label: "Concluído",
-  },
-  pending: {
-    dot: "bg-blue-400 animate-[analyzing-pulse_1.4s_ease-in-out_infinite]",
-    title: "text-blue-400",
-    border: "border-blue-500/30",
-    bg: "bg-[#0d1526]",
-    label: "Pendente",
-  },
-  archived: {
-    dot: "bg-white/30",
-    title: "text-white/50",
-    border: "border-white/10",
-    bg: "bg-white/03",
-    label: "Arquivado",
-  },
-};
-
 interface CaseDetailFeatureProps {
   report: DetailsReport;
   reportId: string;
@@ -64,7 +31,40 @@ export function CaseDetailFeature({ report, reportId }: CaseDetailFeatureProps) 
   const searchParams = useSearchParams();
   const chatStore = useChatStore();
   const { toast } = useToast();
+  const { t } = useTranslation();
   const caseStatus = apiStatusToCaseStatus(report.status);
+
+  const bannerConfig: Record<CaseStatus, { dot: string; title: string; border: string; bg: string; label: string }> = {
+    analysis: {
+      dot: "bg-[#2585F4] animate-[analyzing-pulse_1.4s_ease-in-out_infinite]",
+      title: "text-white",
+      border: "border-[#2585F4]/40",
+      bg: "bg-[#0d1a2e]",
+      label: t("caseDetail.status.inAnalysis"),
+    },
+    concluded: {
+      dot: "bg-green-400",
+      title: "text-green-400",
+      border: "border-green-500/30",
+      bg: "bg-[#0b1f14]",
+      label: t("caseDetail.status.completed"),
+    },
+    pending: {
+      dot: "bg-blue-400 animate-[analyzing-pulse_1.4s_ease-in-out_infinite]",
+      title: "text-blue-400",
+      border: "border-blue-500/30",
+      bg: "bg-[#0d1526]",
+      label: t("caseDetail.status.pending"),
+    },
+    archived: {
+      dot: "bg-white/30",
+      title: "text-white/50",
+      border: "border-white/10",
+      bg: "bg-white/03",
+      label: t("caseDetail.status.archived"),
+    },
+  };
+
   const banner = bannerConfig[caseStatus];
   const { downloadPdf, isDownloading } = useReportDownload();
 
