@@ -27,9 +27,12 @@ export default function LawyerDashboardPage() {
   const total = operationalStats
     ? operationalStats.pending + operationalStats.accepted + operationalStats.refused
     : 0;
-  const progressPercent = total > 0
-    ? Math.round((operationalStats!.accepted / total) * 100)
-    : 0;
+
+  const pendingPct  = total > 0 ? Math.round((operationalStats!.pending  / total) * 100) : 0;
+  const acceptedPct = total > 0 ? Math.round((operationalStats!.accepted / total) * 100) : 0;
+  const refusedPct  = total > 0 ? Math.round((operationalStats!.refused  / total) * 100) : 0;
+
+  const progressPercent = acceptedPct;
 
   return (
     <div className="flex w-full flex-col gap-8">
@@ -58,19 +61,19 @@ export default function LawyerDashboardPage() {
               <StatCard
                 label="PENDENTES"
                 value={operationalStats?.pending ?? 0}
-                change={0}
+                change={pendingPct}
                 isPositive={false}
               />
               <StatCard
                 label="ACEITOS"
                 value={operationalStats?.accepted ?? 0}
-                change={0}
+                change={acceptedPct}
                 isPositive
               />
               <StatCard
                 label="RECUSADOS"
                 value={operationalStats?.refused ?? 0}
-                change={0}
+                change={refusedPct}
                 isPositive={false}
               />
             </div>

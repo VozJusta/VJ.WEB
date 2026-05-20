@@ -17,7 +17,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const user: User = {
     id: storeUser?.id ?? "",
-    name: storeUser?.fullName ?? "Usuário",
+    name: storeUser?.fullName || "Usuário",
     email: storeUser?.email ?? "",
     role: (storeUser?.role ?? "citizen") as UserRole,
     avatarUrl: undefined,

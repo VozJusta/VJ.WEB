@@ -40,7 +40,7 @@ export default function LawyerLayout({
   }, []);
 
   const displayUser = {
-    name: user?.name ?? "Advogado",
+    name: user?.name || "Advogado",
     role: "Advogado",
     avatarUrl: user?.avatarUrl,
   };
