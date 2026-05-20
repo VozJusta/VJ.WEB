@@ -1,0 +1,9 @@
+User-agent: *
+Allow: /
+
+Disallow: /dashboard/
+Disallow: /advogado/
+Disallow: /api/
+Disallow: /auth/
+
+Sitemap: https://vozjusta.com.br/sitemap.xml

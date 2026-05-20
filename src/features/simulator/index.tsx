@@ -1,12 +1,13 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { PersonalityOption } from '@/components/ui/personality-option';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/components/ui/toast/toast-provider';
 import type { PersonalityType } from '@/types/simulator.types';
+import { useAuthStore } from '@/store/auth.store';
 import AnchorIcon from '@mui/icons-material/Anchor';
 import BoltIcon from '@mui/icons-material/Bolt';
 import BalanceIcon from '@mui/icons-material/Balance';
@@ -70,17 +71,19 @@ const personalities: PersonalityConfig[] = [
   },
 ];
 
-const JUDGE_NAME_KEY = 'vj_last_judge_name';
+const JUDGE_NAME_KEY_PREFIX = 'vj_last_judge_name';
 
 export function SimulatorConfig() {
   const router = useRouter();
   const { toast } = useToast();
-  const [judgeName, setJudgeName] = useState(() => {
-    if (typeof window !== 'undefined') {
-      return localStorage.getItem(JUDGE_NAME_KEY) ?? '';
-    }
-    return '';
-  });
+  const userId = useAuthStore((s) => s.user?.id ?? 'anon');
+  const judgeNameKey = `${JUDGE_NAME_KEY_PREFIX}_${userId}`;
+  const [judgeName, setJudgeName] = useState('');
+
+  useEffect(() => {
+    const stored = localStorage.getItem(judgeNameKey);
+    if (stored) setJudgeName(stored);
+  }, [judgeNameKey]);
   const [judgeNameError, setJudgeNameError] = useState('');
   const [selectedPersonality, setSelectedPersonality] = useState<PersonalityType>('impartial');
 
@@ -89,9 +92,9 @@ export function SimulatorConfig() {
     setJudgeNameError('');
     if (typeof window !== 'undefined') {
       if (value.trim()) {
-        localStorage.setItem(JUDGE_NAME_KEY, value.trim());
+        localStorage.setItem(judgeNameKey, value.trim());
       } else {
-        localStorage.removeItem(JUDGE_NAME_KEY);
+        localStorage.removeItem(judgeNameKey);
       }
     }
   };
@@ -100,7 +103,7 @@ export function SimulatorConfig() {
     setJudgeName('');
     setJudgeNameError('');
     setSelectedPersonality('impartial');
-    if (typeof window !== 'undefined') localStorage.removeItem(JUDGE_NAME_KEY);
+    if (typeof window !== 'undefined') localStorage.removeItem(judgeNameKey);
   };
 
   const handleStartSimulation = () => {
@@ -111,7 +114,7 @@ export function SimulatorConfig() {
       return;
     }
     setJudgeNameError('');
-    if (typeof window !== 'undefined') localStorage.setItem(JUDGE_NAME_KEY, trimmed);
+    if (typeof window !== 'undefined') localStorage.setItem(judgeNameKey, trimmed);
     const params = new URLSearchParams({ personality: selectedPersonality, judgeName: trimmed });
     router.push(`/dashboard/simulador/sessao?${params.toString()}`);
   };

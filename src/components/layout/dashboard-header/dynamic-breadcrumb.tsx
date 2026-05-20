@@ -53,7 +53,16 @@ function buildBreadcrumbs(pathname: string): BreadcrumbItem[] {
 
   for (let i = 0; i < segments.length; i++) {
     const segment = segments[i];
-    if (isUUID(segment)) continue;
+    if (isUUID(segment)) {
+      const prevSegment = segments[i - 1];
+      if (prevSegment === "casos") {
+        const caseRef = `#${segment.slice(0, 8).toUpperCase()}`;
+        const href = "/" + segments.slice(0, i + 1).join("/");
+        const isLast = i === segments.length - 1;
+        items.push({ label: `Caso ${caseRef}`, href: isLast ? undefined : href });
+      }
+      continue;
+    }
 
     const href = "/" + segments.slice(0, i + 1).join("/");
     const isLast = i === segments.length - 1 || segments.slice(i + 1).every(isUUID);

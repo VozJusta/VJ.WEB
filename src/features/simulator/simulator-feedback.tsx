@@ -6,14 +6,36 @@ import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import DownloadIcon from '@mui/icons-material/Download';
 import HomeIcon from '@mui/icons-material/Home';
 import TrendingUpIcon from '@mui/icons-material/TrendingUp';
+import PersonIcon from '@mui/icons-material/Person';
+import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
 import { simulationService } from '@/services/simulation.service';
 import { useState } from 'react';
+
+const PERSONALITY_LABELS: Record<string, string> = {
+  calm: 'Calmo',
+  aggressive: 'Agressivo',
+  impartial: 'Imparcial',
+  empathetic: 'Empático',
+  pragmatic: 'Pragmático',
+  researcher: 'Pesquisador',
+};
 
 export function SimulatorFeedback() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const reportId = searchParams.get('reportId');
+  const judgeName = searchParams.get('judgeName') || 'Juiz IA';
+  const personality = searchParams.get('personality') || 'impartial';
+  const sessionDate = searchParams.get('date') || new Date().toISOString().slice(0, 10);
   const [isDownloading, setIsDownloading] = useState(false);
+
+  const formattedDate = (() => {
+    try {
+      return new Date(sessionDate + 'T00:00:00').toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' });
+    } catch {
+      return sessionDate;
+    }
+  })();
 
   const handleDownloadReport = async () => {
     if (!reportId) return;
@@ -70,6 +92,21 @@ export function SimulatorFeedback() {
                 <div className="text-left">
                   <p className="text-xs uppercase tracking-wide text-text-muted">Status</p>
                   <p className="text-sm font-semibold text-foreground">Concluída</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-2 rounded-xl border border-(--border-subtle) bg-surface px-4 py-3">
+                <PersonIcon className="text-primary" sx={{ fontSize: 20 }} />
+                <div className="text-left">
+                  <p className="text-xs uppercase tracking-wide text-text-muted">Juiz</p>
+                  <p className="text-sm font-semibold text-foreground">{judgeName}</p>
+                  <p className="text-xs text-text-muted">{PERSONALITY_LABELS[personality] ?? personality}</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-2 rounded-xl border border-(--border-subtle) bg-surface px-4 py-3">
+                <CalendarTodayIcon className="text-text-muted" sx={{ fontSize: 20 }} />
+                <div className="text-left">
+                  <p className="text-xs uppercase tracking-wide text-text-muted">Data</p>
+                  <p className="text-sm font-semibold text-foreground">{formattedDate}</p>
                 </div>
               </div>
             </div>
