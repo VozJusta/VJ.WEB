@@ -12,56 +12,87 @@ function parseRole(roleStr: unknown): 'citizen' | 'lawyer' {
   return raw === 'lawyer' ? 'lawyer' : 'citizen';
 }
 
+function parseBool(value: string | null): boolean {
+  if (value === null) return false;
+  return value === 'true' || value === '1';
+}
+
 export function GoogleAuthHandler() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const { login } = useAuth();
 
   useEffect(() => {
-    const authData = searchParams.get('authData');
-    const accessToken = searchParams.get('access_token');
-    const xSecurityToken = searchParams.get('x-security-token') || searchParams.get('token');
+    const authDataParam = searchParams.get('authData');
+    const securityTokenParam =
+      searchParams.get('x-security-token') ||
+      searchParams.get('token') ||
+      searchParams.get('securityToken');
+    const accessTokenParam = searchParams.get('access_token');
 
-    let data: Partial<GoogleAuthResponse> & Record<string, unknown> | null = null;
+    let data: Partial<GoogleAuthResponse> | null = null;
 
-    if (authData) {
+    if (authDataParam) {
       try {
-        data = JSON.parse(atob(authData));
+        data = JSON.parse(atob(authDataParam));
       } catch {
-        // malformed base64 — ignore
+        router.replace('/login?error=invalid_auth_data');
+        return;
       }
-    } else if (accessToken) {
+    } else if (securityTokenParam || accessTokenParam) {
+      const registerCompleted = parseBool(searchParams.get('registerCompleted'));
+      const role = parseRole(searchParams.get('role'));
+
       data = {
-        access_token: accessToken,
-        refresh_token: searchParams.get('refresh_token') ?? '',
-        role: parseRole(searchParams.get('role')),
+        validated: true,
+        sub: searchParams.get('sub') ?? '',
+        role,
         email: searchParams.get('email') ?? '',
         full_name: searchParams.get('full_name') ?? '',
+        loggedWithGoogle: true,
+        registerCompleted,
+        securityToken: securityTokenParam ?? undefined,
+        access_token: accessTokenParam ?? undefined,
+        refresh_token: searchParams.get('refresh_token') ?? undefined,
       };
-    } else if (xSecurityToken) {
-      data = { securityToken: xSecurityToken, role: parseRole(searchParams.get('role')) };
     }
 
     if (!data) return;
 
     try {
-      // Always persist whatever tokens we received — never gate access_token on refresh_token presence
-      if (data.access_token) {
-        authStorage.setAccessToken(data.access_token as string);
+      const role = parseRole(data.role);
+      authStorage.setUserRole(role);
+
+      const securityToken = data.securityToken ?? '';
+      const registerCompleted = data.registerCompleted ?? false;
+
+      if (!registerCompleted) {
+        if (securityToken) {
+          authStorage.setSecurityToken(securityToken);
+          sessionStorage.setItem('pending_google_token', securityToken);
+          sessionStorage.setItem('pending_google_role', role);
+          sessionStorage.setItem('pending_google_email', data.email ?? '');
+          sessionStorage.setItem('pending_google_name', data.full_name ?? '');
+        }
+        router.replace(`/auth/complete/${role}`);
+        return;
       }
-      if (data.refresh_token) {
-        authStorage.setRefreshToken(data.refresh_token as string);
+
+      if (data.access_token) {
+        authStorage.setAccessToken(data.access_token);
+        if (data.refresh_token) {
+          authStorage.setRefreshToken(data.refresh_token);
+        }
+      } else if (securityToken) {
+        authStorage.setAccessToken(securityToken);
       }
 
       login(data as GoogleAuthResponse);
 
-      const role = parseRole(data.role);
-      authStorage.setUserRole(role);
-
       const home = role === 'lawyer' ? '/advogado' : '/dashboard';
       router.replace(home);
     } catch {
-      // malformed auth data — stay on current page
+      router.replace('/login?error=authentication_failed');
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchParams]);

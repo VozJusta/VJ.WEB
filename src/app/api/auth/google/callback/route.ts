@@ -16,34 +16,44 @@ export async function GET(request: Request) {
       throw new Error("API URL not configured");
     }
 
-    const callbackUrl = `${apiUrl}/auth/google/callback?code=${code}&state=${state}`;
+    const callbackUrl = `${apiUrl}/auth/google/callback?code=${code}&state=${encodeURIComponent(state ?? "")}`;
 
     const response = await fetch(callbackUrl, {
       method: "GET",
       headers: {
         Accept: "application/json",
       },
+      redirect: "manual",
     });
 
-    if (!response.ok) {
+    if (!response.ok && response.status !== 302) {
       throw new Error(`Authentication failed: ${response.status}`);
     }
 
+    const securityToken =
+      response.headers.get("x-security-token") ||
+      response.headers.get("X-Security-Token") ||
+      "";
+
     const authData = await response.json();
 
-    const encodedData = Buffer.from(JSON.stringify(authData)).toString(
+    const enrichedData = {
+      ...authData,
+      securityToken: securityToken || undefined,
+    };
+
+    const encodedData = Buffer.from(JSON.stringify(enrichedData)).toString(
       "base64",
     );
 
-    // Prefer the role from the API response; fall back to the state param (set before Google redirect)
     const rawRole =
       authData.role?.toLowerCase?.() ?? state?.split("|")[0] ?? "citizen";
     const role = rawRole === "lawyer" ? "lawyer" : "citizen";
-    const homePath = role === "lawyer" ? "/advogado" : "/dashboard";
 
     const appUrl =
       process.env.NEXT_PUBLIC_APP_URL ?? new URL(request.url).origin;
-    const redirectUrl = new URL(homePath, appUrl);
+
+    const redirectUrl = new URL("/auth/callback", appUrl);
     redirectUrl.searchParams.set("authData", encodedData);
 
     const redirectResponse = NextResponse.redirect(redirectUrl.toString());
@@ -54,12 +64,13 @@ export async function GET(request: Request) {
       path: "/",
     });
 
-    redirectResponse.cookies.set("google_auth_data", encodedData, {
-      httpOnly: true,
-      sameSite: "lax",
-      maxAge: 300,
-      path: "/",
-    });
+    if (authData.registerCompleted && securityToken) {
+      redirectResponse.cookies.set("access_token", securityToken, {
+        sameSite: "lax",
+        maxAge: 60 * 60 * 24 * 7,
+        path: "/",
+      });
+    }
 
     return redirectResponse;
   } catch {
