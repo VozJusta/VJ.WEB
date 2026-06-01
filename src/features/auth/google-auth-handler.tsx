@@ -12,37 +12,61 @@ function parseRole(roleStr: unknown): 'citizen' | 'lawyer' {
   return raw === 'lawyer' ? 'lawyer' : 'citizen';
 }
 
+function parseBool(value: string | null): boolean {
+  if (value === null) return false;
+  return value === 'true' || value === '1';
+}
+
 export function GoogleAuthHandler() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const { login } = useAuth();
 
   useEffect(() => {
-    const authData = searchParams.get('authData');
-
-    if (!authData) return;
+    const authDataParam = searchParams.get('authData');
+    const securityTokenParam =
+      searchParams.get('x-security-token') ||
+      searchParams.get('token') ||
+      searchParams.get('securityToken');
+    const accessTokenParam = searchParams.get('access_token');
 
     let data: Partial<GoogleAuthResponse> | null = null;
 
-    try {
-      data = JSON.parse(atob(authData));
-    } catch {
-      router.replace('/login?error=invalid_auth_data');
-      return;
+    if (authDataParam) {
+      try {
+        data = JSON.parse(atob(authDataParam));
+      } catch {
+        router.replace('/login?error=invalid_auth_data');
+        return;
+      }
+    } else if (securityTokenParam || accessTokenParam) {
+      const registerCompleted = parseBool(searchParams.get('registerCompleted'));
+      const role = parseRole(searchParams.get('role'));
+
+      data = {
+        validated: true,
+        sub: searchParams.get('sub') ?? '',
+        role,
+        email: searchParams.get('email') ?? '',
+        full_name: searchParams.get('full_name') ?? '',
+        loggedWithGoogle: true,
+        registerCompleted,
+        securityToken: securityTokenParam ?? undefined,
+        access_token: accessTokenParam ?? undefined,
+        refresh_token: searchParams.get('refresh_token') ?? undefined,
+      };
     }
 
-    if (!data) {
-      router.replace('/login?error=invalid_auth_data');
-      return;
-    }
+    if (!data) return;
 
     try {
       const role = parseRole(data.role);
       authStorage.setUserRole(role);
 
       const securityToken = data.securityToken ?? '';
+      const registerCompleted = data.registerCompleted ?? false;
 
-      if (!data.registerCompleted) {
+      if (!registerCompleted) {
         if (securityToken) {
           authStorage.setSecurityToken(securityToken);
           sessionStorage.setItem('pending_google_token', securityToken);
@@ -54,7 +78,12 @@ export function GoogleAuthHandler() {
         return;
       }
 
-      if (securityToken) {
+      if (data.access_token) {
+        authStorage.setAccessToken(data.access_token);
+        if (data.refresh_token) {
+          authStorage.setRefreshToken(data.refresh_token);
+        }
+      } else if (securityToken) {
         authStorage.setAccessToken(securityToken);
       }
 
