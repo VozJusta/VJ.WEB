@@ -19,49 +19,51 @@ export function GoogleAuthHandler() {
 
   useEffect(() => {
     const authData = searchParams.get('authData');
-    const accessToken = searchParams.get('access_token');
-    const xSecurityToken = searchParams.get('x-security-token') || searchParams.get('token');
 
-    let data: Partial<GoogleAuthResponse> & Record<string, unknown> | null = null;
+    if (!authData) return;
 
-    if (authData) {
-      try {
-        data = JSON.parse(atob(authData));
-      } catch {
-        // malformed base64 — ignore
-      }
-    } else if (accessToken) {
-      data = {
-        access_token: accessToken,
-        refresh_token: searchParams.get('refresh_token') ?? '',
-        role: parseRole(searchParams.get('role')),
-        email: searchParams.get('email') ?? '',
-        full_name: searchParams.get('full_name') ?? '',
-      };
-    } else if (xSecurityToken) {
-      data = { securityToken: xSecurityToken, role: parseRole(searchParams.get('role')) };
-    }
-
-    if (!data) return;
+    let data: Partial<GoogleAuthResponse> | null = null;
 
     try {
-      // Always persist whatever tokens we received — never gate access_token on refresh_token presence
-      if (data.access_token) {
-        authStorage.setAccessToken(data.access_token as string);
+      data = JSON.parse(atob(authData));
+    } catch {
+      router.replace('/login?error=invalid_auth_data');
+      return;
+    }
+
+    if (!data) {
+      router.replace('/login?error=invalid_auth_data');
+      return;
+    }
+
+    try {
+      const role = parseRole(data.role);
+      authStorage.setUserRole(role);
+
+      const securityToken = data.securityToken ?? '';
+
+      if (!data.registerCompleted) {
+        if (securityToken) {
+          authStorage.setSecurityToken(securityToken);
+          sessionStorage.setItem('pending_google_token', securityToken);
+          sessionStorage.setItem('pending_google_role', role);
+          sessionStorage.setItem('pending_google_email', data.email ?? '');
+          sessionStorage.setItem('pending_google_name', data.full_name ?? '');
+        }
+        router.replace(`/auth/complete/${role}`);
+        return;
       }
-      if (data.refresh_token) {
-        authStorage.setRefreshToken(data.refresh_token as string);
+
+      if (securityToken) {
+        authStorage.setAccessToken(securityToken);
       }
 
       login(data as GoogleAuthResponse);
 
-      const role = parseRole(data.role);
-      authStorage.setUserRole(role);
-
       const home = role === 'lawyer' ? '/advogado' : '/dashboard';
       router.replace(home);
     } catch {
-      // malformed auth data — stay on current page
+      router.replace('/login?error=authentication_failed');
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchParams]);

@@ -18,6 +18,9 @@ import type {
   ForgotPasswordResetRequest,
   ForgotPasswordResetResponse,
   UserRole,
+  CompleteCitizenRequest,
+  CompleteLawyerRequest,
+  CompleteRegistrationResponse,
 } from '@/types/auth.types';
 
 export class AuthServiceError extends Error {
@@ -424,6 +427,68 @@ export const authService = {
 
       return {
         message: getResponseMessage(data, 'Código validado com sucesso.'),
+      };
+    } catch (error) {
+      if (error instanceof AuthServiceError) {
+        throw error;
+      }
+      return handleAPIError(error);
+    }
+  },
+
+  async completeRegistrationCitizen(
+    data: CompleteCitizenRequest,
+    securityToken: string
+  ): Promise<CompleteRegistrationResponse> {
+    try {
+      const response = await fetch(`${API.BASE_URL}${API.ENDPOINTS.AUTH.COMPLETE_CITIZEN}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-security-token': securityToken,
+        },
+        body: JSON.stringify(data),
+      });
+
+      const payload = await parseResponseBody(response);
+
+      if (!response.ok) {
+        await handleAPIError(response);
+      }
+
+      return {
+        message: getResponseMessage(payload, 'Cadastro concluído com sucesso.'),
+      };
+    } catch (error) {
+      if (error instanceof AuthServiceError) {
+        throw error;
+      }
+      return handleAPIError(error);
+    }
+  },
+
+  async completeRegistrationLawyer(
+    data: CompleteLawyerRequest,
+    securityToken: string
+  ): Promise<CompleteRegistrationResponse> {
+    try {
+      const response = await fetch(`${API.BASE_URL}${API.ENDPOINTS.AUTH.COMPLETE_LAWYER}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-security-token': securityToken,
+        },
+        body: JSON.stringify(data),
+      });
+
+      const payload = await parseResponseBody(response);
+
+      if (!response.ok) {
+        await handleAPIError(response);
+      }
+
+      return {
+        message: getResponseMessage(payload, 'Cadastro concluído com sucesso.'),
       };
     } catch (error) {
       if (error instanceof AuthServiceError) {

@@ -16,6 +16,8 @@ export const API = {
       FORGOT_SEND_EMAIL: '/auth/send/forgot/email',
       FORGOT_VERIFY_CODE: '/auth/forgot/verify-code',
       FORGOT_PASSWORD: '/auth/forgot/password',
+      COMPLETE_CITIZEN: '/auth/complete/citizen',
+      COMPLETE_LAWYER: '/auth/complete/lawyer',
     },
     SIGNUP: {
       CITIZEN: '/citizen',

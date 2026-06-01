@@ -3,8 +3,8 @@ import type { NextRequest } from "next/server";
 
 const PROTECTED_ROUTES = ["/dashboard", "/advogado"];
 const AUTH_ROUTES = ["/login", "/onBoarding", "/esqueci-minha-senha", "/redefinir-senha", "/verificacao"];
-// Routes that must never be blocked (OAuth callbacks, etc.)
-const PUBLIC_ALWAYS = ["/auth/callback"];
+// Routes that must never be blocked (OAuth callbacks, complete registration, etc.)
+const PUBLIC_ALWAYS = ["/auth/callback", "/auth/complete"];
 
 function getDashboardForRole(role: string | undefined): string {
   return role === "lawyer" ? "/advogado" : "/dashboard";
@@ -54,5 +54,6 @@ export const config = {
     "/redefinir-senha",
     "/verificacao/:path*",
     "/auth/callback",
+    "/auth/complete/:path*",
   ],
 };

@@ -7,8 +7,29 @@ export interface GoogleAuthResponse {
   email: string;
   full_name: string;
   loggedWithGoogle: boolean;
+  registerCompleted: boolean;
+  securityToken?: string;
   access_token?: string;
   refresh_token?: string;
+}
+
+export interface CompleteCitizenRequest {
+  cpf: string;
+  phone: string;
+  password: string;
+}
+
+export interface CompleteLawyerRequest {
+  cpf: string;
+  oabNumber: string;
+  oabState: string;
+  specialization: string;
+  phone: string;
+  password: string;
+}
+
+export interface CompleteRegistrationResponse {
+  message: string;
 }
 
 export interface AuthenticateResponse {
