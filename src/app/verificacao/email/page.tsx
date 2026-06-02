@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense } from "react";
+import { Suspense, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { VerificationForm, type VerificationConfig } from "@/features/auth/verification";
 import { useAuth } from "@/hooks/useAuth";
@@ -18,6 +18,20 @@ function EmailVerificationContent() {
   const email = searchParams.get("email") || "seu@email.com";
   const type = searchParams.get("type") || "signup";
   const roleParam = searchParams.get("role");
+
+  // The Google OAuth flow redirects here carrying the security token in the URL.
+  // Persist it where VerificationForm expects it, otherwise the code submit fails
+  // with "Sessão de verificação inválida".
+  const securityTokenParam =
+    searchParams.get("x-security-token") ||
+    searchParams.get("token") ||
+    searchParams.get("securityToken");
+
+  useEffect(() => {
+    if (!securityTokenParam) return;
+    sessionStorage.setItem("pending_verification_token", securityTokenParam);
+    authStorage.setSecurityToken(securityTokenParam);
+  }, [securityTokenParam]);
 
   const config: VerificationConfig = {
     type: "email",
