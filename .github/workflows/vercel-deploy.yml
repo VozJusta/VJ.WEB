@@ -1,0 +1,104 @@
+name: Vercel Deploy
+
+# Deploy do VJ.WEB (Next.js 16 + pnpm) na Vercel.
+#   push em `develop`  → deploy de PRODUÇÃO
+#   pull_request       → deploy de PREVIEW (URL única por PR)
+#
+# Secrets necessários (Settings → Secrets and variables → Actions):
+#   VERCEL_TOKEN       → token de conta em vercel.com/account/tokens
+#   VERCEL_ORG_ID      → de `.vercel/project.json` após `vercel link`
+#   VERCEL_PROJECT_ID  → de `.vercel/project.json` após `vercel link`
+#
+# A env NEXT_PUBLIC_API_URL é gerenciada na própria Vercel (Project → Settings →
+# Environment Variables) e baixada via `vercel pull`.
+
+on:
+  push:
+    branches: [develop]
+  pull_request:
+
+# Evita deploys concorrentes na mesma ref; cancela o anterior ainda em andamento.
+concurrency:
+  group: vercel-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+  VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+
+jobs:
+  # --- Gate de qualidade: roda lint + typecheck antes de qualquer deploy ---
+  quality:
+    name: Lint & Typecheck
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1  # v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Lint
+        run: pnpm lint
+
+      - name: Typecheck
+        run: pnpm exec tsc --noEmit
+
+  deploy:
+    name: Build & Deploy (${{ github.event_name == 'push' && 'production' || 'preview' }})
+    needs: quality
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1  # v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - name: Install Vercel CLI
+        run: pnpm add -g vercel@latest
+
+      # --- Produção: push em develop ---
+      - name: Pull Vercel env (production)
+        if: github.event_name == 'push'
+        run: vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
+
+      - name: Build (production)
+        if: github.event_name == 'push'
+        run: vercel build --prod --token=${{ secrets.VERCEL_TOKEN }}
+
+      - name: Deploy (production)
+        if: github.event_name == 'push'
+        run: |
+          url=$(vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }})
+          echo "🚀 Production: $url" >> "$GITHUB_STEP_SUMMARY"
+
+      # --- Preview: pull requests ---
+      - name: Pull Vercel env (preview)
+        if: github.event_name == 'pull_request'
+        run: vercel pull --yes --environment=preview --token=${{ secrets.VERCEL_TOKEN }}
+
+      - name: Build (preview)
+        if: github.event_name == 'pull_request'
+        run: vercel build --token=${{ secrets.VERCEL_TOKEN }}
+
+      - name: Deploy (preview)
+        if: github.event_name == 'pull_request'
+        run: |
+          url=$(vercel deploy --prebuilt --token=${{ secrets.VERCEL_TOKEN }})
+          echo "🔍 Preview: $url" >> "$GITHUB_STEP_SUMMARY"
