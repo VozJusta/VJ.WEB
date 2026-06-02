@@ -58,9 +58,18 @@ export function GoogleAuthHandler() {
           sessionStorage.setItem('pending_user_name', data.full_name);
         }
 
+        // Persiste o token OAuth no localStorage como fallback (espelha authenticate()).
+        // Sem isso, se o header x-security-token da resposta do send for bloqueado por CORS,
+        // a página de verificação fica sem nenhum token e falha com "Sessão de verificação inválida".
+        if (securityToken) {
+          authStorage.setSecurityToken(securityToken);
+        }
+
         const sendResponse = await authService.sendEmailVerificationCode(email, securityToken);
-        if (sendResponse.securityToken) {
-          sessionStorage.setItem('pending_verification_token', sendResponse.securityToken);
+        // Usa o token rotacionado da resposta, ou cai de volta no token OAuth original.
+        const verificationToken = sendResponse.securityToken || securityToken;
+        if (verificationToken) {
+          sessionStorage.setItem('pending_verification_token', verificationToken);
         }
 
         router.replace(

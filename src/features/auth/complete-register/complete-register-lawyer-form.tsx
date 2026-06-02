@@ -139,8 +139,10 @@ export function CompleteRegisterLawyerForm() {
       sessionStorage.removeItem("pending_google_name");
 
       const sendResponse = await authService.sendEmailVerificationCode(email, securityToken);
-      if (sendResponse.securityToken) {
-        sessionStorage.setItem("pending_verification_token", sendResponse.securityToken);
+      // Usa o token rotacionado da resposta, ou cai de volta no token OAuth original.
+      const verificationToken = sendResponse.securityToken || securityToken;
+      if (verificationToken) {
+        sessionStorage.setItem("pending_verification_token", verificationToken);
       }
 
       router.replace(
