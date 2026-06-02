@@ -130,18 +130,22 @@ export function CompleteRegisterLawyerForm() {
         securityToken
       );
 
+      const email = sessionStorage.getItem("pending_google_email") ?? "";
+      const role = sessionStorage.getItem("pending_google_role") ?? "lawyer";
+
       sessionStorage.removeItem("pending_google_token");
       sessionStorage.removeItem("pending_google_role");
       sessionStorage.removeItem("pending_google_email");
       sessionStorage.removeItem("pending_google_name");
 
-      toast({
-        title: "Cadastro concluído!",
-        description: "Sua conta foi criada com sucesso. Faça o login para continuar.",
-        variant: "success",
-      });
+      const sendResponse = await authService.sendEmailVerificationCode(email, securityToken);
+      if (sendResponse.securityToken) {
+        sessionStorage.setItem("pending_verification_token", sendResponse.securityToken);
+      }
 
-      setTimeout(() => router.replace("/login"), 1500);
+      router.replace(
+        `/verificacao/email?email=${encodeURIComponent(email)}&type=login&role=${role}`
+      );
     } catch (error) {
       if (error instanceof ZodError) {
         const fieldErrors: Record<string, string> = {};
