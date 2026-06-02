@@ -1,5 +1,14 @@
+import type { Metadata } from "next";
 import Header from "@/components/layout/header";
 import Footer from "@/components/layout/footer";
+
+export const metadata: Metadata = {
+  title: "Termos de Uso",
+  description:
+    "Leia os Termos de Uso da VozJusta e entenda as regras que regem o uso da nossa plataforma de acesso à justiça.",
+  alternates: { canonical: "/termos" },
+  robots: { index: true, follow: true },
+};
 
 export default function TermosPage() {
   return (

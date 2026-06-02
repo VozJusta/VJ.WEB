@@ -1,9 +1,24 @@
+import type { Metadata } from "next";
 import Header from "@/components/layout/header";
 import Footer from "@/components/layout/footer";
 import { TeamMemberCard } from "@/components/ui/team-member-card";
 import { GradientDivider } from "@/components/ui/gradient-divider";
 import { teamMembers } from "./team.data";
 import { GroupsOutlined } from "@mui/icons-material";
+
+export const metadata: Metadata = {
+  title: "Nosso Time",
+  description:
+    "Conheça a equipe multidisciplinar da VozJusta — profissionais apaixonados por tecnologia, inovação e acesso à justiça para todos os brasileiros.",
+  alternates: { canonical: "/nosso-time" },
+  openGraph: {
+    title: "Nosso Time | VozJusta",
+    description:
+      "Conheça as mentes por trás da VozJusta — tecnologia e paixão pelo acesso à justiça.",
+    url: "/nosso-time",
+    type: "website",
+  },
+};
 
 export default function NossoTimePage() {
   return (

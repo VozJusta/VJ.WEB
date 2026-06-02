@@ -9,7 +9,7 @@ import { FaqSection } from "./sections/faq-section";
 
 export default function LandingPage() {
   return (
-    <main className="flex flex-col px-8 max-w-7xl">
+    <main className="flex flex-col w-full items-center">
       <HeroSection />
       <FeaturesSection />
       <SimulatorSection />

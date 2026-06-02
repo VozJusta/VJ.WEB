@@ -3,8 +3,18 @@ import Header from "@/components/layout/header";
 import Footer from "@/components/layout/footer";
 
 export const metadata: Metadata = {
-  title: "Política de Privacidade — VozJusta",
-  description: "Saiba como a VozJusta coleta, usa e protege seus dados pessoais em conformidade com a LGPD.",
+  title: "Política de Privacidade",
+  description:
+    "Saiba como a VozJusta coleta, usa e protege seus dados pessoais em conformidade com a LGPD — Lei Geral de Proteção de Dados.",
+  alternates: { canonical: "/privacidade" },
+  robots: { index: true, follow: true },
+  openGraph: {
+    title: "Política de Privacidade | VozJusta",
+    description:
+      "Como a VozJusta protege seus dados pessoais em conformidade com a LGPD.",
+    url: "/privacidade",
+    type: "website",
+  },
 };
 
 export default function PrivacidadePage() {

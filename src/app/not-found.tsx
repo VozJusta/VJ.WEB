@@ -40,7 +40,7 @@ export default function NotFound() {
             text-blue-500
             leading-none
             tracking-tight
-            animate-pulse
+            animate-fade-in
           "
         >
           404
