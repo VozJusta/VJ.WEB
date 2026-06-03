@@ -22,7 +22,7 @@ function EmailVerificationContent() {
   const config: VerificationConfig = {
     type: "email",
     contact: email,
-    flowType: type === "reset" ? "reset" : "signup",
+    flowType: type === "reset" ? "reset" : type === "login" ? "login" : "signup",
     expirationTime: 300,
   };
 

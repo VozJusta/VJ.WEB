@@ -3,7 +3,7 @@ export type VerificationType = "email";
 export interface VerificationConfig {
   type: VerificationType;
   contact: string;
-  flowType?: "signup" | "reset";
+  flowType?: "signup" | "login" | "reset";
   expirationTime?: number;
 }
 

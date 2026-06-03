@@ -57,7 +57,7 @@ export function VerificationForm({ config, onVerified, onBack }: VerificationFor
 
       if (flowType === "reset") {
         await authService.verifyForgotPasswordCode(requestPayload);
-      } else {
+      } else { // "signup" | "login"
         const pendingToken = sessionStorage.getItem("pending_verification_token") || "";
         const fallbackToken = localStorage.getItem("x-security-token") || "";
         const primaryToken = pendingToken || fallbackToken;
