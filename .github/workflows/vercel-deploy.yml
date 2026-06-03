@@ -56,6 +56,11 @@ jobs:
       - name: Lint
         run: pnpm lint
 
+      # Gera next-env.d.ts e os tipos de rotas (necessários para resolver
+      # imports de assets .svg/.png) sem rodar o build completo.
+      - name: Generate Next types
+        run: pnpm exec next typegen
+
       - name: Typecheck
         run: pnpm exec tsc --noEmit
 
