@@ -67,16 +67,14 @@ jobs:
   deploy:
     name: Build & Deploy (${{ github.event_name == 'push' && 'production' || 'preview' }})
     needs: quality
+    # Confiança: roda em push (já restrito a quem tem write em develop) ou em PRs
+    # do próprio repositório. PRs de forks são bloqueados — só quem tem acesso de
+    # escrita consegue criar branch aqui — evitando expor o VERCEL_TOKEN a código
+    # não confiável. (author_association não é usado: orgs com membership privado
+    # reportam CONTRIBUTOR, tornando-o um sinal não confiável.)
+    if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository
     runs-on: ubuntu-latest
     steps:
-      - name: DEBUG context
-        run: |
-          echo "event_name=[${{ github.event_name }}]"
-          echo "repository=[${{ github.repository }}]"
-          echo "head_repo=[${{ github.event.pull_request.head.repo.full_name }}]"
-          echo "author_association=[${{ github.event.pull_request.author_association }}]"
-          echo "trust=[${{ github.event_name == 'push' || (github.event.pull_request.head.repo.full_name == github.repository && contains(fromJSON('["OWNER","COLLABORATOR","MEMBER"]'), github.event.pull_request.author_association)) }}]"
-
       - name: Checkout
         uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5  # v4
 
