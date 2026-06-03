@@ -64,7 +64,7 @@ export async function apiFetch(
     return headers;
   };
 
-  let accessToken = authStorage.getAccessToken();
+  const accessToken = authStorage.getAccessToken();
   let response = await fetch(url, { ...init, headers: buildHeaders(accessToken) });
 
   if (response.status !== 401) return response;

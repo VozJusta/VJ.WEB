@@ -17,6 +17,10 @@ on:
     branches: [develop]
   pull_request:
 
+# Menor privilégio: o workflow só precisa ler o código.
+permissions:
+  contents: read
+
 # Evita deploys concorrentes na mesma ref; cancela o anterior ainda em andamento.
 concurrency:
   group: vercel-${{ github.ref }}
@@ -25,6 +29,8 @@ concurrency:
 env:
   VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
   VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+  # Versão fixada do Vercel CLI (atualizada via Dependabot/PR revisado).
+  VERCEL_CLI_VERSION: "54.7.1"
 
 jobs:
   # --- Gate de qualidade: roda lint + typecheck antes de qualquer deploy ---
@@ -33,13 +39,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5  # v4
 
       - name: Setup pnpm
         uses: pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1  # v4
 
       - name: Setup Node
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020  # v4
         with:
           node-version: 20
           cache: pnpm
@@ -56,49 +62,66 @@ jobs:
   deploy:
     name: Build & Deploy (${{ github.event_name == 'push' && 'production' || 'preview' }})
     needs: quality
+    # Confiança: deploya em push (já restrito a quem tem write em develop) ou em
+    # PRs do próprio repositório abertos por membros/colaboradores. Bloqueia PRs
+    # de forks/autores não confiáveis para não expor o VERCEL_TOKEN.
+    if: >-
+      github.event_name == 'push' ||
+      (github.event.pull_request.head.repo.full_name == github.repository &&
+       contains(fromJSON('["OWNER","COLLABORATOR","MEMBER"]'), github.event.pull_request.author_association))
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5  # v4
 
       - name: Setup pnpm
         uses: pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1  # v4
 
       - name: Setup Node
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020  # v4
         with:
           node-version: 20
           cache: pnpm
 
       - name: Install Vercel CLI
-        run: pnpm add -g vercel@latest
+        run: pnpm add -g "vercel@${VERCEL_CLI_VERSION}"
 
       # --- Produção: push em develop ---
+      # O token vai apenas nos passos pull/deploy (via env, fora do argv). O passo
+      # de build executa código do repositório e por isso NÃO recebe o token.
       - name: Pull Vercel env (production)
         if: github.event_name == 'push'
-        run: vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+        run: vercel pull --yes --environment=production
 
       - name: Build (production)
         if: github.event_name == 'push'
-        run: vercel build --prod --token=${{ secrets.VERCEL_TOKEN }}
+        run: vercel build --prod
 
       - name: Deploy (production)
         if: github.event_name == 'push'
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
         run: |
-          url=$(vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }})
+          url=$(vercel deploy --prebuilt --prod)
           echo "🚀 Production: $url" >> "$GITHUB_STEP_SUMMARY"
 
       # --- Preview: pull requests ---
       - name: Pull Vercel env (preview)
         if: github.event_name == 'pull_request'
-        run: vercel pull --yes --environment=preview --token=${{ secrets.VERCEL_TOKEN }}
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+        run: vercel pull --yes --environment=preview
 
       - name: Build (preview)
         if: github.event_name == 'pull_request'
-        run: vercel build --token=${{ secrets.VERCEL_TOKEN }}
+        run: vercel build
 
       - name: Deploy (preview)
         if: github.event_name == 'pull_request'
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
         run: |
-          url=$(vercel deploy --prebuilt --token=${{ secrets.VERCEL_TOKEN }})
+          url=$(vercel deploy --prebuilt)
           echo "🔍 Preview: $url" >> "$GITHUB_STEP_SUMMARY"
