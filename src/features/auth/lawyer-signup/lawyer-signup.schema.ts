@@ -15,15 +15,24 @@ export const lawyerSignupSchema = z.object({
   cpf: z
     .string()
     .min(1, "CPF/CNPJ é obrigatório")
-    .refine(
-      (value) => cpfRegex.test(value) || cnpjRegex.test(value),
-      "CPF/CNPJ inválido. Use o formato 000.000.000-00 ou 00.000.000/0000-00"
-    ),
+    .superRefine((value, ctx) => {
+      const digits = value.replace(/\D/g, "");
+      const isCnpj = digits.length > 11;
+      if (isCnpj) {
+        if (!cnpjRegex.test(value)) {
+          ctx.addIssue({ code: z.ZodIssueCode.custom, message: "CNPJ inválido" });
+        }
+      } else {
+        if (!cpfRegex.test(value)) {
+          ctx.addIssue({ code: z.ZodIssueCode.custom, message: "CPF inválido" });
+        }
+      }
+    }),
 
   email: z
     .string()
     .min(1, "E-mail é obrigatório")
-    .email("E-mail inválido"),
+    .email("Formato de e-mail inválido"),
 
   phone: z
     .string()

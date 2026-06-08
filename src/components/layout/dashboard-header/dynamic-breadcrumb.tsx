@@ -69,7 +69,7 @@ function buildBreadcrumbs(pathname: string): BreadcrumbItem[] {
     }
 
     const href = "/" + segments.slice(0, i + 1).join("/");
-    const isLast = i === segments.length - 1 || segments.slice(i + 1).every(isUUID);
+    const isLast = i === segments.length - 1;
     const label = isLast
       ? (pageNameMap[pathname] ?? routeLabelMap[segment] ?? routeLabelMap[segment.toLowerCase()] ?? segment)
       : (routeLabelMap[segment] ?? routeLabelMap[segment.toLowerCase()] ?? segment);
