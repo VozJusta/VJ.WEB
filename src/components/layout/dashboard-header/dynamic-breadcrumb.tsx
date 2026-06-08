@@ -7,10 +7,13 @@ import type { BreadcrumbItem } from "@/components/ui/breadcrumb/breadcrumb.types
 const routeLabelMap: Record<string, string> = {
   dashboard: "Dashboard",
   documentos: "Documentos",
+  todos: "Todos os Documentos",
   chat: "Chat com IA",
   simulador: "Simulador",
   perfil: "Perfil",
   configuracoes: "Configurações",
+  privacidade: "Privacidade",
+  historico: "Histórico",
   casos: "Meus Casos",
   advogados: "Especialistas",
   notificacoes: "Notificações",
@@ -33,6 +36,7 @@ const pageNameMap: Record<string, string> = {
   "/dashboard/configuracoes": "Configurações",
   "/dashboard/casos": "Meus Casos",
   "/dashboard/casos/novo": "Novo Caso",
+  "/dashboard/documentos/todos": "Todos os Documentos",
   // Lawyer area
   "/advogado": "Resumo Geral",
   "/advogado/solicitacoes": "Solicitações",

@@ -8,6 +8,8 @@ import { ChatInput } from "@/components/ui/chat-input";
 import { Button } from "@/components/ui/button";
 import { useChat } from "@/hooks/useChat";
 import { chatService } from "@/services/chat.service";
+import { evidenceService } from "@/services/evidence.service";
+import { useToast } from "@/components/ui/toast/toast-provider";
 
 interface AIChatFeatureProps {
   conversationId?: string;
@@ -16,6 +18,7 @@ interface AIChatFeatureProps {
 
 export function AIChatFeature({ conversationId, caseId }: AIChatFeatureProps) {
   const router = useRouter();
+  const { toast } = useToast();
   const {
     messages,
     inputValue,
@@ -33,6 +36,7 @@ export function AIChatFeature({ conversationId, caseId }: AIChatFeatureProps) {
 
   const [isRecording, setIsRecording] = useState(false);
   const [isTranscribing, setIsTranscribing] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const chunksRef = useRef<Blob[]>([]);
 
@@ -41,8 +45,6 @@ export function AIChatFeature({ conversationId, caseId }: AIChatFeatureProps) {
       loadHistory(conversationId);
     }
   }, [conversationId]);
-
-  // No auto-redirect: show completion banner and let user click through
 
   const handleVoiceRecord = async () => {
     if (isRecording) {
@@ -84,6 +86,26 @@ export function AIChatFeature({ conversationId, caseId }: AIChatFeatureProps) {
       setIsRecording(true);
     } catch {
       // microphone access denied or not available
+    }
+  };
+
+  const handleFileAttach = async (file: File) => {
+    setIsUploading(true);
+    try {
+      await evidenceService.upload(file);
+      toast({
+        title: "Arquivo enviado",
+        description: "O arquivo foi anexado como evidência.",
+        variant: "success",
+      });
+    } catch (err) {
+      toast({
+        title: "Erro ao enviar arquivo",
+        description: err instanceof Error ? err.message : "Tente novamente.",
+        variant: "error",
+      });
+    } finally {
+      setIsUploading(false);
     }
   };
 
@@ -180,9 +202,11 @@ export function AIChatFeature({ conversationId, caseId }: AIChatFeatureProps) {
             onChange={setInputValue}
             onSend={() => sendMessage(inputValue)}
             onVoiceRecord={handleVoiceRecord}
+            onFileAttach={handleFileAttach}
             disabled={isLoading || isFinished || isFetchingHistory}
             isRecording={isRecording}
             isTranscribing={isTranscribing}
+            isUploading={isUploading}
             maxHeight={160}
           />
         </div>
