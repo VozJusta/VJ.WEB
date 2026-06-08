@@ -63,14 +63,18 @@ export function NewCaseFeature() {
   const [isRecording, setIsRecording] = useState(false);
   const [isTranscribing, setIsTranscribing] = useState(false);
   const [elapsed, setElapsed] = useState(0);
+  const [isReady, setIsReady] = useState(false);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const chunksRef = useRef<Blob[]>([]);
   const { startAnalysis, isLoading, conversationId, caseId, error, clearChat } = useChat();
 
-  // Always start fresh so a second case doesn't inherit state from a previous session
+  // Always start fresh so a second case doesn't inherit state from a previous session.
+  // isReady gates the navigation effect so stale store values don't trigger a redirect
+  // before clearChat() has zeroed them out.
   useEffect(() => {
     clearChat();
+    setIsReady(true);
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -87,10 +91,10 @@ export function NewCaseFeature() {
   }, [isRecording]);
 
   useEffect(() => {
-    if (conversationId && caseId) {
+    if (isReady && conversationId && caseId) {
       router.push(`/dashboard/casos/${caseId}/chat?conversationId=${conversationId}`);
     }
-  }, [conversationId, caseId, router]);
+  }, [isReady, conversationId, caseId, router]);
 
   const handleStartRecording = async () => {
     try {

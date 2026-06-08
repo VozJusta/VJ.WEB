@@ -29,7 +29,9 @@ export default function Header() {
         e.preventDefault();
         const element = document.querySelector(hashId);
         if (element) {
-          element.scrollIntoView({ behavior: "smooth", block: "start" });
+          const HEADER_OFFSET = 96;
+          const top = element.getBoundingClientRect().top + window.scrollY - HEADER_OFFSET;
+          window.scrollTo({ top, behavior: "smooth" });
         }
       }
     }
