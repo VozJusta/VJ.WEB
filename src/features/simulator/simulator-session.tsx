@@ -52,14 +52,22 @@ export function SimulatorSession() {
   const [transcription, setTranscription] = useState('');
   const [elapsedSeconds, setElapsedSeconds] = useState(0);
   const [isTranscribing, setIsTranscribing] = useState(false);
+  const [transcriptionError, setTranscriptionError] = useState<string | null>(null);
   // Tracks manual termination so audio is blocked even before WebSocket confirms
   const [isManuallyEnded, setIsManuallyEnded] = useState(false);
 
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const chunksRef = useRef<Blob[]>([]);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  // Ref so recorder.onstop always reads the latest session state
+  const isSessionEndedRef = useRef(false);
 
   const isSessionEnded = status === 'Completed' || status === 'TimedOut' || isManuallyEnded;
+
+  // Keep ref in sync with derived state
+  useEffect(() => {
+    isSessionEndedRef.current = isSessionEnded;
+  }, [isSessionEnded]);
 
   // Stop active recording when session ends
   useEffect(() => {
@@ -74,7 +82,6 @@ export function SimulatorSession() {
     const personality = PERSONALITY_MAP[personalityParam] ?? 'Impartial';
     start(personality);
     return () => {
-      // Disconnect WebSocket and clean up on unmount / navigation
       reset();
     };
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -114,7 +121,8 @@ export function SimulatorSession() {
     `${String(Math.floor(s / 60)).padStart(2, '0')}:${String(s % 60).padStart(2, '0')}`;
 
   const handleStartRecording = async () => {
-    if (isSessionEnded) return;
+    if (isSessionEndedRef.current) return;
+    setTranscriptionError(null);
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       const recorder = new MediaRecorder(stream);
@@ -125,17 +133,20 @@ export function SimulatorSession() {
       };
 
       recorder.onstop = async () => {
-        stream.getTracks().forEach((t) => t.stop());
+        stream.getTracks().forEach((trk) => trk.stop());
         const blob = new Blob(chunksRef.current, { type: 'audio/webm' });
         const url = URL.createObjectURL(blob);
 
         setIsTranscribing(true);
+        setTranscriptionError(null);
         try {
           const text = await chatService.transcribeAudio(url);
           setTranscription(text);
-          if (text.trim() && !isSessionEnded) await sendChat(text);
+          if (text.trim() && !isSessionEndedRef.current) {
+            await sendChat(text);
+          }
         } catch {
-          // transcription failure — user can retry
+          setTranscriptionError('Não foi possível transcrever o áudio. Tente gravar novamente.');
         } finally {
           URL.revokeObjectURL(url);
           setIsTranscribing(false);
@@ -147,7 +158,7 @@ export function SimulatorSession() {
       setIsRecording(true);
       setElapsedSeconds(0);
     } catch {
-      // microphone access denied or unavailable
+      setTranscriptionError('Acesso ao microfone negado. Verifique as permissões do navegador.');
     }
   };
 
@@ -176,9 +187,6 @@ export function SimulatorSession() {
       setIsRecording(false);
       setIsPaused(false);
     }
-    // Emit stop — server responds with simulation:end + simulation:report.
-    // Navigation is handled by the status effect above (with hasNavigatedRef guard).
-    // Fallback: if status never changes (e.g. socket error), navigate after 4s.
     stop();
     setTimeout(() => {
       if (!hasNavigatedRef.current) {
@@ -202,7 +210,7 @@ export function SimulatorSession() {
       )}
 
       {error && (
-        <div className="fixed top-20 left-1/2 -translate-x-1/2 z-50 rounded-xl bg-red-500/20 border border-red-500 px-6 py-3 text-sm text-red-300">
+        <div className="fixed top-20 left-1/2 -translate-x-1/2 z-50 rounded-xl bg-red-500/20 border border-red-500 px-6 py-3 text-sm text-red-300 max-w-sm text-center">
           {error}
         </div>
       )}
@@ -297,6 +305,12 @@ export function SimulatorSession() {
               {transcription && (
                 <p className="text-sm leading-relaxed text-gray-300">{transcription}</p>
               )}
+            </div>
+          )}
+
+          {transcriptionError && (
+            <div className="rounded-lg border border-red-700/50 bg-red-900/20 p-3 mb-3">
+              <p className="text-sm text-red-400">{transcriptionError}</p>
             </div>
           )}
 

@@ -82,7 +82,12 @@ export const dashboardService = {
     const response = await apiFetch(`/dashboard/citizens/me/reports/${reportId}`);
     if (!response.ok) throw new Error('Falha ao buscar detalhes do relatório');
     const json = await response.json();
-    return json?.user?.report ?? json;
+    const report = json?.user?.report ?? json;
+    // Normalize snake_case field from backend
+    if (!report.caseId && report.case_id) {
+      report.caseId = report.case_id;
+    }
+    return report;
   },
 
   async downloadReportPdf(reportId: string): Promise<Blob> {
