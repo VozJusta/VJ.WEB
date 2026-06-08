@@ -83,7 +83,7 @@ export default function DossierSentPage({ params }: DossierSentPageProps) {
     <>
       {showModal && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm px-4"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm px-4 cursor-pointer"
           onClick={() => router.back()}
         >
           <div

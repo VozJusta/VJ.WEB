@@ -28,7 +28,7 @@ export function LogoutConfirmModal({ isOpen, onClose, onConfirm }: LogoutConfirm
 
   return createPortal(
     <div
-      className="fixed inset-0 z-60 flex items-center justify-center bg-black/70 px-4 backdrop-blur-sm"
+      className="fixed inset-0 z-60 flex items-center justify-center bg-black/70 px-4 backdrop-blur-sm cursor-pointer"
       onClick={onClose}
     >
       <div

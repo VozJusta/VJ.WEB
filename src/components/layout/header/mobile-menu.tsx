@@ -50,7 +50,7 @@ export function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
     <>
       <div
         className={`
-          fixed inset-0 bg-black/60 backdrop-blur-sm z-40
+          fixed inset-0 bg-black/60 backdrop-blur-sm z-40 cursor-pointer
           transition-opacity duration-300
           ${isOpen ? "opacity-100" : "opacity-0 pointer-events-none"}
         `}
