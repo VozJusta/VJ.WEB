@@ -1,16 +1,15 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { SearchRounded, ArrowForwardRounded } from "@mui/icons-material";
-import { useAuthStore } from "@/store/auth.store";
 import { citizenRoutes, lawyerRoutes, type SearchRoute } from "@/lib/search-routes";
 import { cn } from "@/lib/utils";
 
 export function SearchCommand() {
   const router = useRouter();
-  const userRole = useAuthStore((s) => s.userRole);
-  const routes = userRole === "lawyer" ? lawyerRoutes : citizenRoutes;
+  const pathname = usePathname();
+  const routes = pathname?.startsWith("/advogado") ? lawyerRoutes : citizenRoutes;
 
   const [isOpen, setIsOpen] = useState(false);
   const [query, setQuery] = useState("");
