@@ -71,11 +71,11 @@ export function AIChatFeature({ conversationId, caseId }: AIChatFeatureProps) {
         }
       }
 
-      const messageText = isPdf
+      const apiText = isPdf
         ? `Continue com as informações do PDF:\n\n${extractedText}`
         : `Continue com as informações da imagem:\n\n${extractedText}`;
 
-      await sendMessage(messageText, attachment);
+      await sendMessage('', attachment, apiText);
     } catch {
       // silent failure — user can try again
     } finally {
