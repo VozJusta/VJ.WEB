@@ -10,7 +10,12 @@ import {
   MoreHorizRounded,
   HourglassEmptyRounded,
   AutoAwesomeRounded,
+  AttachFileRounded,
+  PictureAsPdfRounded,
+  ImageRounded,
+  CloseRounded,
 } from "@mui/icons-material";
+import { extractPdfText } from "@/lib/pdf-extract";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { VoiceRecorder } from "@/components/ui/voice-recorder";
@@ -64,6 +69,10 @@ export function NewCaseFeature() {
   const [isTranscribing, setIsTranscribing] = useState(false);
   const [elapsed, setElapsed] = useState(0);
   const [isReady, setIsReady] = useState(false);
+  const [attachedFile, setAttachedFile] = useState<{ name: string; type: 'pdf' | 'image' } | null>(null);
+  const [extractedFileContent, setExtractedFileContent] = useState('');
+  const [isProcessingFile, setIsProcessingFile] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const chunksRef = useRef<Blob[]>([]);
@@ -137,11 +146,47 @@ export function NewCaseFeature() {
     setIsRecording(false);
   };
 
-  const canSubmit = !!selectedCategory && story.trim().length > 0 && !isLoading && !isTranscribing;
+  const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const isPdf = file.type === 'application/pdf';
+    const isImage = file.type.startsWith('image/');
+    if (!isPdf && !isImage) return;
+
+    setIsProcessingFile(true);
+    setAttachedFile({ name: file.name, type: isPdf ? 'pdf' : 'image' });
+    try {
+      let text: string;
+      if (isPdf) {
+        text = await extractPdfText(file);
+        if (!text.trim()) text = '(Não foi possível extrair texto deste PDF)';
+      } else {
+        const evidence = await chatService.uploadEvidence(file);
+        text = evidence.ocr_content ?? '(Nenhum texto identificado na imagem)';
+      }
+      setExtractedFileContent(text);
+    } catch {
+      setAttachedFile(null);
+      setExtractedFileContent('');
+    } finally {
+      setIsProcessingFile(false);
+      if (fileInputRef.current) fileInputRef.current.value = '';
+    }
+  };
+
+  const handleRemoveAttachment = () => {
+    setAttachedFile(null);
+    setExtractedFileContent('');
+  };
+
+  const canSubmit = !!selectedCategory && (story.trim().length > 0 || !!attachedFile) && !isLoading && !isTranscribing && !isProcessingFile;
 
   const handleSubmit = async () => {
     if (!canSubmit) return;
-    await startAnalysis(story, selectedCategory!);
+    const fullStory = extractedFileContent
+      ? story.trim() ? `${story}\n\n${extractedFileContent}` : extractedFileContent
+      : story;
+    await startAnalysis(fullStory, selectedCategory!);
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
@@ -267,12 +312,56 @@ export function NewCaseFeature() {
           )}
         </div>
 
+        {attachedFile && (
+          <div className="mt-2 flex items-center gap-2 px-3 py-2 rounded-lg border border-[#1B2233] bg-[#0d1526]">
+            {attachedFile.type === 'pdf' ? (
+              <PictureAsPdfRounded fontSize="small" className="text-red-400 shrink-0" aria-hidden />
+            ) : (
+              <ImageRounded fontSize="small" className="text-blue-400 shrink-0" aria-hidden />
+            )}
+            <span className="text-xs text-white/70 flex-1 truncate">{attachedFile.name}</span>
+            {isProcessingFile ? (
+              <span className="h-3.5 w-3.5 animate-spin rounded-full border border-[#2585F4] border-t-transparent shrink-0" />
+            ) : (
+              <button
+                type="button"
+                onClick={handleRemoveAttachment}
+                className="shrink-0 text-white/30 hover:text-white/70 transition-colors"
+                aria-label="Remover anexo"
+              >
+                <CloseRounded fontSize="small" />
+              </button>
+            )}
+          </div>
+        )}
+
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept=".pdf,image/*"
+          className="hidden"
+          onChange={handleFileSelect}
+          aria-label="Anexar arquivo"
+        />
+
         <div className="mt-2 flex items-center justify-between gap-2">
-          <p id="story-hint" className="text-xs text-white/25">
-            Cifrado ponta a ponta
-            <span className="mx-1">•</span>
-            <kbd className="px-1.5 py-0.5 bg-white/10 rounded text-[10px] font-mono">Ctrl+Enter</kbd> para enviar
-          </p>
+          <div className="flex items-center gap-2">
+            <p id="story-hint" className="text-xs text-white/25">
+              Cifrado ponta a ponta
+              <span className="mx-1">•</span>
+              <kbd className="px-1.5 py-0.5 bg-white/10 rounded text-[10px] font-mono">Ctrl+Enter</kbd> para enviar
+            </p>
+            <button
+              type="button"
+              onClick={() => fileInputRef.current?.click()}
+              disabled={isProcessingFile}
+              className="flex items-center gap-1 text-xs text-white/35 hover:text-white/60 transition-colors disabled:opacity-40"
+              aria-label="Anexar arquivo"
+            >
+              <AttachFileRounded style={{ fontSize: 14 }} aria-hidden />
+              Anexar
+            </button>
+          </div>
           <p
             id="story-char-count"
             aria-live="polite"
