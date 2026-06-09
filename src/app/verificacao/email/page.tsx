@@ -23,7 +23,7 @@ function EmailVerificationContent() {
     type: "email",
     contact: email,
     flowType: type === "reset" ? "reset" : type === "login" ? "login" : "signup",
-    expirationTime: 300,
+    expirationTime: 900,
   };
 
   const handleVerified = () => {

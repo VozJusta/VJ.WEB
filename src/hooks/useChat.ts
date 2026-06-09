@@ -147,8 +147,10 @@ export function useChat() {
     async (
       message: string,
       attachment?: ChatMessage['attachment'],
+      apiContent?: string,
     ) => {
-      if (!message.trim() || isLoading || isFinished || !conversationId) return;
+      const contentForApi = apiContent ?? message;
+      if (!contentForApi.trim() || isLoading || isFinished || !conversationId) return;
 
       const tempId = `${Date.now()}-user`;
       const newMsg: ChatMessage = { id: tempId, content: message, role: 'user', timestamp: new Date(), attachment };
@@ -159,7 +161,7 @@ export function useChat() {
       setError(null);
 
       try {
-        const data = await chatService.continueConversation(conversationId, message);
+        const data = await chatService.continueConversation(conversationId, contentForApi);
 
         if (data.question) {
           const aiMsg: ChatMessage = {

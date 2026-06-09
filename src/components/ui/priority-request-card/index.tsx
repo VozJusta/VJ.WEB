@@ -6,6 +6,7 @@ import type { PriorityRequest, PriorityLevel, RequestStatus } from "@/types/dash
 type PriorityRequestCardProps = {
   request: PriorityRequest;
   className?: string;
+  onClick?: () => void;
 };
 
 const priorityConfig: Record<
@@ -60,18 +61,23 @@ const statusConfig: Record<
   },
 };
 
-export function PriorityRequestCard({ request, className }: PriorityRequestCardProps) {
+export function PriorityRequestCard({ request, className, onClick }: PriorityRequestCardProps) {
   const priority = priorityConfig[request.priority];
   const status = statusConfig[request.status];
 
   return (
     <article
+      onClick={onClick}
+      role={onClick ? "button" : undefined}
+      tabIndex={onClick ? 0 : undefined}
+      onKeyDown={onClick ? (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onClick(); } } : undefined}
       className={cn(
         "group relative overflow-hidden rounded-2xl",
         "border border-(--border-subtle) bg-surface-elevated",
         "p-6",
         "transition-all duration-300",
         "hover:border-primary/30 hover:shadow-lg hover:shadow-primary/5",
+        onClick && "cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary",
         className,
       )}
     >

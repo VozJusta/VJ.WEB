@@ -67,6 +67,8 @@ export interface HighRelevanceItem {
   status: string;
   confidence_score: number;
   category_detected: string;
+  caseId?: string;
+  reportId?: string;
 }
 
 export const dashboardService = {

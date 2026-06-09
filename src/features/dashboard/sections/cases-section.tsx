@@ -86,7 +86,7 @@ export function CasesSection() {
                 status={statusMap(report.status)}
                 updatedLabel={new Date(report.created_at).toLocaleDateString('pt-BR')}
                 protocol={`#${report.id.slice(0, 8).toUpperCase()}`}
-                href={`/dashboard/casos/${report.id}`}
+                href={report.caseId ? `/dashboard/casos/${report.id}?caseId=${report.caseId}` : `/dashboard/casos/${report.id}`}
               />
             </li>
           ))}

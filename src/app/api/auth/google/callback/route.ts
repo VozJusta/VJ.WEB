@@ -37,6 +37,23 @@ export async function GET(request: Request) {
 
     const authData = await response.json();
 
+    if (authData.error || authData.status === 'error') {
+      return NextResponse.redirect(
+        new URL(`/login?error=${encodeURIComponent(authData.error ?? 'authentication_failed')}`, request.url)
+      );
+    }
+
+    const intendedRole = state?.split('|')[0] ?? 'citizen';
+    const returnedRole = authData.role?.toLowerCase?.() ?? 'citizen';
+    if (intendedRole !== returnedRole) {
+      const errorMsg = returnedRole === 'lawyer'
+        ? 'Este email está cadastrado como Advogado. Acesse a área de Advogados.'
+        : 'Este email está cadastrado como Cidadão. Acesse a área de Cidadãos.';
+      return NextResponse.redirect(
+        new URL(`/login?error=${encodeURIComponent(errorMsg)}`, request.url)
+      );
+    }
+
     const enrichedData = {
       ...authData,
       securityToken: securityToken || undefined,
