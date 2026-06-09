@@ -1,5 +1,6 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { InsightsRounded, QueryStatsRounded } from "@mui/icons-material";
 import { StatCard } from "@/components/ui/stat-card";
 import { ProductivityChart } from "@/components/ui/productivity-chart";
@@ -9,6 +10,7 @@ import { useDashboardLawyer } from "@/hooks/useDashboardLawyer";
 import { getCategoryLabel } from "@/lib/status";
 
 export default function LawyerDashboardPage() {
+  const router = useRouter();
   const { analytics, operationalStats, highRelevance, isLoading } = useDashboardLawyer();
 
   const chartData = analytics?.data?.map((d) => ({
@@ -177,6 +179,12 @@ export default function LawyerDashboardPage() {
                       priority: item.confidence_score >= 0.9 ? "urgent" : "high",
                       date: new Date().toISOString().slice(0, 10),
                       category: getCategoryLabel(item.category_detected),
+                    }}
+                    onClick={() => {
+                      const query = new URLSearchParams({ status: item.status });
+                      if (item.caseId) query.set('caseId', item.caseId);
+                      if (item.reportId) query.set('reportId', item.reportId);
+                      router.push(`/advogado/solicitacoes/${item.id}?${query.toString()}`);
                     }}
                   />
                 ))}
