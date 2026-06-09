@@ -90,8 +90,7 @@ export default function ContatoPage() {
 
       setFormData({ name: "", email: "", subject: "", message: "" });
       setIsSubmitted(true);
-    } catch (error) {
-
+    } catch {
       toast({
         title: "Erro ao enviar mensagem",
         description: "Tente novamente ou entre em contato via WhatsApp.",

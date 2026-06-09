@@ -34,6 +34,7 @@ export function useLawyerRequests(initialStatus?: RequestStatus) {
   );
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchRequests(1, statusFilter);
   }, [fetchRequests, statusFilter]);
 

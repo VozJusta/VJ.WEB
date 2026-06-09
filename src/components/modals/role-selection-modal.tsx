@@ -1,6 +1,5 @@
 'use client';
 
-import { useState } from 'react';
 import type { UserRole } from '@/types/auth.types';
 
 interface RoleSelectionModalProps {
@@ -16,10 +15,7 @@ export function RoleSelectionModal({
   onSelectRole,
   isLoading = false,
 }: RoleSelectionModalProps) {
-  const [selectedRole, setSelectedRole] = useState<UserRole | null>(null);
-
   const handleSelect = (role: UserRole) => {
-    setSelectedRole(role);
     onSelectRole(role);
   };
 

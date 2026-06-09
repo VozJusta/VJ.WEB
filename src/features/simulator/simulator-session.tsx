@@ -73,6 +73,7 @@ export function SimulatorSession() {
   useEffect(() => {
     if (isSessionEnded && isRecording) {
       mediaRecorderRef.current?.stop();
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setIsRecording(false);
       setIsPaused(false);
     }

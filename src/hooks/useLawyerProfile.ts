@@ -10,6 +10,7 @@ export function useLawyerProfile(lawyerId: string) {
 
   useEffect(() => {
     if (!lawyerId) return;
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setIsLoading(true);
     setError(null);
     lawyersService

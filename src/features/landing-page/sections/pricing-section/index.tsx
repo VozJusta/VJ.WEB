@@ -7,7 +7,6 @@ import { citizenPlans, lawyerPlans } from "./pricing-section.data";
 
 export function PricingSection({
   title = "Escolha seu plano",
-  subtitle,
   className = "",
 }: PricingSectionProps = {}) {
   const [activeAudience, setActiveAudience] = useState<PlanAudience>("citizen");

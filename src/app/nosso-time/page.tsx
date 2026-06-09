@@ -3,7 +3,6 @@ import Footer from "@/components/layout/footer";
 import { TeamMemberCard } from "@/components/ui/team-member-card";
 import { GradientDivider } from "@/components/ui/gradient-divider";
 import { teamMembers } from "./team.data";
-import { GroupsOutlined } from "@mui/icons-material";
 
 export default function NossoTimePage() {
   return (

@@ -1,7 +1,6 @@
 "use client";
 
 import { cn } from "@/lib/utils";
-import { ErrorOutlineRounded } from "@mui/icons-material";
 import type { PriorityRequest, PriorityLevel, RequestStatus } from "@/types/dashboard.types";
 
 type PriorityRequestCardProps = {

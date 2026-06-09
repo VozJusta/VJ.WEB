@@ -26,6 +26,7 @@ export function useDashboardCitizen() {
   }, []);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchReports(1);
   }, [fetchReports]);
 

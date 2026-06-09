@@ -22,6 +22,7 @@ export function ProtectedRoute({
     if (!hasTokens) {
       router.replace(redirectTo);
     } else {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setIsChecking(false);
     }
   }, [router, redirectTo]);

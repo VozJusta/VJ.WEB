@@ -22,6 +22,7 @@ const toastIcons = {
 };
 
 export function Toast({
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   id,
   title,
   description,

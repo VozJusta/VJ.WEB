@@ -50,7 +50,7 @@ export function SearchCommand() {
     const onKey = (e: KeyboardEvent) => {
       if ((e.ctrlKey || e.metaKey) && e.key === "k") {
         e.preventDefault();
-        isOpen ? close() : open();
+        if (isOpen) close(); else open();
       }
     };
     window.addEventListener("keydown", onKey);

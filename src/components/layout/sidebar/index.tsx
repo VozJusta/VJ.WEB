@@ -22,7 +22,6 @@ export function Sidebar({ isOpen, onToggle, onClose, className, homeHref = "/das
 
       <aside
         aria-label="Menu lateral"
-        aria-expanded={isOpen}
         className={cn(
           "fixed inset-y-0 left-0 z-50 flex flex-col w-60",
           "bg-surface",

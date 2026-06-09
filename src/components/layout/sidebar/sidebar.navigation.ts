@@ -1,6 +1,5 @@
 import {
   HomeRounded,
-  FolderOpenRounded,
   ChatBubbleOutlineRounded,
   PsychologyRounded,
   NotificationsOutlined,

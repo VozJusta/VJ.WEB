@@ -10,7 +10,6 @@ export function NotificationsList() {
   const {
     notifications,
     isLoading,
-    error,
     unreadCount,
     markAsRead,
     markAllAsRead,

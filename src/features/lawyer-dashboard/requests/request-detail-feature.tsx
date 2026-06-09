@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import {
   ArrowBackRounded,
   CheckRounded,
@@ -24,7 +24,6 @@ interface RequestDetailFeatureProps {
 }
 
 export function RequestDetailFeature({ requestId }: RequestDetailFeatureProps) {
-  const router = useRouter();
   const searchParams = useSearchParams();
   const caseId = searchParams.get("caseId") ?? "";
   const reportId = searchParams.get("reportId") ?? "";

@@ -82,6 +82,7 @@ export function SimulatorConfig() {
 
   useEffect(() => {
     const stored = localStorage.getItem(judgeNameKey);
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     if (stored) setJudgeName(stored);
   }, [judgeNameKey]);
   const [judgeNameError, setJudgeNameError] = useState('');

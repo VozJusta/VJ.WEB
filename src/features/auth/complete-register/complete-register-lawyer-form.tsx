@@ -84,6 +84,7 @@ export function CompleteRegisterLawyerForm() {
       return;
     }
 
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setSecurityToken(token);
     setUserName(name);
   }, [router]);

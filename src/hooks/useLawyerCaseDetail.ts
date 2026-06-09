@@ -10,6 +10,7 @@ export function useLawyerCaseDetail(caseId: string) {
 
   useEffect(() => {
     if (!caseId) return;
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setIsLoading(true);
     setError(null);
     dashboardService

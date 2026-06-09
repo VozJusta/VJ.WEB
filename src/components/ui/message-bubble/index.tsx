@@ -1,7 +1,5 @@
 "use client";
 
-import { formatDistanceToNow } from "date-fns/formatDistanceToNow";
-import { ptBR } from "date-fns/locale/pt-BR";
 import { AutoAwesomeRounded, PictureAsPdfRounded, ImageRounded } from "@mui/icons-material";
 import { cn } from "@/lib/utils";
 import type { MessageBubbleProps } from "./message-bubble.types";
@@ -16,11 +14,6 @@ export function MessageBubble({
 }: MessageBubbleProps) {
   const isAssistant = role === "assistant";
   
-  const timeAgo = formatDistanceToNow(new Date(timestamp), {
-    addSuffix: false,
-    locale: ptBR,
-  });
-
   const formattedTime = `Hoje, ${new Date(timestamp).toLocaleTimeString("pt-BR", {
     hour: "2-digit",
     minute: "2-digit",
@@ -83,6 +76,7 @@ export function MessageBubble({
               {attachment.type === 'pdf' ? (
                 <PictureAsPdfRounded sx={{ fontSize: 18 }} aria-hidden="true" className="shrink-0 opacity-80" />
               ) : attachment.previewUrl ? (
+                // eslint-disable-next-line @next/next/no-img-element
                 <img
                   src={attachment.previewUrl}
                   alt={attachment.name}

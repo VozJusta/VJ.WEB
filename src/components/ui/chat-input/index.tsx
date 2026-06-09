@@ -38,18 +38,6 @@ export function ChatInput({
     textarea.style.height = `${newHeight}px`;
   }, [value, maxHeight]);
 
-  // Close menu when clicking outside
-  useEffect(() => {
-    if (!menuOpen) return;
-    const handler = (e: MouseEvent) => {
-      if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
-        setMenuOpen(false);
-      }
-    };
-    document.addEventListener("mousedown", handler);
-    return () => document.removeEventListener("mousedown", handler);
-  }, [menuOpen]);
-
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
@@ -71,28 +59,6 @@ export function ChatInput({
       setTimeout(() => textareaRef.current?.focus(), 0);
     }
   };
-
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file && onFileAttach) {
-      onFileAttach(file);
-    }
-    // Reset so the same file can be selected again
-    e.target.value = "";
-    setMenuOpen(false);
-  };
-
-  const handleAudioOption = () => {
-    setMenuOpen(false);
-    onVoiceRecord?.();
-  };
-
-  const handleFileOption = () => {
-    setMenuOpen(false);
-    fileInputRef.current?.click();
-  };
-
-  const hasAttachOptions = onVoiceRecord || onFileAttach;
 
   return (
     <>
@@ -168,7 +134,13 @@ export function ChatInput({
                 : "text-text-secondary hover:bg-white/10 hover:text-foreground",
               isTranscribing && "cursor-not-allowed opacity-50",
             )}
-          </div>
+          >
+            {isRecording ? (
+              <StopRounded fontSize="small" aria-hidden="true" />
+            ) : (
+              <MicNoneRounded fontSize="small" aria-hidden="true" />
+            )}
+          </button>
         )}
 
         <label htmlFor="chat-input" className="sr-only">

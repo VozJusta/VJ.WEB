@@ -47,6 +47,7 @@ export function useSimulation() {
   }, [remainingSecs]);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     if (status === 'Completed' || status === 'TimedOut') setRemainingSecs(null);
   }, [status]);
 

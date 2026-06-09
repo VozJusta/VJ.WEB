@@ -74,6 +74,7 @@ export function NewCaseFeature() {
   // before clearChat() has zeroed them out.
   useEffect(() => {
     clearChat();
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setIsReady(true);
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -83,6 +84,7 @@ export function NewCaseFeature() {
       timerRef.current = setInterval(() => setElapsed((e) => e + 1), 1000);
     } else {
       if (timerRef.current) clearInterval(timerRef.current);
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setElapsed(0);
     }
     return () => {

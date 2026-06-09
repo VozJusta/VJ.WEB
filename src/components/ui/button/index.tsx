@@ -11,7 +11,6 @@ const Button = forwardRef<HTMLButtonElement | HTMLAnchorElement, ButtonProps>(
       variant,
       size,
       fullWidth,
-      asChild = false,
       loading = false,
       leftIcon,
       rightIcon,

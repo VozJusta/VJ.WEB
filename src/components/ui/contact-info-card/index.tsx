@@ -1,5 +1,5 @@
 import { cn } from "@/lib/utils";
-import { EmailRounded, PhoneRounded, PersonRounded } from "@mui/icons-material";
+import { EmailRounded, PhoneRounded } from "@mui/icons-material";
 import type { ContactInfoCardProps } from "./contact-info-card.types";
 
 export function ContactInfoCard({
@@ -26,6 +26,7 @@ export function ContactInfoCard({
       <header className="mb-4 flex items-center gap-3">
         <figure className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-[#2585F4] to-[#1565C0]">
           {avatarUrl ? (
+            // eslint-disable-next-line @next/next/no-img-element
             <img
               src={avatarUrl}
               alt=""

@@ -195,7 +195,6 @@ export function FileUpload({
         tabIndex={0}
         aria-label="Área de upload de documentos. Arraste arquivos ou pressione Enter para selecionar."
         aria-describedby={descId}
-        aria-invalid={uploadState === "error"}
         onDragEnter={handleDragEnter}
         onDragLeave={handleDragLeave}
         onDragOver={handleDragOver}
@@ -279,6 +278,7 @@ export function FileUpload({
             >
               {entry.previewUrl ? (
                 <figure className="w-8 h-8 rounded-md overflow-hidden shrink-0 bg-white/10">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
                     src={entry.previewUrl}
                     alt={entry.file.name}

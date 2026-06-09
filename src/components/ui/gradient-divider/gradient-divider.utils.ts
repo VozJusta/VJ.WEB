@@ -19,11 +19,6 @@ export function generateGradient(
 
   const stopsString = stops
     .map((stop) => {
-      const alpha = stop.opacity / 100;
-      const colorValue = stop.color.startsWith("#")
-        ? stop.color.slice(1)
-        : stop.color;
-
       return `color-mix(in srgb, ${stop.color} ${stop.opacity}%, transparent) ${stop.position}%`;
     })
     .join(", ");

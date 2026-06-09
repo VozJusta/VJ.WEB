@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { useRouter } from "next/navigation";
 import { CheckCircleRounded } from "@mui/icons-material";
 import { MessageBubble } from "@/components/ui/message-bubble";
 import { ChatInput } from "@/components/ui/chat-input";
@@ -16,8 +15,6 @@ interface AIChatFeatureProps {
 }
 
 export function AIChatFeature({ conversationId, caseId }: AIChatFeatureProps) {
-  const router = useRouter();
-  const { toast } = useToast();
   const {
     messages,
     inputValue,
@@ -27,7 +24,6 @@ export function AIChatFeature({ conversationId, caseId }: AIChatFeatureProps) {
     isFinished,
     reportId,
     error,
-    progress,
     bottomRef,
     sendMessage,
     loadHistory,
@@ -43,6 +39,7 @@ export function AIChatFeature({ conversationId, caseId }: AIChatFeatureProps) {
     if (conversationId && messages.length === 0) {
       loadHistory(conversationId);
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [conversationId]);
 
   const handleFileUpload = async (file: File) => {
@@ -129,26 +126,6 @@ export function AIChatFeature({ conversationId, caseId }: AIChatFeatureProps) {
       setIsRecording(true);
     } catch {
       // microphone access denied or not available
-    }
-  };
-
-  const handleFileAttach = async (file: File) => {
-    setIsUploading(true);
-    try {
-      await evidenceService.upload(file);
-      toast({
-        title: "Arquivo enviado",
-        description: "O arquivo foi anexado como evidência.",
-        variant: "success",
-      });
-    } catch (err) {
-      toast({
-        title: "Erro ao enviar arquivo",
-        description: err instanceof Error ? err.message : "Tente novamente.",
-        variant: "error",
-      });
-    } finally {
-      setIsUploading(false);
     }
   };
 

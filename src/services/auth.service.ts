@@ -2,7 +2,6 @@ import { API } from '@/lib/api';
 import { authStorage } from '@/lib/auth';
 import type {
   CredentialsLoginRequest,
-  AuthResponse,
   AuthenticateResponse,
   CitizenSignupRequest,
   CitizenSignupResponse,

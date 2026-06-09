@@ -18,7 +18,7 @@ interface DossierSentFeatureProps {
   reportId?: string;
 }
 
-export function DossierSentFeature({ lawyerName, lawyerId, reportId }: DossierSentFeatureProps) {
+export function DossierSentFeature({ lawyerName, reportId }: DossierSentFeatureProps) {
   const router = useRouter();
   const { downloadPdf, isDownloading } = useReportDownload();
 

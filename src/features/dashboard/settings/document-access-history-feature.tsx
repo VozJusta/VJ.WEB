@@ -47,6 +47,7 @@ type DocumentAccessHistoryFeatureProps = {
 };
 
 export function DocumentAccessHistoryFeature({
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   documentId,
 }: DocumentAccessHistoryFeatureProps) {
   const documentName = "RG - Frente e Verso.pdf";
