@@ -17,6 +17,7 @@ interface AIChatFeatureProps {
 
 export function AIChatFeature({ conversationId, caseId }: AIChatFeatureProps) {
   const router = useRouter();
+  const { toast } = useToast();
   const {
     messages,
     inputValue,
@@ -128,6 +129,26 @@ export function AIChatFeature({ conversationId, caseId }: AIChatFeatureProps) {
       setIsRecording(true);
     } catch {
       // microphone access denied or not available
+    }
+  };
+
+  const handleFileAttach = async (file: File) => {
+    setIsUploading(true);
+    try {
+      await evidenceService.upload(file);
+      toast({
+        title: "Arquivo enviado",
+        description: "O arquivo foi anexado como evidência.",
+        variant: "success",
+      });
+    } catch (err) {
+      toast({
+        title: "Erro ao enviar arquivo",
+        description: err instanceof Error ? err.message : "Tente novamente.",
+        variant: "error",
+      });
+    } finally {
+      setIsUploading(false);
     }
   };
 

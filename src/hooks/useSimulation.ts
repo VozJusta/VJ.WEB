@@ -31,6 +31,14 @@ export function useSimulation() {
   const simulationStartedRef = useRef(false);
   // Holds end status while waiting for simulation:report before navigating
   const pendingEndStatusRef = useRef<SimulationStatus | null>(null);
+  // Tracks current reportId in a ref to avoid stale closure in socket handlers
+  const reportIdRef = useRef<string | null>(null);
+  // Timeout ref for WebSocket start acknowledgement
+  const wsStartTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    reportIdRef.current = reportId;
+  }, [reportId]);
 
   useEffect(() => {
     if (remainingSecs === null || remainingSecs <= 0) return;
@@ -51,6 +59,10 @@ export function useSimulation() {
   }, [reportId]);
 
   const disconnectSocket = useCallback(() => {
+    if (wsStartTimeoutRef.current) {
+      clearTimeout(wsStartTimeoutRef.current);
+      wsStartTimeoutRef.current = null;
+    }
     socketRef.current?.disconnect();
     socketRef.current = null;
   }, []);
@@ -61,6 +73,14 @@ export function useSimulation() {
     setIsSpeaking(true);
     try {
       const blob = await simulationService.synthesize(text);
+
+      // Guard: ensure we actually got audio binary data
+      if (!blob.type.startsWith('audio') && !blob.type.includes('octet-stream')) {
+        // Likely got a JSON error body — skip playback silently
+        setIsSpeaking(false);
+        return;
+      }
+
       const url = URL.createObjectURL(blob);
 
       if (audioRef.current) {
@@ -75,7 +95,7 @@ export function useSimulation() {
 
       audio.onended = () => { setIsSpeaking(false); setIsAudioPaused(false); };
       audio.onerror = () => { setIsSpeaking(false); setIsAudioPaused(false); };
-      audio.play();
+      audio.play().catch(() => { setIsSpeaking(false); });
     } catch {
       setIsSpeaking(false);
     }
@@ -100,6 +120,7 @@ export function useSimulation() {
       const socket = io(`${apiUrl}/simulation`, {
         transports: ['websocket'],
         reconnection: true,
+        reconnectionAttempts: 3,
         auth: { token: token ?? '' },
       });
 
@@ -110,10 +131,22 @@ export function useSimulation() {
         if (!simulationStartedRef.current) {
           simulationStartedRef.current = true;
           socket.emit('simulation:start', { simulationId: simId });
+
+          // 10-second timeout: if simulation:started never arrives, show error
+          wsStartTimeoutRef.current = setTimeout(() => {
+            if (socketRef.current === socket) {
+              setError('A sessão demorou para iniciar. Verifique sua conexão e tente novamente.');
+              setIsLoading(false);
+            }
+          }, 10_000);
         }
       });
 
       socket.on('simulation:started', () => {
+        if (wsStartTimeoutRef.current) {
+          clearTimeout(wsStartTimeoutRef.current);
+          wsStartTimeoutRef.current = null;
+        }
         setIsLoading(false);
         setStatus('InProgress');
       });
@@ -127,12 +160,10 @@ export function useSimulation() {
         const endStatus: SimulationStatus =
           payload.status === 'Completed' ? 'Completed' : 'TimedOut';
 
-        // Keep socket alive to receive simulation:report (may arrive after reconnect)
-        if (reportId) {
-          // Report already in state — apply status immediately
+        // Use ref to check reportId without stale closure
+        if (reportIdRef.current) {
           setStatus(endStatus);
         } else {
-          // Wait for report; apply status once it arrives or after 3s fallback
           pendingEndStatusRef.current = endStatus;
           setTimeout(() => {
             if (pendingEndStatusRef.current) {
@@ -144,19 +175,23 @@ export function useSimulation() {
       });
 
       socket.on('simulation:report', (payload: { simulationId: string; reportId: string }) => {
+        reportIdRef.current = payload.reportId;
         setReportId(payload.reportId);
-        // reportId state update triggers the effect above to apply pendingEndStatus
       });
 
       socket.on('simulation:resumed', (payload: { simulationId: string }) => {
-        // Server detected an in-progress simulation on reconnect
         setSimulationId(payload.simulationId);
         setStatus('InProgress');
         setIsLoading(false);
       });
 
-      socket.on('connect_error', () => {
-        setError('Erro de conexão com o servidor de simulação');
+      socket.on('connect_error', (err: Error) => {
+        const msg = err?.message?.toLowerCase() ?? '';
+        if (msg.includes('unauthorized') || msg.includes('jwt') || msg.includes('token')) {
+          setError('Sessão expirada. Por favor, faça login novamente.');
+        } else {
+          setError('Erro de conexão com o servidor de simulação. Tente novamente.');
+        }
         setIsLoading(false);
       });
     } catch (err) {
@@ -176,7 +211,8 @@ export function useSimulation() {
         setAiResponse(data.text);
         await synthesizeAndPlay(data.text);
       } catch (err) {
-        setError(err instanceof Error ? err.message : 'Erro ao enviar mensagem');
+        const msg = err instanceof Error ? err.message : 'Erro ao enviar mensagem';
+        setError(msg);
       } finally {
         setIsLoading(false);
       }
@@ -202,16 +238,15 @@ export function useSimulation() {
 
   const stop = useCallback(() => {
     if (socketRef.current && simulationId) {
-      // Emit stop — server will respond with simulation:end then simulation:report
       socketRef.current.emit('simulation:stop', { simulationId });
     }
-    // Socket stays alive to receive simulation:report; cleanup happens in reset()
   }, [simulationId]);
 
   const reset = useCallback(() => {
     disconnectSocket();
     simulationStartedRef.current = false;
     pendingEndStatusRef.current = null;
+    reportIdRef.current = null;
     if (audioRef.current) {
       audioRef.current.pause();
       if (audioRef.current.src) URL.revokeObjectURL(audioRef.current.src);

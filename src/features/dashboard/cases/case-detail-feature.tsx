@@ -93,7 +93,7 @@ export function CaseDetailFeature({ report, reportId }: CaseDetailFeatureProps) 
   const protocol = `#${reportId.slice(0, 8).toUpperCase()}`;
 
   return (
-    <div className="relative flex flex-col gap-6 w-full mx-auto px-4 py-6 md:px-6 md:py-8 pb-24">
+    <div className="relative flex flex-col gap-6 w-full mx-auto px-4 py-6 md:px-6 md:py-8 pb-28">
       <header className="flex items-center gap-3">
         <Link
           href="/dashboard/casos"
@@ -241,14 +241,14 @@ export function CaseDetailFeature({ report, reportId }: CaseDetailFeatureProps) 
         </section>
       )}
 
-      <div className="fixed bottom-6 right-6 z-10 flex flex-col gap-2 items-end">
+      <div className="fixed bottom-0 left-0 right-0 lg:left-60 z-10 flex flex-row items-center justify-end gap-3 border-t border-[#1B2233] bg-[#080f1c]/95 backdrop-blur-sm px-4 py-3">
         {canSendToLawyer && (
           <Button
             variant="outline"
             size="md"
             leftIcon={<GavelRounded fontSize="small" aria-hidden />}
             onClick={handleSendToLawyer}
-            className="border-[#2585F4]/40 text-[#2585F4] hover:bg-[#2585F4]/10 shadow-[0_8px_32px_rgba(0,0,0,0.3)]"
+            className="border-[#2585F4]/40 text-[#2585F4] hover:bg-[#2585F4]/10"
           >
             Enviar para Advogado
           </Button>
@@ -265,7 +265,6 @@ export function CaseDetailFeature({ report, reportId }: CaseDetailFeatureProps) 
           }
           onClick={() => downloadPdf(reportId)}
           disabled={isDownloading}
-          className="shadow-[0_8px_32px_rgba(37,133,244,0.45)]"
         >
           {isDownloading ? "Baixando..." : "Baixar Relatório"}
         </Button>
