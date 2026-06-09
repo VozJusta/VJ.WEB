@@ -19,7 +19,31 @@ export interface HistoryResponse {
   messages: ConversationMessage[];
 }
 
+export interface EvidenceResponse {
+  id: string;
+  url: string;
+  public_id: string;
+  ocr_content: string;
+  citizen_id: string;
+  created_at: string;
+}
+
 export const chatService = {
+  async uploadEvidence(file: File): Promise<EvidenceResponse> {
+    const formData = new FormData();
+    formData.append('file', file);
+    const response = await apiFetch('/citizen/me/evidence', {
+      method: 'POST',
+      body: formData,
+    });
+    if (!response.ok) {
+      const err = await response.json().catch(() => ({}));
+      throw new Error(err.message || 'Erro ao enviar evidência');
+    }
+    return response.json();
+  },
+
+
   async startConversation(message: string): Promise<ConversationResponse> {
     const response = await apiFetch('/report/conversation/start', {
       method: 'POST',
