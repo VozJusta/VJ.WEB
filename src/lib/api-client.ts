@@ -42,8 +42,12 @@ async function refreshAccessToken(): Promise<string> {
 
   const data = await response.json();
   const newAccessToken: string = data.access_token;
+  const newRefreshToken: string | undefined = data.refresh_token;
 
   authStorage.setAccessToken(newAccessToken);
+  if (newRefreshToken) {
+    authStorage.setRefreshToken(newRefreshToken);
+  }
 
   return newAccessToken;
 }
