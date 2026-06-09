@@ -6,6 +6,7 @@ export interface StoredMessage {
   content: string;
   role: 'user' | 'assistant';
   timestamp: string;
+  attachment?: { name: string; type: 'pdf' | 'image' };
 }
 
 interface ChatStore {

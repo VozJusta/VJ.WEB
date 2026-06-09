@@ -2,7 +2,7 @@
 
 import { formatDistanceToNow } from "date-fns/formatDistanceToNow";
 import { ptBR } from "date-fns/locale/pt-BR";
-import { AutoAwesomeRounded } from "@mui/icons-material";
+import { AutoAwesomeRounded, PictureAsPdfRounded, ImageRounded } from "@mui/icons-material";
 import { cn } from "@/lib/utils";
 import type { MessageBubbleProps } from "./message-bubble.types";
 
@@ -10,6 +10,7 @@ export function MessageBubble({
   role,
   content,
   timestamp,
+  attachment,
   quickActions,
   onQuickAction,
 }: MessageBubbleProps) {
@@ -77,6 +78,22 @@ export function MessageBubble({
               : "bg-primary text-primary-foreground",
           )}
         >
+          {attachment && (
+            <div className="mb-3 flex items-center gap-2 rounded-xl border border-white/20 bg-white/10 px-3 py-2">
+              {attachment.type === 'pdf' ? (
+                <PictureAsPdfRounded sx={{ fontSize: 18 }} aria-hidden="true" className="shrink-0 opacity-80" />
+              ) : attachment.previewUrl ? (
+                <img
+                  src={attachment.previewUrl}
+                  alt={attachment.name}
+                  className="h-8 w-8 shrink-0 rounded-md object-cover"
+                />
+              ) : (
+                <ImageRounded sx={{ fontSize: 18 }} aria-hidden="true" className="shrink-0 opacity-80" />
+              )}
+              <span className="truncate text-xs font-medium opacity-90">{attachment.name}</span>
+            </div>
+          )}
           <p className="text-sm leading-relaxed whitespace-pre-wrap">
             {content}
           </p>

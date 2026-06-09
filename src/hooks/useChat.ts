@@ -9,6 +9,7 @@ interface ChatMessage {
   content: string;
   role: 'user' | 'assistant';
   timestamp: Date;
+  attachment?: { name: string; type: 'pdf' | 'image'; previewUrl?: string };
 }
 
 function toUiMessage(msg: ConversationMessage): ChatMessage {
@@ -25,7 +26,15 @@ function storedToUi(msg: StoredMessage): ChatMessage {
 }
 
 function uiToStored(msg: ChatMessage): StoredMessage {
-  return { ...msg, timestamp: msg.timestamp.toISOString() };
+  return {
+    id: msg.id,
+    content: msg.content,
+    role: msg.role,
+    timestamp: msg.timestamp.toISOString(),
+    attachment: msg.attachment
+      ? { name: msg.attachment.name, type: msg.attachment.type }
+      : undefined,
+  };
 }
 
 export function useChat() {
@@ -134,11 +143,14 @@ export function useChat() {
   );
 
   const sendMessage = useCallback(
-    async (message: string) => {
+    async (
+      message: string,
+      attachment?: ChatMessage['attachment'],
+    ) => {
       if (!message.trim() || isLoading || isFinished || !conversationId) return;
 
       const tempId = `${Date.now()}-user`;
-      const newMsg: ChatMessage = { id: tempId, content: message, role: 'user', timestamp: new Date() };
+      const newMsg: ChatMessage = { id: tempId, content: message, role: 'user', timestamp: new Date(), attachment };
       const updated = [...messages, newMsg];
       syncMessages(updated);
       setInputValue('');

@@ -8,8 +8,7 @@ import { ChatInput } from "@/components/ui/chat-input";
 import { Button } from "@/components/ui/button";
 import { useChat } from "@/hooks/useChat";
 import { chatService } from "@/services/chat.service";
-import { evidenceService } from "@/services/evidence.service";
-import { useToast } from "@/components/ui/toast/toast-provider";
+import { extractPdfText } from "@/lib/pdf-extract";
 
 interface AIChatFeatureProps {
   conversationId?: string;
@@ -36,7 +35,7 @@ export function AIChatFeature({ conversationId, caseId }: AIChatFeatureProps) {
 
   const [isRecording, setIsRecording] = useState(false);
   const [isTranscribing, setIsTranscribing] = useState(false);
-  const [isUploading, setIsUploading] = useState(false);
+  const [isProcessingFile, setIsProcessingFile] = useState(false);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const chunksRef = useRef<Blob[]>([]);
 
@@ -45,6 +44,50 @@ export function AIChatFeature({ conversationId, caseId }: AIChatFeatureProps) {
       loadHistory(conversationId);
     }
   }, [conversationId]);
+
+  const handleFileUpload = async (file: File) => {
+    const isPdf = file.type === 'application/pdf';
+    const isImage = file.type.startsWith('image/');
+    if (!isPdf && !isImage) return;
+
+    setIsProcessingFile(true);
+    const previewUrl = isImage ? URL.createObjectURL(file) : undefined;
+    const attachment = {
+      name: file.name,
+      type: (isPdf ? 'pdf' : 'image') as 'pdf' | 'image',
+      previewUrl,
+    };
+
+    try {
+      let extractedText: string;
+
+      if (isPdf) {
+        extractedText = await extractPdfText(file);
+        if (!extractedText.trim()) {
+          extractedText = '(Não foi possível extrair texto deste PDF)';
+        }
+      } else {
+        const evidence = await chatService.uploadEvidence(file);
+        extractedText = evidence.ocr_content ?? '';
+        if (!extractedText.trim()) {
+          extractedText = '(Nenhum texto identificado na imagem)';
+        }
+      }
+
+      const messageText = isPdf
+        ? `Continue com as informações do PDF:\n\n${extractedText}`
+        : `Continue com as informações da imagem:\n\n${extractedText}`;
+
+      await sendMessage(messageText, attachment);
+    } catch {
+      // silent failure — user can try again
+    } finally {
+      if (previewUrl) URL.revokeObjectURL(previewUrl);
+      setIsProcessingFile(false);
+    }
+  };
+
+  // No auto-redirect: show completion banner and let user click through
 
   const handleVoiceRecord = async () => {
     if (isRecording) {
@@ -140,6 +183,7 @@ export function AIChatFeature({ conversationId, caseId }: AIChatFeatureProps) {
               role={message.role}
               content={message.content}
               timestamp={message.timestamp}
+              attachment={message.attachment}
             />
           ))}
 
@@ -202,11 +246,11 @@ export function AIChatFeature({ conversationId, caseId }: AIChatFeatureProps) {
             onChange={setInputValue}
             onSend={() => sendMessage(inputValue)}
             onVoiceRecord={handleVoiceRecord}
-            onFileAttach={handleFileAttach}
+            onFileUpload={handleFileUpload}
             disabled={isLoading || isFinished || isFetchingHistory}
             isRecording={isRecording}
             isTranscribing={isTranscribing}
-            isUploading={isUploading}
+            isProcessingFile={isProcessingFile}
             maxHeight={160}
           />
         </div>
