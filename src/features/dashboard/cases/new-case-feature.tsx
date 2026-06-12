@@ -5,9 +5,6 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import {
   ArrowBackRounded,
-  ShoppingCartRounded,
-  WorkRounded,
-  MoreHorizRounded,
   HourglassEmptyRounded,
   AutoAwesomeRounded,
   AttachFileRounded,
@@ -19,51 +16,11 @@ import { extractPdfText } from "@/lib/pdf-extract";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { VoiceRecorder } from "@/components/ui/voice-recorder";
-import { Checkbox } from "@/components/ui/checkbox";
 import { useChat } from "@/hooks/useChat";
 import { chatService } from "@/services/chat.service";
 
-type CategoryId = "trabalhista" | "consumidor" | "outros";
-
-type Category = {
-  id: CategoryId;
-  label: string;
-  description: string;
-  icon: React.ElementType;
-  iconBg: string;
-  iconColor: string;
-};
-
-const CATEGORIES: Category[] = [
-  {
-    id: "trabalhista",
-    label: "Trabalhista",
-    description: "Problemas no emprego ou rescisões",
-    icon: WorkRounded,
-    iconBg: "bg-orange-500/15",
-    iconColor: "text-orange-400",
-  },
-  {
-    id: "consumidor",
-    label: "Consumidor",
-    description: "Compras, serviços ou cobranças indevidas",
-    icon: ShoppingCartRounded,
-    iconBg: "bg-blue-500/15",
-    iconColor: "text-blue-400",
-  },
-  {
-    id: "outros",
-    label: "Outros",
-    description: "Família, imobiliário ou outros temas",
-    icon: MoreHorizRounded,
-    iconBg: "bg-white/08",
-    iconColor: "text-white/50",
-  },
-];
-
 export function NewCaseFeature() {
   const router = useRouter();
-  const [selectedCategory, setSelectedCategory] = useState<CategoryId | null>(null);
   const [story, setStory] = useState("");
   const [isRecording, setIsRecording] = useState(false);
   const [isTranscribing, setIsTranscribing] = useState(false);
@@ -179,14 +136,14 @@ export function NewCaseFeature() {
     setExtractedFileContent('');
   };
 
-  const canSubmit = !!selectedCategory && (story.trim().length > 0 || !!attachedFile) && !isLoading && !isTranscribing && !isProcessingFile;
+  const canSubmit = (story.trim().length > 0 || !!attachedFile) && !isLoading && !isTranscribing && !isProcessingFile;
 
   const handleSubmit = async () => {
     if (!canSubmit) return;
     const fullStory = extractedFileContent
       ? story.trim() ? `${story}\n\n${extractedFileContent}` : extractedFileContent
       : story;
-    await startAnalysis(fullStory, selectedCategory!);
+    await startAnalysis(fullStory, 'outros');
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
@@ -210,59 +167,6 @@ export function NewCaseFeature() {
           Relatar Novo Caso
         </h1>
       </header>
-
-      <section aria-labelledby="category-heading">
-        <h2
-          id="category-heading"
-          className="text-xs font-semibold tracking-widest uppercase text-white/40 mb-3"
-        >
-          Selecione uma categoria
-        </h2>
-
-        <ul className="flex flex-col divide-y divide-[#1B2233] rounded-2xl border border-[#1B2233] overflow-hidden">
-          {CATEGORIES.map((cat) => {
-            const Icon = cat.icon;
-            const isSelected = selectedCategory === cat.id;
-
-            return (
-              <li key={cat.id}>
-                <button
-                  type="button"
-                  onClick={() => setSelectedCategory(cat.id)}
-                  aria-pressed={isSelected}
-                  className={cn(
-                    "w-full flex items-center gap-4 px-5 py-4 text-left transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[#2585F4]",
-                    isSelected ? "bg-[#111c30]" : "bg-[#0d1526] hover:bg-[#111c30]",
-                  )}
-                >
-                  <span
-                    className={cn(
-                      "flex shrink-0 items-center justify-center w-10 h-10 rounded-xl",
-                      cat.iconBg,
-                      cat.iconColor,
-                    )}
-                    aria-hidden
-                  >
-                    <Icon fontSize="small" />
-                  </span>
-
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-semibold text-white">{cat.label}</p>
-                    <p className="text-xs text-white/45">{cat.description}</p>
-                  </div>
-
-                  <Checkbox
-                    checked={isSelected}
-                    onChange={() => setSelectedCategory(cat.id)}
-                    aria-label={`Selecionar categoria ${cat.label}`}
-                    className="shrink-0"
-                  />
-                </button>
-              </li>
-            );
-          })}
-        </ul>
-      </section>
 
       <section aria-labelledby="story-heading">
         <header className="flex items-center justify-between mb-3">

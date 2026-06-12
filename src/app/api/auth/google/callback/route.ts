@@ -35,6 +35,13 @@ export async function GET(request: Request) {
       response.headers.get("X-Security-Token") ||
       "";
 
+    const contentType = response.headers.get('content-type') ?? '';
+    if (!contentType.includes('application/json')) {
+      return NextResponse.redirect(
+        new URL('/login?error=authentication_failed', request.url)
+      );
+    }
+
     const authData = await response.json();
 
     if (authData.error || authData.status === 'error') {

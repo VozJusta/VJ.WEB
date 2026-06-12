@@ -84,7 +84,7 @@ export function CasesSection() {
                 id={report.id}
                 title={report.title || getCategoryLabel(report.category_detected) || "Caso"}
                 status={statusMap(report.status)}
-                updatedLabel={new Date(report.created_at).toLocaleDateString('pt-BR')}
+                updatedLabel={new Date(report.created_at.includes('T') ? report.created_at : report.created_at + 'T12:00:00').toLocaleDateString('pt-BR')}
                 protocol={`#${report.id.slice(0, 8).toUpperCase()}`}
                 href={report.caseId ? `/dashboard/casos/${report.id}?caseId=${report.caseId}` : `/dashboard/casos/${report.id}`}
               />

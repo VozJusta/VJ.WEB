@@ -9,7 +9,11 @@ export function useLawyerCaseDetail(caseId: string) {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!caseId) return;
+    if (!caseId) {
+      setIsLoading(false);
+      setError('caseId não encontrado');
+      return;
+    }
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setIsLoading(true);
     setError(null);

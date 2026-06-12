@@ -38,7 +38,7 @@ export function AllCasesFeature() {
     id: r.id,
     title: r.title || getCategoryLabel(r.category_detected) || "Caso",
     status: apiStatusToCard(r.status),
-    updatedLabel: new Date(r.created_at).toLocaleDateString("pt-BR"),
+    updatedLabel: new Date(r.created_at.includes('T') ? r.created_at : r.created_at + 'T12:00:00').toLocaleDateString("pt-BR"),
     protocol: `#${r.id.slice(0, 8).toUpperCase()}`,
     href: r.caseId ? `/dashboard/casos/${r.id}?caseId=${r.caseId}` : `/dashboard/casos/${r.id}`,
   }));

@@ -1,5 +1,6 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { formatDistanceToNow } from "date-fns/formatDistanceToNow";
 import { ptBR } from "date-fns/locale/pt-BR";
 import {
@@ -44,7 +45,16 @@ function resolveKey(type: string): IconKey {
   return "default";
 }
 
+const navRoutes: Partial<Record<IconKey, string>> = {
+  NEW_REQUEST: '/advogado/solicitacoes',
+  CASE_ACCEPTED: '/dashboard/casos',
+  CASE_REFUSED: '/dashboard/casos',
+  CASE_UPDATED: '/dashboard/casos',
+  MESSAGE: '/dashboard/casos',
+};
+
 export function NotificationCard({ notification, onMarkAsRead, onDelete }: NotificationCardProps) {
+  const router = useRouter();
   const key = resolveKey(notification.type);
   const Icon = iconMap[key];
   const colors = colorMap[key];
@@ -58,6 +68,8 @@ export function NotificationCard({ notification, onMarkAsRead, onDelete }: Notif
     if (!notification.is_read && onMarkAsRead) {
       onMarkAsRead(notification.id);
     }
+    const route = navRoutes[key];
+    if (route) router.push(route);
   };
 
   return (

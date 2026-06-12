@@ -53,6 +53,7 @@ export function SimulatorSession() {
   const [elapsedSeconds, setElapsedSeconds] = useState(0);
   const [isTranscribing, setIsTranscribing] = useState(false);
   const [transcriptionError, setTranscriptionError] = useState<string | null>(null);
+  const [textInput, setTextInput] = useState('');
   // Tracks manual termination so audio is blocked even before WebSocket confirms
   const [isManuallyEnded, setIsManuallyEnded] = useState(false);
 
@@ -89,6 +90,11 @@ export function SimulatorSession() {
   }, []);
 
   const hasNavigatedRef = useRef(false);
+  const reportIdRef = useRef<string | null>(null);
+
+  useEffect(() => {
+    reportIdRef.current = reportId;
+  }, [reportId]);
 
   const buildFeedbackPath = (rId: string | null) => {
     const params = new URLSearchParams();
@@ -100,7 +106,7 @@ export function SimulatorSession() {
   };
 
   useEffect(() => {
-    if ((status === 'Completed' || status === 'TimedOut') && !hasNavigatedRef.current) {
+    if ((status === 'Completed' || status === 'TimedOut') && reportId && !hasNavigatedRef.current) {
       hasNavigatedRef.current = true;
       router.push(buildFeedbackPath(reportId));
     }
@@ -189,12 +195,13 @@ export function SimulatorSession() {
       setIsPaused(false);
     }
     stop();
+    // Fallback: navigate after 15s if reportId never arrives
     setTimeout(() => {
       if (!hasNavigatedRef.current) {
         hasNavigatedRef.current = true;
-        router.push(buildFeedbackPath(reportId));
+        router.push(buildFeedbackPath(reportIdRef.current));
       }
-    }, 4000);
+    }, 15000);
   };
 
   const canRecord = !isLoading && !isSpeaking && !isTranscribing && !isSessionEnded;
@@ -340,6 +347,42 @@ export function SimulatorSession() {
               {isRecording ? <StopIcon /> : <MicIcon />}
             </button>
           </div>
+
+          {!isSessionEnded && (
+            <div className="mt-4 flex gap-2">
+              <textarea
+                value={textInput}
+                onChange={(e) => setTextInput(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' && !e.shiftKey && textInput.trim()) {
+                    e.preventDefault();
+                    sendChat(textInput.trim());
+                    setTextInput('');
+                  }
+                }}
+                placeholder={t("simulator.session.typeMessage") || "Digite sua mensagem..."}
+                rows={2}
+                disabled={isLoading || isSpeaking || isTranscribing}
+                className="flex-1 resize-none rounded-xl bg-gray-800 px-3 py-2 text-sm text-white placeholder:text-gray-500 border border-gray-700 focus:outline-none focus:ring-2 focus:ring-[#2585F4] disabled:opacity-50"
+              />
+              <button
+                type="button"
+                onClick={() => {
+                  if (textInput.trim()) {
+                    sendChat(textInput.trim());
+                    setTextInput('');
+                  }
+                }}
+                disabled={!textInput.trim() || isLoading || isSpeaking || isTranscribing}
+                className="self-end flex h-10 w-10 items-center justify-center rounded-xl bg-[#2585F4] text-white transition-all hover:bg-[#1978E5] disabled:opacity-50 disabled:cursor-not-allowed shrink-0"
+                aria-label="Enviar mensagem"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5">
+                  <path d="M3.478 2.405a.75.75 0 00-.926.94l2.432 7.905H13.5a.75.75 0 010 1.5H4.984l-2.432 7.905a.75.75 0 00.926.94 60.519 60.519 0 0018.445-8.986.75.75 0 000-1.218A60.517 60.517 0 003.478 2.405z" />
+                </svg>
+              </button>
+            </div>
+          )}
 
           {isSessionEnded && (
             <p className="mt-3 text-center text-xs text-white/50">{t("simulator.session.sessionEnded")}</p>

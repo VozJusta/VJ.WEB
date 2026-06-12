@@ -33,7 +33,7 @@ export function RequestsList() {
     citizenInitials: r.clientName.split(' ').slice(0, 2).map((n: string) => n[0]).join(''),
     area: getCategoryLabel(r.category_detected) || 'Geral',
     status: apiStatusToUi(r.statusCase),
-    createdAt: new Date(r.created_at).toLocaleDateString('pt-BR'),
+    createdAt: new Date(r.created_at.includes('T') ? r.created_at : r.created_at + 'T12:00:00').toLocaleDateString('pt-BR'),
   }));
 
   const counts = useMemo(() => ({

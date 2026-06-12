@@ -73,8 +73,7 @@ export function RoleSelectionModal({
           <button
             type="button"
             onClick={onClose}
-            disabled={isLoading}
-            className="w-full rounded-lg border border-white/10 bg-white/5 px-4 py-2 text-sm text-white/70 transition-all hover:bg-white/10 hover:text-white disabled:opacity-50"
+            className="w-full rounded-lg border border-white/10 bg-white/5 px-4 py-2 text-sm text-white/70 transition-all hover:bg-white/10 hover:text-white"
           >
             Cancelar
           </button>

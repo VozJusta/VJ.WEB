@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { CheckCircleRounded } from "@mui/icons-material";
+import { CheckCircleRounded, PictureAsPdfRounded, ImageRounded, CloseRounded } from "@mui/icons-material";
 import { MessageBubble } from "@/components/ui/message-bubble";
 import { ChatInput } from "@/components/ui/chat-input";
 import { Button } from "@/components/ui/button";
@@ -32,6 +32,12 @@ export function AIChatFeature({ conversationId, caseId }: AIChatFeatureProps) {
   const [isRecording, setIsRecording] = useState(false);
   const [isTranscribing, setIsTranscribing] = useState(false);
   const [isProcessingFile, setIsProcessingFile] = useState(false);
+  const [pendingFile, setPendingFile] = useState<{
+    file: File;
+    name: string;
+    type: 'pdf' | 'image';
+    previewUrl?: string;
+  } | null>(null);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const chunksRef = useRef<Blob[]>([]);
 
@@ -42,45 +48,50 @@ export function AIChatFeature({ conversationId, caseId }: AIChatFeatureProps) {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [conversationId]);
 
-  const handleFileUpload = async (file: File) => {
+  const handleFileUpload = (file: File) => {
     const isPdf = file.type === 'application/pdf';
     const isImage = file.type.startsWith('image/');
     if (!isPdf && !isImage) return;
 
-    setIsProcessingFile(true);
     const previewUrl = isImage ? URL.createObjectURL(file) : undefined;
-    const attachment = {
-      name: file.name,
-      type: (isPdf ? 'pdf' : 'image') as 'pdf' | 'image',
-      previewUrl,
-    };
+    setPendingFile({ file, name: file.name, type: isPdf ? 'pdf' : 'image', previewUrl });
+  };
 
-    try {
-      let extractedText: string;
+  const handleRemovePendingFile = () => {
+    if (pendingFile?.previewUrl) URL.revokeObjectURL(pendingFile.previewUrl);
+    setPendingFile(null);
+  };
 
-      if (isPdf) {
-        extractedText = await extractPdfText(file);
-        if (!extractedText.trim()) {
-          extractedText = '(Não foi possível extrair texto deste PDF)';
+  const handleSend = async () => {
+    if (!pendingFile && !inputValue.trim()) return;
+
+    if (pendingFile) {
+      const { file, name, type, previewUrl } = pendingFile;
+      setIsProcessingFile(true);
+      const attachment = { name, type, previewUrl };
+      try {
+        let extractedText: string;
+        if (type === 'pdf') {
+          extractedText = await extractPdfText(file);
+          if (!extractedText.trim()) extractedText = '(Não foi possível extrair texto deste PDF)';
+        } else {
+          const evidence = await chatService.uploadEvidence(file);
+          extractedText = evidence.ocr_content ?? '';
+          if (!extractedText.trim()) extractedText = '(Nenhum texto identificado na imagem)';
         }
-      } else {
-        const evidence = await chatService.uploadEvidence(file);
-        extractedText = evidence.ocr_content ?? '';
-        if (!extractedText.trim()) {
-          extractedText = '(Nenhum texto identificado na imagem)';
-        }
+        const apiText = type === 'pdf'
+          ? `Continue com as informações do PDF:\n\n${extractedText}`
+          : `Continue com as informações da imagem:\n\n${extractedText}`;
+        await sendMessage(inputValue, attachment, apiText);
+      } catch {
+        // silent failure — user can try again
+      } finally {
+        if (previewUrl) URL.revokeObjectURL(previewUrl);
+        setPendingFile(null);
+        setIsProcessingFile(false);
       }
-
-      const apiText = isPdf
-        ? `Continue com as informações do PDF:\n\n${extractedText}`
-        : `Continue com as informações da imagem:\n\n${extractedText}`;
-
-      await sendMessage('', attachment, apiText);
-    } catch {
-      // silent failure — user can try again
-    } finally {
-      if (previewUrl) URL.revokeObjectURL(previewUrl);
-      setIsProcessingFile(false);
+    } else {
+      await sendMessage(inputValue);
     }
   };
 
@@ -218,10 +229,31 @@ export function AIChatFeature({ conversationId, caseId }: AIChatFeatureProps) {
       {/* Sticky input — always visible at the bottom of the viewport */}
       <div className="sticky bottom-0 z-10 border-t border-(--border-subtle) bg-surface px-4 pb-4 pt-3 md:px-6">
         <div className="mx-auto max-w-4xl">
+          {pendingFile && (
+            <div className="mb-2 flex items-center gap-2 rounded-lg border border-white/10 bg-white/5 px-3 py-2">
+              {pendingFile.type === 'pdf' ? (
+                <PictureAsPdfRounded fontSize="small" className="text-red-400 shrink-0" aria-hidden />
+              ) : pendingFile.previewUrl ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={pendingFile.previewUrl} alt="" className="h-8 w-8 rounded object-cover shrink-0" />
+              ) : (
+                <ImageRounded fontSize="small" className="text-blue-400 shrink-0" aria-hidden />
+              )}
+              <span className="flex-1 truncate text-xs text-white/70">{pendingFile.name}</span>
+              <button
+                type="button"
+                onClick={handleRemovePendingFile}
+                className="shrink-0 text-white/30 hover:text-white/70 transition-colors"
+                aria-label="Remover arquivo"
+              >
+                <CloseRounded fontSize="small" />
+              </button>
+            </div>
+          )}
           <ChatInput
             value={inputValue}
             onChange={setInputValue}
-            onSend={() => sendMessage(inputValue)}
+            onSend={handleSend}
             onVoiceRecord={handleVoiceRecord}
             onFileUpload={handleFileUpload}
             disabled={isLoading || isFinished || isFetchingHistory}

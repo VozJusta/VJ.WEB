@@ -4,6 +4,23 @@ const cpfRegex = /^\d{3}\.\d{3}\.\d{3}-\d{2}$/;
 const phoneRegex = /^\(\d{2}\) \d{5}-\d{4}$/;
 const oabNumberRegex = /^\d{4,6}$/;
 
+export const SPECIALIZATIONS = [
+  "Direito Civil",
+  "Direito Trabalhista",
+  "Direito do Consumidor",
+  "Direito de Família",
+  "Direito Penal",
+  "Direito Tributário",
+  "Direito Imobiliário",
+  "Direito Empresarial",
+  "Direito Previdenciário",
+  "Direito Ambiental",
+  "Direito Digital",
+  "Direito da Saúde",
+  "Direito Bancário",
+  "Outros",
+] as const;
+
 const OAB_STATES = [
   "AC", "AL", "AM", "AP", "BA", "CE", "DF", "ES", "GO",
   "MA", "MG", "MS", "MT", "PA", "PB", "PE", "PI", "PR",
@@ -30,8 +47,7 @@ export const completeRegisterLawyerSchema = z
     specialization: z
       .string()
       .min(1, "Especialidade é obrigatória")
-      .min(3, "Especialidade deve ter pelo menos 3 caracteres")
-      .max(100, "Especialidade muito longa"),
+      .refine((val) => SPECIALIZATIONS.includes(val as typeof SPECIALIZATIONS[number]), "Especialidade inválida"),
 
     phone: z
       .string()

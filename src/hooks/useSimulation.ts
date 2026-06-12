@@ -109,10 +109,19 @@ export function useSimulation() {
     pendingEndStatusRef.current = null;
 
     try {
-      // Step 1: create simulation via REST, get simulationId
-      const sim = await simulationService.start(personality);
-      const simId = sim.id;
-      setSimulationId(simId);
+      // Check for existing simulation to prevent page reload creating a new one
+      const savedSimId = typeof window !== 'undefined' ? sessionStorage.getItem('vj_sim_id') : null;
+
+      let simId: string;
+      if (savedSimId) {
+        simId = savedSimId;
+        setSimulationId(simId);
+      } else {
+        const sim = await simulationService.start(personality);
+        simId = sim.id;
+        setSimulationId(simId);
+        if (typeof window !== 'undefined') sessionStorage.setItem('vj_sim_id', simId);
+      }
 
       const token = authStorage.getAccessToken();
       const apiUrl = process.env.NEXT_PUBLIC_API_URL!;
@@ -158,6 +167,8 @@ export function useSimulation() {
       });
 
       socket.on('simulation:end', (payload: { simulationId: string; status: string }) => {
+        if (typeof window !== 'undefined') sessionStorage.removeItem('vj_sim_id');
+
         const endStatus: SimulationStatus =
           payload.status === 'Completed' ? 'Completed' : 'TimedOut';
 
@@ -244,6 +255,7 @@ export function useSimulation() {
   }, [simulationId]);
 
   const reset = useCallback(() => {
+    if (typeof window !== 'undefined') sessionStorage.removeItem('vj_sim_id');
     disconnectSocket();
     simulationStartedRef.current = false;
     pendingEndStatusRef.current = null;

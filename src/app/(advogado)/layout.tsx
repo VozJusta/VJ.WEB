@@ -7,6 +7,7 @@ import { Sidebar } from "@/components/layout/sidebar";
 import { DashboardHeader } from "@/components/layout/dashboard-header";
 import { lawyerMainNav, lawyerBottomNav } from "@/components/layout/sidebar/sidebar-lawyer.navigation";
 import { GoogleAuthHandler } from "@/features/auth/google-auth-handler";
+import { NotificationsInitializer } from "@/components/notifications-initializer";
 import { useAuth } from "@/contexts/auth-context";
 import { useAuthStore } from "@/store/auth.store";
 import { authStorage } from "@/lib/auth";
@@ -50,6 +51,7 @@ export default function LawyerLayout({
     <Suspense fallback={null}>
       <GoogleAuthHandler />
     </Suspense>
+    <NotificationsInitializer />
     <div className="layout-bg min-h-screen">
       <Sidebar
         isOpen={isSidebarOpen}

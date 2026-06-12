@@ -172,7 +172,7 @@ export default function LawyerDashboardPage() {
                     key={item.id}
                     request={{
                       id: item.id,
-                      score: Math.round(item.confidence_score),
+                      score: Math.round(item.confidence_score * 100),
                       title: item.title,
                       description: getCategoryLabel(item.category_detected),
                       status: item.status === "Accepted" ? "in_progress" : "pending",

@@ -77,7 +77,14 @@ export const dashboardService = {
       `/dashboard/citizens/me/reports?page=${page}&pageSize=${pageSize}`,
     );
     if (!response.ok) throw new Error('Falha ao buscar relatórios');
-    return response.json();
+    const json = await response.json();
+    if (Array.isArray(json?.user?.data)) {
+      json.user.data = json.user.data.map((r: ReportCard & { case_id?: string }) => {
+        if (!r.caseId && r.case_id) r.caseId = r.case_id;
+        return r;
+      });
+    }
+    return json;
   },
 
   async getReportDetails(reportId: string): Promise<DetailsReport> {
