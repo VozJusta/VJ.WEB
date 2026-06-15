@@ -45,13 +45,20 @@ function resolveKey(type: string): IconKey {
   return "default";
 }
 
-const navRoutes: Partial<Record<IconKey, string>> = {
+const navBaseRoutes: Partial<Record<IconKey, string>> = {
   NEW_REQUEST: '/advogado/solicitacoes',
   CASE_ACCEPTED: '/dashboard/casos',
   CASE_REFUSED: '/dashboard/casos',
   CASE_UPDATED: '/dashboard/casos',
   MESSAGE: '/dashboard/casos',
 };
+
+function resolveNavRoute(key: IconKey, referenceId?: string): string | undefined {
+  const base = navBaseRoutes[key];
+  if (!base) return undefined;
+  if (referenceId) return `${base}/${referenceId}`;
+  return base;
+}
 
 export function NotificationCard({ notification, onMarkAsRead, onDelete }: NotificationCardProps) {
   const router = useRouter();
@@ -68,7 +75,7 @@ export function NotificationCard({ notification, onMarkAsRead, onDelete }: Notif
     if (!notification.is_read && onMarkAsRead) {
       onMarkAsRead(notification.id);
     }
-    const route = navRoutes[key];
+    const route = resolveNavRoute(key, notification.reference_id);
     if (route) router.push(route);
   };
 

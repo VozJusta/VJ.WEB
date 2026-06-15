@@ -474,7 +474,8 @@
       "yourSpeech": "Sua fala",
       "endSession": "Encerrar e Ver Feedback",
       "sessionEnded": "Audiência encerrada — envio de áudio desativado",
-      "paused": "Pausado"
+      "paused": "Pausado",
+      "typeMessage": "Digite sua mensagem..."
     },
     "feedback": {
       "aiProcessing": "Processamento IA",

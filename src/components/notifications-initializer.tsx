@@ -38,6 +38,17 @@ export function NotificationsInitializer() {
       useNotificationsStore.setState((s) => ({ unreadCount: s.unreadCount + 1 }));
     };
 
+    socket.on('connect', () => {
+      // Refetch unread count when socket connects (auth is confirmed ready)
+      notificationsService
+        .getAll(1, 50)
+        .then((data) => {
+          const count = (data.data ?? []).filter((n: ApiNotification) => !n.is_read).length;
+          setUnreadCount(count);
+        })
+        .catch(() => {});
+    });
+
     socket.on('notification', handleNew);
     socket.on('notifications:new', handleNew);
     socket.on('connect_error', () => {});
@@ -45,7 +56,7 @@ export function NotificationsInitializer() {
     return () => {
       socket.disconnect();
     };
-  }, []);
+  }, [setUnreadCount]);
 
   return null;
 }

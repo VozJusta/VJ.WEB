@@ -68,7 +68,7 @@ export function AIChatFeature({ conversationId, caseId }: AIChatFeatureProps) {
     if (pendingFile) {
       const { file, name, type, previewUrl } = pendingFile;
       setIsProcessingFile(true);
-      const attachment = { name, type, previewUrl };
+      const attachment: { name: string; type: 'pdf' | 'image'; previewUrl?: string; url?: string } = { name, type, previewUrl };
       try {
         let extractedText: string;
         if (type === 'pdf') {
@@ -78,6 +78,8 @@ export function AIChatFeature({ conversationId, caseId }: AIChatFeatureProps) {
           const evidence = await chatService.uploadEvidence(file);
           extractedText = evidence.ocr_content ?? '';
           if (!extractedText.trim()) extractedText = '(Nenhum texto identificado na imagem)';
+          // Store the permanent server URL so image stays visible after blob URL is revoked
+          if (evidence.url) attachment.url = evidence.url;
         }
         const apiText = type === 'pdf'
           ? `Continue com as informações do PDF:\n\n${extractedText}`

@@ -109,19 +109,13 @@ export function useSimulation() {
     pendingEndStatusRef.current = null;
 
     try {
-      // Check for existing simulation to prevent page reload creating a new one
-      const savedSimId = typeof window !== 'undefined' ? sessionStorage.getItem('vj_sim_id') : null;
+      // Always start fresh — clear any stale ID from previous sessions
+      if (typeof window !== 'undefined') sessionStorage.removeItem('vj_sim_id');
 
-      let simId: string;
-      if (savedSimId) {
-        simId = savedSimId;
-        setSimulationId(simId);
-      } else {
-        const sim = await simulationService.start(personality);
-        simId = sim.id;
-        setSimulationId(simId);
-        if (typeof window !== 'undefined') sessionStorage.setItem('vj_sim_id', simId);
-      }
+      const sim = await simulationService.start(personality);
+      const simId = sim.id;
+      setSimulationId(simId);
+      if (typeof window !== 'undefined') sessionStorage.setItem('vj_sim_id', simId);
 
       const token = authStorage.getAccessToken();
       const apiUrl = process.env.NEXT_PUBLIC_API_URL!;

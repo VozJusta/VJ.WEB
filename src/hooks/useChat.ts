@@ -9,7 +9,7 @@ interface ChatMessage {
   content: string;
   role: 'user' | 'assistant';
   timestamp: Date;
-  attachment?: { name: string; type: 'pdf' | 'image'; previewUrl?: string };
+  attachment?: { name: string; type: 'pdf' | 'image'; previewUrl?: string; url?: string };
 }
 
 function toUiMessage(msg: ConversationMessage): ChatMessage {
@@ -32,7 +32,7 @@ function uiToStored(msg: ChatMessage): StoredMessage {
     role: msg.role,
     timestamp: msg.timestamp.toISOString(),
     attachment: msg.attachment
-      ? { name: msg.attachment.name, type: msg.attachment.type }
+      ? { name: msg.attachment.name, type: msg.attachment.type, url: msg.attachment.url }
       : undefined,
   };
 }
@@ -87,7 +87,7 @@ export function useChat() {
 
   const startAnalysis = useCallback(
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    async (description: string, category: string) => {
+    async (description: string, category: string, apiContent?: string) => {
       if (!description.trim()) {
         setError('Descreva o ocorrido para iniciar a análise');
         return;
@@ -104,8 +104,10 @@ export function useChat() {
       };
       syncMessages([userMsg]);
 
+      const contentForApi = apiContent ?? description;
+
       try {
-        const data = await chatService.startConversation(description);
+        const data = await chatService.startConversation(contentForApi);
 
         setConversationId(data.conversationId);
         store.setConversationId(data.conversationId);

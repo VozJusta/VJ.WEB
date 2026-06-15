@@ -9,6 +9,7 @@ import type { RequestStatus } from "@/components/ui/request-card/request-card.ty
 import type { FilterTabItem } from "@/components/ui/filter-tabs/filter-tabs.types";
 import { useLawyerRequests } from "@/hooks/useLawyerRequests";
 import { getCategoryLabel } from "@/lib/status";
+import { parseApiDate } from "@/lib/utils";
 
 type FilterValue = "all" | RequestStatus;
 
@@ -33,7 +34,7 @@ export function RequestsList() {
     citizenInitials: r.clientName.split(' ').slice(0, 2).map((n: string) => n[0]).join(''),
     area: getCategoryLabel(r.category_detected) || 'Geral',
     status: apiStatusToUi(r.statusCase),
-    createdAt: new Date(r.created_at.includes('T') ? r.created_at : r.created_at + 'T12:00:00').toLocaleDateString('pt-BR'),
+    createdAt: parseApiDate(r.created_at).toLocaleDateString('pt-BR'),
   }));
 
   const counts = useMemo(() => ({

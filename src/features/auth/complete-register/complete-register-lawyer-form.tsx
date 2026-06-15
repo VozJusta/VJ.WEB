@@ -286,9 +286,9 @@ export function CompleteRegisterLawyerForm() {
                 className="w-full bg-transparent text-sm text-white outline-none [&>option]:bg-[#071735]"
               >
                 <option value="">Selecione</option>
-                {SPECIALIZATIONS.map((spec) => (
-                  <option key={spec} value={spec}>
-                    {spec}
+                {SPECIALIZATIONS.map((opt) => (
+                  <option key={opt.value} value={opt.value}>
+                    {opt.label}
                   </option>
                 ))}
               </select>

@@ -26,8 +26,7 @@ export function NewCaseFeature() {
   const [isTranscribing, setIsTranscribing] = useState(false);
   const [elapsed, setElapsed] = useState(0);
   const [isReady, setIsReady] = useState(false);
-  const [attachedFile, setAttachedFile] = useState<{ name: string; type: 'pdf' | 'image' } | null>(null);
-  const [extractedFileContent, setExtractedFileContent] = useState('');
+  const [attachedFile, setAttachedFile] = useState<{ file: File; name: string; type: 'pdf' | 'image' } | null>(null);
   const [isProcessingFile, setIsProcessingFile] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -103,47 +102,50 @@ export function NewCaseFeature() {
     setIsRecording(false);
   };
 
-  const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
     const isPdf = file.type === 'application/pdf';
     const isImage = file.type.startsWith('image/');
     if (!isPdf && !isImage) return;
 
-    setIsProcessingFile(true);
-    setAttachedFile({ name: file.name, type: isPdf ? 'pdf' : 'image' });
-    try {
-      let text: string;
-      if (isPdf) {
-        text = await extractPdfText(file);
-        if (!text.trim()) text = '(Não foi possível extrair texto deste PDF)';
-      } else {
-        const evidence = await chatService.uploadEvidence(file);
-        text = evidence.ocr_content ?? '(Nenhum texto identificado na imagem)';
-      }
-      setExtractedFileContent(text);
-    } catch {
-      setAttachedFile(null);
-      setExtractedFileContent('');
-    } finally {
-      setIsProcessingFile(false);
-      if (fileInputRef.current) fileInputRef.current.value = '';
-    }
+    setAttachedFile({ file, name: file.name, type: isPdf ? 'pdf' : 'image' });
+    if (fileInputRef.current) fileInputRef.current.value = '';
   };
 
   const handleRemoveAttachment = () => {
     setAttachedFile(null);
-    setExtractedFileContent('');
   };
 
   const canSubmit = (story.trim().length > 0 || !!attachedFile) && !isLoading && !isTranscribing && !isProcessingFile;
 
   const handleSubmit = async () => {
     if (!canSubmit) return;
-    const fullStory = extractedFileContent
-      ? story.trim() ? `${story}\n\n${extractedFileContent}` : extractedFileContent
+
+    let extractedContent = '';
+    if (attachedFile) {
+      setIsProcessingFile(true);
+      try {
+        if (attachedFile.type === 'pdf') {
+          extractedContent = await extractPdfText(attachedFile.file);
+          if (!extractedContent.trim()) extractedContent = '(Não foi possível extrair texto deste PDF)';
+        } else {
+          const evidence = await chatService.uploadEvidence(attachedFile.file);
+          extractedContent = evidence.ocr_content ?? '(Nenhum texto identificado na imagem)';
+        }
+      } catch {
+        extractedContent = '';
+      } finally {
+        setIsProcessingFile(false);
+      }
+    }
+
+    const visibleStory = story.trim() || attachedFile?.name || '';
+    const apiContent = extractedContent
+      ? story.trim() ? `${story}\n\n${extractedContent}` : extractedContent
       : story;
-    await startAnalysis(fullStory, 'outros');
+
+    await startAnalysis(visibleStory, 'outros', apiContent || visibleStory);
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {

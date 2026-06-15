@@ -181,8 +181,7 @@ export default function LawyerDashboardPage() {
                       category: getCategoryLabel(item.category_detected),
                     }}
                     onClick={() => {
-                      const query = new URLSearchParams({ status: item.status });
-                      if (item.caseId) query.set('caseId', item.caseId);
+                      const query = new URLSearchParams({ status: item.status, caseId: item.id });
                       if (item.reportId) query.set('reportId', item.reportId);
                       router.push(`/advogado/solicitacoes/${item.id}?${query.toString()}`);
                     }}

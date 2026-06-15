@@ -1,25 +1,13 @@
 import { z } from "zod";
+import { SPECIALIZATION_OPTIONS } from "@/lib/status";
 
 const cpfRegex = /^\d{3}\.\d{3}\.\d{3}-\d{2}$/;
 const phoneRegex = /^\(\d{2}\) \d{5}-\d{4}$/;
 const oabNumberRegex = /^\d{4,6}$/;
 
-export const SPECIALIZATIONS = [
-  "Direito Civil",
-  "Direito Trabalhista",
-  "Direito do Consumidor",
-  "Direito de Família",
-  "Direito Penal",
-  "Direito Tributário",
-  "Direito Imobiliário",
-  "Direito Empresarial",
-  "Direito Previdenciário",
-  "Direito Ambiental",
-  "Direito Digital",
-  "Direito da Saúde",
-  "Direito Bancário",
-  "Outros",
-] as const;
+export const SPECIALIZATIONS = SPECIALIZATION_OPTIONS;
+
+const VALID_SPECIALIZATION_VALUES = SPECIALIZATION_OPTIONS.map((o) => o.value);
 
 const OAB_STATES = [
   "AC", "AL", "AM", "AP", "BA", "CE", "DF", "ES", "GO",
@@ -47,7 +35,7 @@ export const completeRegisterLawyerSchema = z
     specialization: z
       .string()
       .min(1, "Especialidade é obrigatória")
-      .refine((val) => SPECIALIZATIONS.includes(val as typeof SPECIALIZATIONS[number]), "Especialidade inválida"),
+      .refine((val) => VALID_SPECIALIZATION_VALUES.includes(val as typeof VALID_SPECIALIZATION_VALUES[number]), "Especialidade inválida"),
 
     phone: z
       .string()

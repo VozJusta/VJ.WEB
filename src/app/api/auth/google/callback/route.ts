@@ -5,8 +5,10 @@ export async function GET(request: Request) {
   const code = url.searchParams.get("code");
   const state = url.searchParams.get("state");
 
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? new URL(request.url).origin;
+
   if (!code) {
-    return NextResponse.redirect(new URL("/login?error=no_code", request.url));
+    return NextResponse.redirect(`${appUrl}/login?error=no_code`);
   }
 
   try {
@@ -37,16 +39,14 @@ export async function GET(request: Request) {
 
     const contentType = response.headers.get('content-type') ?? '';
     if (!contentType.includes('application/json')) {
-      return NextResponse.redirect(
-        new URL('/login?error=authentication_failed', request.url)
-      );
+      return NextResponse.redirect(`${appUrl}/login?error=authentication_failed`);
     }
 
     const authData = await response.json();
 
     if (authData.error || authData.status === 'error') {
       return NextResponse.redirect(
-        new URL(`/login?error=${encodeURIComponent(authData.error ?? 'authentication_failed')}`, request.url)
+        `${appUrl}/login?error=${encodeURIComponent(authData.error ?? 'authentication_failed')}`
       );
     }
 
@@ -56,9 +56,7 @@ export async function GET(request: Request) {
       const errorMsg = returnedRole === 'lawyer'
         ? 'Este email está cadastrado como Advogado. Acesse a área de Advogados.'
         : 'Este email está cadastrado como Cidadão. Acesse a área de Cidadãos.';
-      return NextResponse.redirect(
-        new URL(`/login?error=${encodeURIComponent(errorMsg)}`, request.url)
-      );
+      return NextResponse.redirect(`${appUrl}/login?error=${encodeURIComponent(errorMsg)}`);
     }
 
     const enrichedData = {
@@ -73,9 +71,6 @@ export async function GET(request: Request) {
     const rawRole =
       authData.role?.toLowerCase?.() ?? state?.split("|")[0] ?? "citizen";
     const role = rawRole === "lawyer" ? "lawyer" : "citizen";
-
-    const appUrl =
-      process.env.NEXT_PUBLIC_APP_URL ?? new URL(request.url).origin;
 
     const redirectUrl = new URL("/auth/callback", appUrl);
     redirectUrl.searchParams.set("authData", encodedData);
@@ -98,8 +93,6 @@ export async function GET(request: Request) {
 
     return redirectResponse;
   } catch {
-    return NextResponse.redirect(
-      new URL("/login?error=authentication_failed", request.url),
-    );
+    return NextResponse.redirect(`${appUrl}/login?error=authentication_failed`);
   }
 }
