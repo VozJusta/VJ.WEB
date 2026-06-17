@@ -88,6 +88,15 @@ summary {
   50% { transform: scaleY(1); }
 }
 
+@keyframes idle-bar {
+  0%, 100% { height: 4px; }
+  50% { height: 18px; }
+}
+
+.animate-idle-bar {
+  animation: idle-bar 1.2s ease-in-out infinite;
+}
+
 @keyframes shimmer {
   0% { transform: translateX(-100%); }
   100% { transform: translateX(300%); }

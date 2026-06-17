@@ -3,6 +3,8 @@
 import { useEffect, useRef, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Button } from '@/components/ui/button';
+import { RobotAvatar } from '@/components/ui/robot-avatar';
+import { AudioWaveform } from '@/components/ui/audio-waveform';
 import PauseIcon from '@mui/icons-material/Pause';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import MicIcon from '@mui/icons-material/Mic';
@@ -60,6 +62,8 @@ export function SimulatorSession() {
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const chunksRef = useRef<Blob[]>([]);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const audioContextRef = useRef<AudioContext | null>(null);
+  const analyserRef = useRef<AnalyserNode | null>(null);
   // Ref so recorder.onstop always reads the latest session state
   const isSessionEndedRef = useRef(false);
 
@@ -132,6 +136,15 @@ export function SimulatorSession() {
     setTranscriptionError(null);
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+
+      const audioContext = new AudioContext();
+      const analyser = audioContext.createAnalyser();
+      analyser.fftSize = 256;
+      const source = audioContext.createMediaStreamSource(stream);
+      source.connect(analyser);
+      audioContextRef.current = audioContext;
+      analyserRef.current = analyser;
+
       const recorder = new MediaRecorder(stream);
       chunksRef.current = [];
 
@@ -171,6 +184,9 @@ export function SimulatorSession() {
 
   const handleStopRecording = () => {
     mediaRecorderRef.current?.stop();
+    audioContextRef.current?.close();
+    audioContextRef.current = null;
+    analyserRef.current = null;
     setIsRecording(false);
     setIsPaused(false);
   };
@@ -225,63 +241,73 @@ export function SimulatorSession() {
 
       <section className="flex flex-1 flex-col gap-4 p-4 md:p-6">
         {/* Judge video area */}
-        <article className="relative overflow-hidden rounded-2xl bg-linear-to-br from-teal-600 to-teal-800 shadow-2xl max-h-80">
-          <div className="aspect-video w-full max-h-80 overflow-hidden">
-            <div className="flex h-full items-end justify-center p-4">
-              {isLoading && (
-                <div className="flex items-center gap-2 rounded-full bg-black/40 px-4 py-2 text-sm text-white">
-                  <span className="h-2 w-2 animate-pulse rounded-full bg-blue-400" />
-                  {t("simulator.session.processing")}
-                </div>
-              )}
-              {(isSpeaking || isAudioPaused) && (
-                <div className="flex items-center gap-2 rounded-full bg-black/40 px-4 py-2 text-sm text-white">
-                  {isAudioPaused ? (
-                    <>
-                      <PauseIcon sx={{ fontSize: 14 }} />
-                      <span>{t("simulator.session.audioPaused")}</span>
-                    </>
-                  ) : (
-                    <>
-                      <span className="relative flex h-2 w-2">
-                        <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-green-400 opacity-75" />
-                        <span className="relative inline-flex h-2 w-2 rounded-full bg-green-400" />
-                      </span>
-                      <span>{t("simulator.session.judgeSpeaking")}</span>
-                    </>
-                  )}
-                  <button
-                    type="button"
-                    onClick={isAudioPaused ? resumeAudio : pauseAudio}
-                    className="ml-1 flex items-center justify-center w-7 h-7 rounded-full bg-white/20 hover:bg-white/30 transition-colors"
-                    aria-label={isAudioPaused ? t("simulator.session.resumeAudio") : t("simulator.session.pauseAudio")}
-                  >
-                    {isAudioPaused
-                      ? <PlayArrowIcon sx={{ fontSize: 16 }} />
-                      : <PauseIcon sx={{ fontSize: 16 }} />
-                    }
-                  </button>
-                </div>
-              )}
-              {isRecording && !isPaused && (
-                <div className="flex items-center gap-2 rounded-full bg-black/30 px-4 py-2 text-sm text-white backdrop-blur-sm">
-                  <span className="relative flex h-2 w-2">
-                    <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-red-500 opacity-75" />
-                    <span className="relative inline-flex h-2 w-2 rounded-full bg-red-500" />
-                  </span>
-                  REC {formatTime(elapsedSeconds)}
-                </div>
-              )}
-              {isPaused && (
-                <div className="flex items-center gap-2 rounded-full bg-black/30 px-4 py-2 text-sm text-white backdrop-blur-sm">
-                  <PauseIcon sx={{ fontSize: 14 }} />
-                  {t("simulator.session.paused")}
-                </div>
-              )}
-            </div>
+        <article className="relative overflow-hidden rounded-2xl bg-[#0D1117] border border-[#1B2233] shadow-2xl">
+          {/* Top status badge */}
+          <div className="absolute top-4 left-1/2 -translate-x-1/2 z-10">
+            {isRecording && !isPaused && (
+              <div className="flex items-center gap-2 rounded-full bg-black/60 px-4 py-1.5 text-sm text-white backdrop-blur-sm border border-white/10">
+                <span className="relative flex h-2 w-2">
+                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-red-500 opacity-75" />
+                  <span className="relative inline-flex h-2 w-2 rounded-full bg-red-500" />
+                </span>
+                REC {formatTime(elapsedSeconds)}
+              </div>
+            )}
+            {isPaused && (
+              <div className="flex items-center gap-2 rounded-full bg-black/60 px-4 py-1.5 text-sm text-white backdrop-blur-sm border border-white/10">
+                <PauseIcon sx={{ fontSize: 14 }} />
+                {t("simulator.session.paused")}
+              </div>
+            )}
+            {isLoading && (
+              <div className="flex items-center gap-2 rounded-full bg-black/60 px-4 py-1.5 text-sm text-white backdrop-blur-sm border border-white/10">
+                <span className="h-2 w-2 animate-pulse rounded-full bg-blue-400" />
+                {t("simulator.session.processing")}
+              </div>
+            )}
+            {(isSpeaking || isAudioPaused) && !isLoading && (
+              <div className="flex items-center gap-2 rounded-full bg-black/60 px-4 py-1.5 text-sm text-white backdrop-blur-sm border border-white/10">
+                {isAudioPaused ? (
+                  <>
+                    <PauseIcon sx={{ fontSize: 14 }} />
+                    <span>{t("simulator.session.audioPaused")}</span>
+                  </>
+                ) : (
+                  <>
+                    <span className="relative flex h-2 w-2">
+                      <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-green-400 opacity-75" />
+                      <span className="relative inline-flex h-2 w-2 rounded-full bg-green-400" />
+                    </span>
+                    <span>{t("simulator.session.judgeSpeaking")}</span>
+                  </>
+                )}
+                <button
+                  type="button"
+                  onClick={isAudioPaused ? resumeAudio : pauseAudio}
+                  className="ml-1 flex items-center justify-center w-7 h-7 rounded-full bg-white/20 hover:bg-white/30 transition-colors"
+                  aria-label={isAudioPaused ? t("simulator.session.resumeAudio") : t("simulator.session.pauseAudio")}
+                >
+                  {isAudioPaused
+                    ? <PlayArrowIcon sx={{ fontSize: 16 }} />
+                    : <PauseIcon sx={{ fontSize: 16 }} />
+                  }
+                </button>
+              </div>
+            )}
           </div>
 
-          <div className="absolute bottom-4 left-4 rounded-lg bg-blue-600/90 px-4 py-2 backdrop-blur-sm">
+          {/* Robot + waveform */}
+          <div className="flex flex-col items-center justify-center gap-5 py-10 px-4">
+            <RobotAvatar size={110} />
+            <AudioWaveform
+              isActive={isRecording && !isPaused}
+              analyserNode={analyserRef.current}
+            />
+          </div>
+
+          {/* Judge name badge */}
+          <div className="absolute bottom-4 left-4 flex items-center gap-2 rounded-lg bg-blue-600/90 px-3 py-1.5 backdrop-blur-sm">
+            <span className="h-2 w-2 rounded-full bg-blue-300" />
             <p className="text-sm font-medium text-white">{judgeName}</p>
           </div>
         </article>
