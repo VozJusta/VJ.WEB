@@ -1,18 +1,41 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { PlanCard } from "@/components/ui/plan-card";
 import { PricingSectionProps, PlanAudience } from "./pricing-section.types";
 import { citizenPlans, lawyerPlans } from "./pricing-section.data";
+import { createCheckoutSession } from "@/services/payment.service";
+import { authStorage } from "@/lib/auth";
 
 export function PricingSection({
   title = "Escolha seu plano",
   className = "",
 }: PricingSectionProps = {}) {
   const [activeAudience, setActiveAudience] = useState<PlanAudience>("citizen");
+  const [loadingPlanId, setLoadingPlanId] = useState<string | null>(null);
+  const router = useRouter();
 
   const currentPlans =
     activeAudience === "citizen" ? citizenPlans : lawyerPlans;
+
+  async function handlePaidPlan(planId: string, planType: string) {
+    const token = authStorage.getAccessToken();
+    if (!token) {
+      router.push("/login");
+      return;
+    }
+
+    setLoadingPlanId(planId);
+    try {
+      const { url } = await createCheckoutSession(planType);
+      router.push(url);
+    } catch {
+      router.push("/login");
+    } finally {
+      setLoadingPlanId(null);
+    }
+  }
 
   return (
     <section
@@ -126,7 +149,12 @@ export function PricingSection({
                 price={plan.price}
                 features={plan.features}
                 ctaText={plan.ctaText}
-                ctaHref={plan.ctaHref}
+                {...(plan.planType
+                  ? {
+                      onCtaClick: () => handlePaidPlan(plan.id, plan.planType!),
+                      ctaLoading: loadingPlanId === plan.id,
+                    }
+                  : { ctaHref: plan.ctaHref })}
                 variant={plan.variant}
                 recommended={plan.recommended}
               />

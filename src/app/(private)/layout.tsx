@@ -6,6 +6,7 @@ import { cn } from "@/lib/utils";
 import { Sidebar } from "@/components/layout/sidebar";
 import { DashboardHeader } from "@/components/layout/dashboard-header";
 import { GoogleAuthHandler } from "@/features/auth/google-auth-handler";
+import { NotificationsInitializer } from "@/components/providers/notifications-initializer";
 import { useAuthStore } from "@/store/auth.store";
 import { authStorage } from "@/lib/auth";
 
@@ -50,6 +51,7 @@ export default function PrivateLayout({
       <Suspense fallback={null}>
         <GoogleAuthHandler />
       </Suspense>
+      <NotificationsInitializer />
       <div className="layout-bg min-h-screen">
         <Sidebar
           isOpen={isSidebarOpen}

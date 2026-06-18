@@ -1,8 +1,8 @@
 "use client";
 
-import { FormEvent, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { ZodError } from "zod";
 import { Email, LockOutline, Visibility, VisibilityOff } from "@mui/icons-material";
 import { Button } from "@/components/ui/button";
@@ -38,7 +38,21 @@ export function LoginForm() {
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
   const { toast } = useToast();
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { setUserRole, setUser, setAuthenticated, setError } = useAuth();
+
+  useEffect(() => {
+    const error = searchParams.get('error');
+    if (error === 'account_conflict') {
+      toast({
+        title: "Conta com método diferente",
+        description: "Este e-mail já está cadastrado com outro método de acesso.",
+        variant: "error",
+      });
+      router.replace('/login');
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();

@@ -10,7 +10,9 @@ import {
   PersonAddAltRounded,
   MessageRounded,
 } from "@mui/icons-material";
+import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
+import { useAuthStore } from "@/store/auth.store";
 import type { ApiNotification } from "@/types/notification.types";
 
 interface NotificationCardProps {
@@ -44,10 +46,20 @@ function resolveKey(type: string): IconKey {
   return "default";
 }
 
+const NOTIFICATION_REDIRECT: Partial<Record<IconKey, { lawyer: string; citizen: string }>> = {
+  NEW_REQUEST: { lawyer: "/advogado/solicitacoes", citizen: "/dashboard/casos" },
+  CASE_ACCEPTED: { lawyer: "/advogado/solicitacoes", citizen: "/dashboard/casos" },
+  CASE_REFUSED: { lawyer: "/advogado/solicitacoes", citizen: "/dashboard/casos" },
+  CASE_UPDATED: { lawyer: "/advogado/solicitacoes", citizen: "/dashboard/casos" },
+  MESSAGE: { lawyer: "/advogado/solicitacoes", citizen: "/dashboard/casos" },
+};
+
 export function NotificationCard({ notification, onMarkAsRead, onDelete }: NotificationCardProps) {
   const key = resolveKey(notification.type);
   const Icon = iconMap[key];
   const colors = colorMap[key];
+  const router = useRouter();
+  const userRole = useAuthStore((s) => s.userRole);
 
   const timeAgo = formatDistanceToNow(new Date(notification.created_at), {
     addSuffix: true,
@@ -57,6 +69,11 @@ export function NotificationCard({ notification, onMarkAsRead, onDelete }: Notif
   const handleClick = () => {
     if (!notification.is_read && onMarkAsRead) {
       onMarkAsRead(notification.id);
+    }
+    const redirectMap = NOTIFICATION_REDIRECT[key];
+    if (redirectMap) {
+      const url = userRole === "lawyer" ? redirectMap.lawyer : redirectMap.citizen;
+      router.push(url);
     }
   };
 

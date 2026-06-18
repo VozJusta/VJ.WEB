@@ -17,6 +17,12 @@ export function GoogleAuthHandler() {
   const router = useRouter();
 
   useEffect(() => {
+    const errorParam = searchParams.get('error');
+    if (errorParam) {
+      router.replace(`/login?error=${errorParam}`);
+      return;
+    }
+
     const authDataParam = searchParams.get('authData');
     if (!authDataParam) return;
 

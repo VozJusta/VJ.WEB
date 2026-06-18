@@ -7,6 +7,7 @@ import { CaseCard } from "@/components/ui/case-card";
 import { EmptyState } from "@/components/ui/empty-state";
 import { useDashboardCitizen } from "@/hooks/useDashboardCitizen";
 import { getCategoryLabel } from "@/lib/status";
+import { parseLocalDate } from "@/lib/date-utils";
 
 const CasesSvg = (
   <svg viewBox="0 0 200 200" className="h-40 w-40 opacity-70" aria-hidden="true" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -84,7 +85,7 @@ export function CasesSection() {
                 id={report.id}
                 title={report.title || getCategoryLabel(report.category_detected) || "Caso"}
                 status={statusMap(report.status)}
-                updatedLabel={new Date(report.created_at).toLocaleDateString('pt-BR')}
+                updatedLabel={parseLocalDate(report.created_at).toLocaleDateString('pt-BR')}
                 protocol={`#${report.id.slice(0, 8).toUpperCase()}`}
                 href={report.caseId ? `/dashboard/casos/${report.id}?caseId=${report.caseId}` : `/dashboard/casos/${report.id}`}
               />

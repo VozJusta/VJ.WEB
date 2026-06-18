@@ -21,6 +21,7 @@ import { useToast } from "@/components/ui/toast/toast-provider";
 import { cn } from "@/lib/utils";
 import { authService, AuthServiceError } from "@/services/auth.service";
 import { authStorage } from "@/lib/auth";
+import { SPECIALIZATION_OPTIONS } from "@/lib/status";
 import {
   completeRegisterLawyerSchema,
   OAB_STATES,
@@ -117,15 +118,15 @@ export function CompleteRegisterLawyerForm() {
       const validated = completeRegisterLawyerSchema.parse(formState);
 
       const cleanPhone = validated.phone.replace(/\D/g, "");
-      const formattedPhone = cleanPhone.replace(/^(\d{2})(\d{5})(\d{4})$/, "$1 $2-$3");
+      const cleanCpf = validated.cpf.replace(/\D/g, "");
 
       await authService.completeRegistrationLawyer(
         {
-          cpf: validated.cpf,
+          cpf: cleanCpf,
           oabNumber: validated.oabNumber,
           oabState: validated.oabState,
           specialization: validated.specialization,
-          phone: formattedPhone,
+          phone: cleanPhone,
           password: validated.password,
         },
         securityToken
@@ -264,18 +265,38 @@ export function CompleteRegisterLawyerForm() {
             </div>
           </section>
 
-          <Input
-            id="specialization"
-            name="specialization"
-            value={formState.specialization}
-            onChange={(e) => set("specialization")(e.target.value)}
-            label="ESPECIALIDADE"
-            placeholder="Ex: Direito Civil, Trabalhista..."
-            leftIcon={<WorkOutline fontSize="small" aria-hidden="true" />}
-            error={errors.specialization}
-            containerClassName="space-y-2"
-            className="h-12 rounded-xl border-white/10 bg-[#05112A] text-sm text-white placeholder:text-white/35 focus:ring-primary"
-          />
+          <div className="space-y-2">
+            <label
+              htmlFor="specialization"
+              className="block text-xs font-semibold uppercase tracking-[0.12em] text-white/70"
+            >
+              ESPECIALIDADE
+            </label>
+            <div className="relative flex h-12 items-center rounded-xl border border-white/10 bg-[#05112A] px-3 focus-within:ring-2 focus-within:ring-primary">
+              <WorkOutline
+                fontSize="small"
+                className="mr-2 shrink-0 text-white/40"
+                aria-hidden="true"
+              />
+              <select
+                id="specialization"
+                name="specialization"
+                value={formState.specialization}
+                onChange={(e) => set("specialization")(e.target.value)}
+                className="w-full bg-transparent text-sm text-white outline-none [&>option]:bg-[#071735]"
+              >
+                <option value="">Selecione uma especialidade</option>
+                {SPECIALIZATION_OPTIONS.map((opt) => (
+                  <option key={opt.value} value={opt.value}>
+                    {opt.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+            {errors.specialization && (
+              <p className="text-xs text-red-400">{errors.specialization}</p>
+            )}
+          </div>
 
           <Input
             id="phone"

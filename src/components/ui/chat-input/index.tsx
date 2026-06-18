@@ -22,9 +22,9 @@ export function ChatInput({
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file && onFileUpload) {
-      onFileUpload(file);
+    const files = Array.from(e.target.files ?? []).slice(0, 5);
+    if (files.length > 0 && onFileUpload) {
+      onFileUpload(files);
     }
     e.target.value = '';
   };
@@ -89,6 +89,7 @@ export function ChatInput({
           ref={fileInputRef}
           type="file"
           accept=".pdf,.jpg,.jpeg,.png"
+          multiple
           className="sr-only"
           onChange={handleFileChange}
           aria-hidden="true"

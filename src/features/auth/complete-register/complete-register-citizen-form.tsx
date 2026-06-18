@@ -110,12 +110,12 @@ export function CompleteRegisterCitizenForm() {
       const validated = completeRegisterCitizenSchema.parse(formState);
 
       const cleanPhone = validated.phone.replace(/\D/g, "");
-      const formattedPhone = cleanPhone.replace(/^(\d{2})(\d{5})(\d{4})$/, "$1 $2-$3");
+      const cleanCpf = validated.cpf.replace(/\D/g, "");
 
       await authService.completeRegistrationCitizen(
         {
-          cpf: validated.cpf,
-          phone: formattedPhone,
+          cpf: cleanCpf,
+          phone: cleanPhone,
           password: validated.password,
         },
         securityToken

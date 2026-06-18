@@ -42,44 +42,55 @@ export function AIChatFeature({ conversationId, caseId }: AIChatFeatureProps) {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [conversationId]);
 
-  const handleFileUpload = async (file: File) => {
-    const isPdf = file.type === 'application/pdf';
-    const isImage = file.type.startsWith('image/');
-    if (!isPdf && !isImage) return;
+  const handleFileUpload = async (files: File[]) => {
+    const validFiles = files.filter(
+      (f) => f.type === 'application/pdf' || f.type.startsWith('image/')
+    ).slice(0, 5);
+    if (validFiles.length === 0) return;
+
+    if (!conversationId) {
+      // Can't send before the conversation starts — silently ignore
+      return;
+    }
 
     setIsProcessingFile(true);
-    const previewUrl = isImage ? URL.createObjectURL(file) : undefined;
+    const apiParts: string[] = [];
+    const previewUrls: string[] = [];
+    // Use the first file as the visible attachment in the bubble
+    const firstFile = validFiles[0];
+    const firstIsImage = firstFile.type.startsWith('image/');
+    const firstPreviewUrl = firstIsImage ? URL.createObjectURL(firstFile) : undefined;
+    if (firstPreviewUrl) previewUrls.push(firstPreviewUrl);
+
     const attachment = {
-      name: file.name,
-      type: (isPdf ? 'pdf' : 'image') as 'pdf' | 'image',
-      previewUrl,
+      name: validFiles.length > 1 ? `${validFiles.length} arquivos` : firstFile.name,
+      type: (firstIsImage ? 'image' : 'pdf') as 'pdf' | 'image',
+      previewUrl: firstPreviewUrl,
     };
 
     try {
-      let extractedText: string;
+      for (const file of validFiles) {
+        const isPdf = file.type === 'application/pdf';
+        let extractedText: string;
 
-      if (isPdf) {
-        extractedText = await extractPdfText(file);
-        if (!extractedText.trim()) {
-          extractedText = '(Não foi possível extrair texto deste PDF)';
-        }
-      } else {
-        const evidence = await chatService.uploadEvidence(file);
-        extractedText = evidence.ocr_content ?? '';
-        if (!extractedText.trim()) {
-          extractedText = '(Nenhum texto identificado na imagem)';
+        if (isPdf) {
+          extractedText = await extractPdfText(file);
+          if (!extractedText.trim()) extractedText = '(Não foi possível extrair texto deste PDF)';
+          apiParts.push(`[PDF: ${file.name}]\n${extractedText}`);
+        } else {
+          const evidence = await chatService.uploadEvidence(file);
+          extractedText = evidence.ocr_content ?? '';
+          if (!extractedText.trim()) extractedText = '(Nenhum texto identificado na imagem)';
+          apiParts.push(`[Imagem: ${file.name}]\n${extractedText}`);
         }
       }
 
-      const apiText = isPdf
-        ? `Continue com as informações do PDF:\n\n${extractedText}`
-        : `Continue com as informações da imagem:\n\n${extractedText}`;
-
+      const apiText = `Continue com as informações dos arquivos anexados:\n\n${apiParts.join('\n\n')}`;
       await sendMessage('', attachment, apiText);
     } catch {
       // silent failure — user can try again
     } finally {
-      if (previewUrl) URL.revokeObjectURL(previewUrl);
+      previewUrls.forEach((u) => URL.revokeObjectURL(u));
       setIsProcessingFile(false);
     }
   };
