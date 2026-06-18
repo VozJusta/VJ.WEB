@@ -5,15 +5,11 @@ import { dashboardService, DetailsReport } from '@/services/dashboard.service';
 
 export function useLawyerCaseDetail(caseId: string) {
   const [report, setReport] = useState<DetailsReport | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(() => !!caseId);
+  const [error, setError] = useState<string | null>(() => caseId ? null : 'caseId não encontrado');
 
   useEffect(() => {
-    if (!caseId) {
-      setIsLoading(false);
-      setError('caseId não encontrado');
-      return;
-    }
+    if (!caseId) return;
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setIsLoading(true);
     setError(null);

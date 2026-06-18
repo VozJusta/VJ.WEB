@@ -86,7 +86,6 @@ export function useChat() {
   }, [store]);
 
   const startAnalysis = useCallback(
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     async (description: string, category: string, apiContent?: string) => {
       if (!description.trim()) {
         setError('Descreva o ocorrido para iniciar a análise');

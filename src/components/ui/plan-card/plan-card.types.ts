@@ -13,7 +13,9 @@ export interface PlanCardProps {
   price: string;
   features: PlanFeature[];
   ctaText: string;
-  ctaHref: string;
+  ctaHref?: string;
+  onCtaClick?: () => void;
+  ctaLoading?: boolean;
   variant?: PlanCardVariant;
   recommended?: boolean;
   recommendedText?: string;

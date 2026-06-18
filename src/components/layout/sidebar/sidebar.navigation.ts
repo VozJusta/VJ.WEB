@@ -6,6 +6,7 @@ import {
   PersonOutlineRounded,
   SettingsOutlined,
   LogoutRounded,
+  CardMembershipRounded,
 } from "@mui/icons-material";
 import type { SidebarNavItem } from "./sidebar.types";
 
@@ -18,6 +19,7 @@ export const sidebarMainNav: SidebarNavItem[] = [
 ];
 
 export const sidebarBottomNav: SidebarNavItem[] = [
+  { label: "Minha Assinatura", href: "/minha-conta/assinatura", icon: CardMembershipRounded },
   { label: "Configurações", href: "/dashboard/configuracoes", icon: SettingsOutlined },
   { label: "Sair", href: "/sair", icon: LogoutRounded },
 ];

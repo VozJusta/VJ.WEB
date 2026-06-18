@@ -58,14 +58,17 @@ export function SimulatorSession() {
   const [textInput, setTextInput] = useState('');
   // Tracks manual termination so audio is blocked even before WebSocket confirms
   const [isManuallyEnded, setIsManuallyEnded] = useState(false);
+  const [chatHistory, setChatHistory] = useState<Array<{ role: 'user' | 'ai'; text: string }>>([]);
 
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const chunksRef = useRef<Blob[]>([]);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const audioContextRef = useRef<AudioContext | null>(null);
-  const analyserRef = useRef<AnalyserNode | null>(null);
+  const [analyserNode, setAnalyserNode] = useState<AnalyserNode | null>(null);
   // Ref so recorder.onstop always reads the latest session state
   const isSessionEndedRef = useRef(false);
+  const pendingUserMsgRef = useRef<string | null>(null);
+  const chatBottomRef = useRef<HTMLDivElement>(null);
 
   const isSessionEnded = status === 'Completed' || status === 'TimedOut' || isManuallyEnded;
 
@@ -92,6 +95,23 @@ export function SimulatorSession() {
     };
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // When aiResponse arrives, flush pending user message + AI reply into history
+  useEffect(() => {
+    if (!aiResponse) return;
+    const userText = pendingUserMsgRef.current;
+    pendingUserMsgRef.current = null;
+    setChatHistory((prev) => {
+      const next = [...prev];
+      if (userText) next.push({ role: 'user', text: userText });
+      next.push({ role: 'ai', text: aiResponse });
+      return next;
+    });
+  }, [aiResponse]);
+
+  useEffect(() => {
+    chatBottomRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [chatHistory]);
 
   const hasNavigatedRef = useRef(false);
   const reportIdRef = useRef<string | null>(null);
@@ -143,7 +163,7 @@ export function SimulatorSession() {
       const source = audioContext.createMediaStreamSource(stream);
       source.connect(analyser);
       audioContextRef.current = audioContext;
-      analyserRef.current = analyser;
+      setAnalyserNode(analyser);
 
       const recorder = new MediaRecorder(stream);
       chunksRef.current = [];
@@ -163,6 +183,7 @@ export function SimulatorSession() {
           const text = await chatService.transcribeAudio(url);
           setTranscription(text);
           if (text.trim() && !isSessionEndedRef.current) {
+            pendingUserMsgRef.current = text;
             await sendChat(text);
           }
         } catch {
@@ -186,7 +207,7 @@ export function SimulatorSession() {
     mediaRecorderRef.current?.stop();
     audioContextRef.current?.close();
     audioContextRef.current = null;
-    analyserRef.current = null;
+    setAnalyserNode(null);
     setIsRecording(false);
     setIsPaused(false);
   };
@@ -301,7 +322,7 @@ export function SimulatorSession() {
             <RobotAvatar size={110} />
             <AudioWaveform
               isActive={isRecording && !isPaused}
-              analyserNode={analyserRef.current}
+              analyserNode={analyserNode}
             />
           </div>
 
@@ -311,6 +332,29 @@ export function SimulatorSession() {
             <p className="text-sm font-medium text-white">{judgeName}</p>
           </div>
         </article>
+
+        {/* Conversation history */}
+        {chatHistory.length > 0 && (
+          <section className="rounded-xl bg-gray-900 p-4 max-h-48 overflow-y-auto flex flex-col gap-2">
+            {chatHistory.map((msg, i) => (
+              <div
+                key={i}
+                className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
+              >
+                <div
+                  className={`max-w-[80%] rounded-xl px-3 py-2 text-sm ${
+                    msg.role === 'user'
+                      ? 'bg-blue-600 text-white'
+                      : 'bg-gray-700 text-gray-200'
+                  }`}
+                >
+                  {msg.text}
+                </div>
+              </div>
+            ))}
+            <div ref={chatBottomRef} />
+          </section>
+        )}
 
         {/* Response area */}
         <article className="rounded-xl bg-gray-900 p-5 shadow-lg">

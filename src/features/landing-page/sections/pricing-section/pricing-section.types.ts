@@ -13,6 +13,7 @@ export interface Plan {
   features: PlanFeature[];
   ctaText: string;
   ctaHref: string;
+  planType?: string;
   variant: PlanCardVariant;
   recommended?: boolean;
   audience: PlanAudience;

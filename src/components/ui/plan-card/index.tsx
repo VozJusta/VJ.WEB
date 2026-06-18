@@ -16,6 +16,8 @@ export function PlanCard({
   features,
   ctaText,
   ctaHref,
+  onCtaClick,
+  ctaLoading = false,
   variant = "dark",
   recommended = false,
   recommendedText = "RECOMENDADO",
@@ -72,8 +74,9 @@ export function PlanCard({
       </ul>
 
       <Button
-        href={ctaHref}
+        {...(onCtaClick ? { onClick: onCtaClick } : { href: ctaHref })}
         size="lg"
+        loading={ctaLoading}
         className={`
           w-full
           rounded-full

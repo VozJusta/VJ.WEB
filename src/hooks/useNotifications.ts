@@ -29,26 +29,31 @@ export function useNotifications() {
     [setUnreadCount],
   );
 
-  const fetchAll = useCallback(async () => {
-    setIsLoading(true);
+  const fetchAll = useCallback(async (silent = false) => {
+    if (!silent) setIsLoading(true);
     setError(null);
     try {
       const data = await notificationsService.getAll(1, 50);
       setNotifications(data.data ?? []);
     } catch (err) {
       const msg = err instanceof Error ? err.message : '';
-      if (!msg.includes('404') && !msg.includes('não encontrada')) {
+      if (!silent && !msg.includes('404') && !msg.includes('não encontrada')) {
         setError(msg || 'Erro ao carregar notificações');
       }
-      setNotifications([]);
+      if (!silent) setNotifications([]);
     } finally {
-      setIsLoading(false);
+      if (!silent) setIsLoading(false);
     }
   }, [setNotifications]);
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchAll();
+  }, [fetchAll]);
+
+  useEffect(() => {
+    const id = setInterval(() => fetchAll(true), 60_000);
+    return () => clearInterval(id);
   }, [fetchAll]);
 
   useEffect(() => {

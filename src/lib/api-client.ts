@@ -41,8 +41,8 @@ async function refreshAccessToken(): Promise<string> {
   if (!response.ok) throw new Error('Refresh failed');
 
   const data = await response.json();
-  const newAccessToken: string = data.access_token;
-  const newRefreshToken: string | undefined = data.refresh_token;
+  const newAccessToken: string = data.access_token ?? data.accessToken;
+  const newRefreshToken: string | undefined = data.refresh_token ?? data.refreshToken;
 
   authStorage.setAccessToken(newAccessToken);
   if (newRefreshToken) {
@@ -72,6 +72,12 @@ export async function apiFetch(
   let response = await fetch(url, { ...init, headers: buildHeaders(accessToken) });
 
   if (response.status !== 401) return response;
+
+  // FormData bodies are consumed on first send and cannot be replayed after refresh
+  if (init?.body instanceof FormData) {
+    forceLogout();
+    throw new Error('Session expired — please sign in again');
+  }
 
   if (isRefreshing) {
     const newToken = await new Promise<string>((resolve, reject) => {

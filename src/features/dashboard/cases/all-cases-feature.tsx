@@ -3,8 +3,8 @@
 import { CasesList } from "./index";
 import { useDashboardCitizen } from "@/hooks/useDashboardCitizen";
 import { getCategoryLabel } from "@/lib/status";
+import { parseLocalDate } from "@/lib/date-utils";
 import type { CaseCardProps } from "@/components/ui/case-card/case-card.types";
-import { parseApiDate } from "@/lib/utils";
 
 function apiStatusToCard(status: string): CaseCardProps["status"] {
   const s = status?.toLowerCase();
@@ -39,7 +39,7 @@ export function AllCasesFeature() {
     id: r.id,
     title: r.title || getCategoryLabel(r.category_detected) || "Caso",
     status: apiStatusToCard(r.status),
-    updatedLabel: parseApiDate(r.created_at).toLocaleDateString("pt-BR"),
+    updatedLabel: parseLocalDate(r.created_at).toLocaleDateString("pt-BR"),
     protocol: `#${r.id.slice(0, 8).toUpperCase()}`,
     href: r.caseId ? `/dashboard/casos/${r.id}?caseId=${r.caseId}` : `/dashboard/casos/${r.id}`,
   }));

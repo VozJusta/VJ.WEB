@@ -6,7 +6,7 @@ import { cn } from "@/lib/utils";
 import { Sidebar } from "@/components/layout/sidebar";
 import { DashboardHeader } from "@/components/layout/dashboard-header";
 import { GoogleAuthHandler } from "@/features/auth/google-auth-handler";
-import { NotificationsInitializer } from "@/components/notifications-initializer";
+import { NotificationsInitializer } from "@/components/providers/notifications-initializer";
 import { useAuthStore } from "@/store/auth.store";
 import { authStorage } from "@/lib/auth";
 

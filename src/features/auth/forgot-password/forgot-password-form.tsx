@@ -119,20 +119,7 @@ export function ForgotPasswordForm() {
               Enviar Código
             </Button>
 
-            <div className="text-center">
-              <Link
-                href="/login"
-                className="text-xs sm:text-sm text-primary hover:text-primary/80 transition-colors inline-flex items-center gap-1"
-              >
-                <ArrowBack fontSize="small" />
-                Voltar para o Login
-              </Link>
-            </div>
           </form>
-
-          <p className="mt-8 text-center text-xs text-white/30">
-            © 2024 Voz Justa. Todos os direitos reservados.
-          </p>
         </div>
       </section>
     </main>

@@ -78,12 +78,12 @@ export const dashboardService = {
     );
     if (!response.ok) throw new Error('Falha ao buscar relatórios');
     const json = await response.json();
-    if (Array.isArray(json?.user?.data)) {
-      json.user.data = json.user.data.map((r: ReportCard & { case_id?: string }) => {
-        if (!r.caseId && r.case_id) r.caseId = r.case_id;
-        return r;
-      });
-    }
+    const items: Array<ReportCard & { case_id?: string }> = json?.user?.data ?? json?.data ?? [];
+    items.forEach((item) => {
+      if (!item.caseId && item.case_id) {
+        item.caseId = item.case_id;
+      }
+    });
     return json;
   },
 
@@ -91,11 +91,9 @@ export const dashboardService = {
     const response = await apiFetch(`/dashboard/citizens/me/reports/${reportId}`);
     if (!response.ok) throw new Error('Falha ao buscar detalhes do relatório');
     const json = await response.json();
-    const report = json?.user?.report ?? json;
-    // Normalize snake_case field from backend
-    if (!report.caseId && report.case_id) {
-      report.caseId = report.case_id;
-    }
+    const report = json?.user?.report ?? json?.report ?? json;
+    // Normalize all possible field names from backend
+    report.caseId = report.caseId ?? report.case_id ?? json?.case_id ?? json?.caseId;
     return report;
   },
 

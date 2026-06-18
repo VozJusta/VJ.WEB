@@ -12,6 +12,7 @@ import {
   MessageRounded,
 } from "@mui/icons-material";
 import { cn } from "@/lib/utils";
+import { useAuthStore } from "@/store/auth.store";
 import type { ApiNotification } from "@/types/notification.types";
 
 interface NotificationCardProps {
@@ -45,26 +46,20 @@ function resolveKey(type: string): IconKey {
   return "default";
 }
 
-const navBaseRoutes: Partial<Record<IconKey, string>> = {
-  NEW_REQUEST: '/advogado/solicitacoes',
-  CASE_ACCEPTED: '/dashboard/casos',
-  CASE_REFUSED: '/dashboard/casos',
-  CASE_UPDATED: '/dashboard/casos',
-  MESSAGE: '/dashboard/casos',
+const NOTIFICATION_REDIRECT: Partial<Record<IconKey, { lawyer: string; citizen: string }>> = {
+  NEW_REQUEST: { lawyer: "/advogado/solicitacoes", citizen: "/dashboard/casos" },
+  CASE_ACCEPTED: { lawyer: "/advogado/solicitacoes", citizen: "/dashboard/casos" },
+  CASE_REFUSED: { lawyer: "/advogado/solicitacoes", citizen: "/dashboard/casos" },
+  CASE_UPDATED: { lawyer: "/advogado/solicitacoes", citizen: "/dashboard/casos" },
+  MESSAGE: { lawyer: "/advogado/solicitacoes", citizen: "/dashboard/casos" },
 };
-
-function resolveNavRoute(key: IconKey, referenceId?: string): string | undefined {
-  const base = navBaseRoutes[key];
-  if (!base) return undefined;
-  if (referenceId) return `${base}/${referenceId}`;
-  return base;
-}
 
 export function NotificationCard({ notification, onMarkAsRead, onDelete }: NotificationCardProps) {
   const router = useRouter();
   const key = resolveKey(notification.type);
   const Icon = iconMap[key];
   const colors = colorMap[key];
+  const userRole = useAuthStore((s) => s.userRole);
 
   const timeAgo = formatDistanceToNow(new Date(notification.created_at), {
     addSuffix: true,
@@ -75,8 +70,11 @@ export function NotificationCard({ notification, onMarkAsRead, onDelete }: Notif
     if (!notification.is_read && onMarkAsRead) {
       onMarkAsRead(notification.id);
     }
-    const route = resolveNavRoute(key, notification.reference_id);
-    if (route) router.push(route);
+    const redirectMap = NOTIFICATION_REDIRECT[key];
+    if (redirectMap) {
+      const url = userRole === "lawyer" ? redirectMap.lawyer : redirectMap.citizen;
+      router.push(url);
+    }
   };
 
   return (

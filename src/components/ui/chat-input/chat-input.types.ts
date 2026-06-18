@@ -3,7 +3,7 @@ export interface ChatInputProps {
   onChange: (value: string) => void;
   onSend: () => void;
   onVoiceRecord?: () => void;
-  onFileUpload?: (file: File) => void;
+  onFileUpload?: (files: File[]) => void;
   placeholder?: string;
   disabled?: boolean;
   maxHeight?: number;
