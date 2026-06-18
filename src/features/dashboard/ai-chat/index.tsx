@@ -89,16 +89,6 @@ export function AIChatFeature({ conversationId, caseId }: AIChatFeatureProps) {
           if (!extractedText.trim()) extractedText = '(Nenhum texto identificado na imagem)';
           apiParts.push(`[Imagem: ${file.name}]\n${extractedText}`);
         }
-        const apiText = type === 'pdf'
-          ? `Continue com as informações do PDF:\n\n${extractedText}`
-          : `Continue com as informações da imagem:\n\n${extractedText}`;
-        await sendMessage(inputValue, attachment, apiText);
-      } catch {
-        // silent failure — user can try again
-      } finally {
-        if (previewUrl) URL.revokeObjectURL(previewUrl);
-        setPendingFile(null);
-        setIsProcessingFile(false);
       }
 
       const apiText = `Continue com as informações dos arquivos anexados:\n\n${apiParts.join('\n\n')}`;
@@ -107,7 +97,20 @@ export function AIChatFeature({ conversationId, caseId }: AIChatFeatureProps) {
       // silent failure — user can try again
     } finally {
       previewUrls.forEach((u) => URL.revokeObjectURL(u));
+      setPendingFile(null);
       setIsProcessingFile(false);
+    }
+  };
+
+  const handleRemovePendingFile = () => {
+    if (pendingFile?.previewUrl) URL.revokeObjectURL(pendingFile.previewUrl);
+    setPendingFile(null);
+  };
+
+  const handleSend = () => {
+    if (inputValue.trim() && !isLoading && !isFinished) {
+      sendMessage(inputValue);
+      setInputValue('');
     }
   };
 

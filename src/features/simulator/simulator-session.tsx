@@ -64,7 +64,7 @@ export function SimulatorSession() {
   const chunksRef = useRef<Blob[]>([]);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const audioContextRef = useRef<AudioContext | null>(null);
-  const analyserRef = useRef<AnalyserNode | null>(null);
+  const [analyserNode, setAnalyserNode] = useState<AnalyserNode | null>(null);
   // Ref so recorder.onstop always reads the latest session state
   const isSessionEndedRef = useRef(false);
   const pendingUserMsgRef = useRef<string | null>(null);
@@ -163,7 +163,7 @@ export function SimulatorSession() {
       const source = audioContext.createMediaStreamSource(stream);
       source.connect(analyser);
       audioContextRef.current = audioContext;
-      analyserRef.current = analyser;
+      setAnalyserNode(analyser);
 
       const recorder = new MediaRecorder(stream);
       chunksRef.current = [];
@@ -207,7 +207,7 @@ export function SimulatorSession() {
     mediaRecorderRef.current?.stop();
     audioContextRef.current?.close();
     audioContextRef.current = null;
-    analyserRef.current = null;
+    setAnalyserNode(null);
     setIsRecording(false);
     setIsPaused(false);
   };
@@ -322,7 +322,7 @@ export function SimulatorSession() {
             <RobotAvatar size={110} />
             <AudioWaveform
               isActive={isRecording && !isPaused}
-              analyserNode={analyserRef.current}
+              analyserNode={analyserNode}
             />
           </div>
 

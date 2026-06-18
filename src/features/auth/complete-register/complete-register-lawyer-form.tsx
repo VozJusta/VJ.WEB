@@ -25,7 +25,6 @@ import { SPECIALIZATION_OPTIONS } from "@/lib/status";
 import {
   completeRegisterLawyerSchema,
   OAB_STATES,
-  SPECIALIZATIONS,
   type CompleteRegisterLawyerFormData,
 } from "./complete-register-lawyer.schema";
 
