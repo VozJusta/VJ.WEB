@@ -449,12 +449,11 @@ export const authService = {
         body: JSON.stringify(data),
       });
 
-      const payload = await parseResponseBody(response);
-
       if (!response.ok) {
         await handleAPIError(response);
       }
 
+      const payload = await parseResponseBody(response);
       return {
         message: getResponseMessage(payload, 'Cadastro concluído com sucesso.'),
       };
@@ -480,12 +479,11 @@ export const authService = {
         body: JSON.stringify(data),
       });
 
-      const payload = await parseResponseBody(response);
-
       if (!response.ok) {
         await handleAPIError(response);
       }
 
+      const payload = await parseResponseBody(response);
       return {
         message: getResponseMessage(payload, 'Cadastro concluído com sucesso.'),
       };
