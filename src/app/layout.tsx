@@ -4,6 +4,7 @@ import "./globals.css";
 import { ToastProvider } from "@/components/ui/toast/toast-provider";
 import { AuthProvider } from "@/contexts/auth-context";
 import { I18nProvider } from "@/providers/i18n-provider";
+import { SpeedInsights } from "@vercel/speed-insights/next"
 
 const inter = Inter({
   variable: "--font-inter",
@@ -28,6 +29,7 @@ export default function RootLayout({
             <ToastProvider>{children}</ToastProvider>
           </AuthProvider>
         </I18nProvider>
+        <SpeedInsights />
       </body>
     </html>
   );
