@@ -64,11 +64,13 @@ export interface OperationalStatsResponse {
 export interface HighRelevanceItem {
   id: string;
   title: string;
-  status: string;
+  statusCase: string;
   confidence_score: number;
   category_detected: string;
+  clientName?: string;
   caseId?: string;
   reportId?: string;
+  created_at?: string;
 }
 
 export const dashboardService = {

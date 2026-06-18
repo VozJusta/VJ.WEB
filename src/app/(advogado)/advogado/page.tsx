@@ -172,17 +172,16 @@ export default function LawyerDashboardPage() {
                     key={item.id}
                     request={{
                       id: item.id,
-                      score: Math.round(item.confidence_score * 100),
+                      score: Math.round(item.confidence_score),
                       title: item.title,
                       description: getCategoryLabel(item.category_detected),
-                      status: item.status === "Accepted" ? "in_progress" : "pending",
-                      priority: item.confidence_score >= 0.9 ? "urgent" : "high",
-                      date: new Date().toISOString().slice(0, 10),
+                      status: item.statusCase === "Accepted" ? "in_progress" : "pending",
+                      priority: item.confidence_score >= 90 ? "urgent" : "high",
+                      date: item.created_at ?? new Date().toISOString().slice(0, 10),
                       category: getCategoryLabel(item.category_detected),
                     }}
                     onClick={() => {
-                      const caseId = item.caseId || item.id;
-                      const query = new URLSearchParams({ status: item.status, caseId });
+                      const query = new URLSearchParams({ status: item.statusCase ?? 'Pending', caseId: item.id });
                       if (item.reportId) query.set('reportId', item.reportId);
                       router.push(`/advogado/solicitacoes/${item.id}?${query.toString()}`);
                     }}
