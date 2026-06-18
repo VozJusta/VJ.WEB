@@ -92,7 +92,7 @@ export function PriorityRequestCard({ request, className, onClick }: PriorityReq
                 className="text-lg font-bold"
                 style={{ color: priority.color }}
               >
-                {request.score}
+                {request.score}%
               </span>
             </div>
 

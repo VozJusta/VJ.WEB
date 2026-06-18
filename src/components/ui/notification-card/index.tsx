@@ -1,5 +1,6 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { formatDistanceToNow } from "date-fns/formatDistanceToNow";
 import { ptBR } from "date-fns/locale/pt-BR";
 import {
@@ -55,6 +56,7 @@ const NOTIFICATION_REDIRECT: Partial<Record<IconKey, { lawyer: string; citizen: 
 };
 
 export function NotificationCard({ notification, onMarkAsRead, onDelete }: NotificationCardProps) {
+  const router = useRouter();
   const key = resolveKey(notification.type);
   const Icon = iconMap[key];
   const colors = colorMap[key];

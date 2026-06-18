@@ -5,6 +5,7 @@ import { useDashboardCitizen } from "@/hooks/useDashboardCitizen";
 import { getCategoryLabel } from "@/lib/status";
 import { parseLocalDate } from "@/lib/date-utils";
 import type { CaseCardProps } from "@/components/ui/case-card/case-card.types";
+import { parseApiDate } from "@/lib/utils";
 
 function apiStatusToCard(status: string): CaseCardProps["status"] {
   const s = status?.toLowerCase();

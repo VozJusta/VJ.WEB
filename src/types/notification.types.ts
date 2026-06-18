@@ -13,6 +13,7 @@ export interface ApiNotification {
   type: ApiNotificationType;
   is_read: boolean;
   created_at: string;
+  reference_id?: string;
 }
 
 export interface NotificationsResponse {

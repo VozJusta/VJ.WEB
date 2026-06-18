@@ -75,10 +75,10 @@ export function MessageBubble({
             <div className="mb-3 flex items-center gap-2 rounded-xl border border-white/20 bg-white/10 px-3 py-2">
               {attachment.type === 'pdf' ? (
                 <PictureAsPdfRounded sx={{ fontSize: 18 }} aria-hidden="true" className="shrink-0 opacity-80" />
-              ) : attachment.previewUrl ? (
+              ) : (attachment.previewUrl ?? attachment.url) ? (
                 // eslint-disable-next-line @next/next/no-img-element
                 <img
-                  src={attachment.previewUrl}
+                  src={attachment.previewUrl ?? attachment.url}
                   alt={attachment.name}
                   className="h-8 w-8 shrink-0 rounded-md object-cover"
                 />
