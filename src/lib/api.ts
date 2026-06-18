@@ -25,6 +25,11 @@ export const API = {
       EMAIL_VALIDATE: '/auth/validate/email',
       LAWYER: '/lawyer',
     },
+    PAYMENTS: {
+      CHECKOUT_SESSION: '/payments/checkout-session',
+      SUBSCRIPTION_ME: '/payments/subscription/me',
+      BILLING_PORTAL: '/payments/billing-portal',
+    },
   },
 } as const;
 
