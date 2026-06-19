@@ -4,6 +4,7 @@ import { useEffect, useState, useCallback } from "react";
 import { InsertDriveFileRounded, ImageRounded } from "@mui/icons-material";
 import Link from "next/link";
 import { evidenceService, Evidence } from "@/services/evidence.service";
+import { parseApiDate } from "@/lib/utils";
 import { useToast } from "@/components/ui/toast/toast-provider";
 
 function getFileIcon(url: string) {
@@ -15,7 +16,7 @@ function getFileIcon(url: string) {
 }
 
 function formatDate(iso: string) {
-  return new Date(iso).toLocaleDateString("pt-BR", {
+  return parseApiDate(iso).toLocaleDateString("pt-BR", {
     day: "2-digit",
     month: "short",
     year: "numeric",

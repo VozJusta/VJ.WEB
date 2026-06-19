@@ -10,4 +10,5 @@ export interface ChatInputProps {
   isRecording?: boolean;
   isTranscribing?: boolean;
   isProcessingFile?: boolean;
+  hasPendingFiles?: boolean;
 }

@@ -3,6 +3,7 @@
 import { useState, useCallback, useRef, useEffect } from 'react';
 import { chatService, ConversationMessage } from '@/services/chat.service';
 import { useChatStore, StoredMessage } from '@/store/chat.store';
+import { useCaseMapStore } from '@/store/case-map.store';
 
 interface ChatMessage {
   id: string;
@@ -39,6 +40,7 @@ function uiToStored(msg: ChatMessage): StoredMessage {
 
 export function useChat() {
   const store = useChatStore();
+  const caseMapStore = useCaseMapStore();
 
   const [messages, setMessages] = useState<ChatMessage[]>(
     () => store.messages.map(storedToUi)
@@ -120,6 +122,7 @@ export function useChat() {
           if (data.reportId) {
             setReportId(data.reportId);
             store.setReportId(data.reportId);
+            if (data.caseId) caseMapStore.set(data.reportId, data.caseId);
           }
           setProgress(100);
         }
@@ -180,6 +183,7 @@ export function useChat() {
           if (data.reportId) {
             setReportId(data.reportId);
             store.setReportId(data.reportId);
+            if (caseId) caseMapStore.set(data.reportId, caseId);
           }
           setProgress(100);
         } else {
