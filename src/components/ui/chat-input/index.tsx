@@ -17,6 +17,7 @@ export function ChatInput({
   isRecording = false,
   isTranscribing = false,
   isProcessingFile = false,
+  hasPendingFiles = false,
 }: ChatInputProps) {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -38,10 +39,12 @@ export function ChatInput({
     textarea.style.height = `${newHeight}px`;
   }, [value, maxHeight]);
 
+  const canSend = (value.trim().length > 0 || hasPendingFiles) && !disabled && !isRecording && !isTranscribing && !isProcessingFile;
+
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
-      if (value.trim() && !disabled) {
+      if (canSend) {
         onSend();
       }
     }
@@ -54,11 +57,19 @@ export function ChatInput({
   }, [disabled]);
 
   const handleSend = () => {
-    if (value.trim() && !disabled) {
+    if (canSend) {
       onSend();
       setTimeout(() => textareaRef.current?.focus(), 0);
     }
   };
+
+  const derivedPlaceholder = isTranscribing
+    ? "Transcrevendo áudio..."
+    : isProcessingFile
+    ? "Processando arquivo..."
+    : hasPendingFiles && !value
+    ? "Adicione uma mensagem ou envie os arquivos..."
+    : placeholder;
 
   return (
     <>
@@ -153,7 +164,7 @@ export function ChatInput({
           value={value}
           onChange={(e) => onChange(e.target.value)}
           onKeyDown={handleKeyDown}
-          placeholder={isTranscribing ? "Transcrevendo áudio..." : isProcessingFile ? "Processando arquivo..." : placeholder}
+          placeholder={derivedPlaceholder}
           disabled={disabled || isRecording || isTranscribing || isProcessingFile}
           rows={1}
           className={cn(
@@ -168,7 +179,7 @@ export function ChatInput({
         <button
           type="button"
           onClick={handleSend}
-          disabled={!value.trim() || disabled || isRecording || isTranscribing || isProcessingFile}
+          disabled={!canSend}
           aria-label="Enviar mensagem"
           className={cn(
             "flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary text-primary-foreground transition-all",

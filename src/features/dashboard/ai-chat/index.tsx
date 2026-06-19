@@ -14,6 +14,13 @@ interface AIChatFeatureProps {
   caseId?: string;
 }
 
+interface PendingFileItem {
+  name: string;
+  type: 'pdf' | 'image';
+  previewUrl?: string;
+  apiText: string;
+}
+
 export function AIChatFeature({ conversationId, caseId }: AIChatFeatureProps) {
   const {
     messages,
@@ -32,12 +39,8 @@ export function AIChatFeature({ conversationId, caseId }: AIChatFeatureProps) {
   const [isRecording, setIsRecording] = useState(false);
   const [isTranscribing, setIsTranscribing] = useState(false);
   const [isProcessingFile, setIsProcessingFile] = useState(false);
-  const [pendingFile, setPendingFile] = useState<{
-    file: File;
-    name: string;
-    type: 'pdf' | 'image';
-    previewUrl?: string;
-  } | null>(null);
+  const [pendingFiles, setPendingFiles] = useState<PendingFileItem[]>([]);
+  const [fileError, setFileError] = useState<string | null>(null);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const chunksRef = useRef<Blob[]>([]);
 
@@ -54,64 +57,78 @@ export function AIChatFeature({ conversationId, caseId }: AIChatFeatureProps) {
     ).slice(0, 5);
     if (validFiles.length === 0) return;
 
-    if (!conversationId) {
-      // Can't send before the conversation starts — silently ignore
-      return;
-    }
-
     setIsProcessingFile(true);
-    const apiParts: string[] = [];
-    const previewUrls: string[] = [];
-    // Use the first file as the visible attachment in the bubble
-    const firstFile = validFiles[0];
-    const firstIsImage = firstFile.type.startsWith('image/');
-    const firstPreviewUrl = firstIsImage ? URL.createObjectURL(firstFile) : undefined;
-    if (firstPreviewUrl) previewUrls.push(firstPreviewUrl);
-
-    const attachment = {
-      name: validFiles.length > 1 ? `${validFiles.length} arquivos` : firstFile.name,
-      type: (firstIsImage ? 'image' : 'pdf') as 'pdf' | 'image',
-      previewUrl: firstPreviewUrl,
-    };
+    setFileError(null);
 
     try {
+      const newPending: PendingFileItem[] = [];
+
       for (const file of validFiles) {
         const isPdf = file.type === 'application/pdf';
-        let extractedText: string;
+        const previewUrl = !isPdf ? URL.createObjectURL(file) : undefined;
+        let extractedText = '';
 
         if (isPdf) {
-          extractedText = await extractPdfText(file);
+          // Try client-side extraction first; fallback to backend OCR for scanned PDFs
+          extractedText = await extractPdfText(file).catch(() => '');
+          if (!extractedText.trim()) {
+            const ev = await chatService.uploadEvidence(file).catch(() => null);
+            extractedText = ev?.ocr_content ?? '';
+          }
           if (!extractedText.trim()) extractedText = '(Não foi possível extrair texto deste PDF)';
-          apiParts.push(`[PDF: ${file.name}]\n${extractedText}`);
         } else {
-          const evidence = await chatService.uploadEvidence(file);
-          extractedText = evidence.ocr_content ?? '';
+          const ev = await chatService.uploadEvidence(file).catch(() => null);
+          extractedText = ev?.ocr_content ?? '';
           if (!extractedText.trim()) extractedText = '(Nenhum texto identificado na imagem)';
-          apiParts.push(`[Imagem: ${file.name}]\n${extractedText}`);
         }
+
+        newPending.push({
+          name: file.name,
+          type: isPdf ? 'pdf' : 'image',
+          previewUrl,
+          apiText: `[${isPdf ? 'PDF' : 'Imagem'}: ${file.name}]\n${extractedText}`,
+        });
       }
 
-      const apiText = `Continue com as informações dos arquivos anexados:\n\n${apiParts.join('\n\n')}`;
-      await sendMessage('', attachment, apiText);
+      setPendingFiles((prev) => [...prev, ...newPending]);
     } catch {
-      // silent failure — user can try again
+      setFileError('Erro ao processar arquivo. Tente novamente.');
     } finally {
-      previewUrls.forEach((u) => URL.revokeObjectURL(u));
-      setPendingFile(null);
       setIsProcessingFile(false);
     }
   };
 
-  const handleRemovePendingFile = () => {
-    if (pendingFile?.previewUrl) URL.revokeObjectURL(pendingFile.previewUrl);
-    setPendingFile(null);
+  const handleRemovePendingFile = (index: number) => {
+    setPendingFiles((prev) => {
+      const removed = prev[index];
+      if (removed?.previewUrl) URL.revokeObjectURL(removed.previewUrl);
+      return prev.filter((_, i) => i !== index);
+    });
   };
 
   const handleSend = () => {
-    if (inputValue.trim() && !isLoading && !isFinished) {
-      sendMessage(inputValue);
-      setInputValue('');
-    }
+    const hasText = inputValue.trim().length > 0;
+    const hasFiles = pendingFiles.length > 0;
+    if ((!hasText && !hasFiles) || isLoading || isFinished) return;
+
+    const fileApiContent = pendingFiles.map((pf) => pf.apiText).join('\n\n');
+    const combinedApiContent = [fileApiContent, inputValue.trim()].filter(Boolean).join('\n\n');
+
+    const attachment = hasFiles
+      ? {
+          name: pendingFiles.length > 1 ? `${pendingFiles.length} arquivos` : pendingFiles[0].name,
+          type: pendingFiles[0].type,
+          previewUrl: pendingFiles[0].previewUrl,
+        }
+      : undefined;
+
+    sendMessage(inputValue.trim(), attachment, combinedApiContent || inputValue.trim());
+    setInputValue('');
+    setFileError(null);
+    setPendingFiles((prev) => {
+      prev.forEach((pf) => { if (pf.previewUrl) URL.revokeObjectURL(pf.previewUrl); });
+      return [];
+    });
   };
 
   // No auto-redirect: show completion banner and let user click through
@@ -248,27 +265,39 @@ export function AIChatFeature({ conversationId, caseId }: AIChatFeatureProps) {
       {/* Sticky input — always visible at the bottom of the viewport */}
       <div className="sticky bottom-0 z-10 border-t border-(--border-subtle) bg-surface px-4 pb-4 pt-3 md:px-6">
         <div className="mx-auto max-w-4xl">
-          {pendingFile && (
-            <div className="mb-2 flex items-center gap-2 rounded-lg border border-white/10 bg-white/5 px-3 py-2">
-              {pendingFile.type === 'pdf' ? (
-                <PictureAsPdfRounded fontSize="small" className="text-red-400 shrink-0" aria-hidden />
-              ) : pendingFile.previewUrl ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img src={pendingFile.previewUrl} alt="" className="h-8 w-8 rounded object-cover shrink-0" />
-              ) : (
-                <ImageRounded fontSize="small" className="text-blue-400 shrink-0" aria-hidden />
-              )}
-              <span className="flex-1 truncate text-xs text-white/70">{pendingFile.name}</span>
-              <button
-                type="button"
-                onClick={handleRemovePendingFile}
-                className="shrink-0 text-white/30 hover:text-white/70 transition-colors"
-                aria-label="Remover arquivo"
-              >
-                <CloseRounded fontSize="small" />
-              </button>
+          {fileError && (
+            <p className="mb-2 text-xs text-red-400 px-1">{fileError}</p>
+          )}
+
+          {pendingFiles.length > 0 && (
+            <div className="mb-2 flex flex-col gap-1">
+              {pendingFiles.map((pf, index) => (
+                <div
+                  key={`${pf.name}-${index}`}
+                  className="flex items-center gap-2 rounded-lg border border-white/10 bg-white/5 px-3 py-2"
+                >
+                  {pf.type === 'pdf' ? (
+                    <PictureAsPdfRounded fontSize="small" className="text-red-400 shrink-0" aria-hidden />
+                  ) : pf.previewUrl ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img src={pf.previewUrl} alt="" className="h-8 w-8 rounded object-cover shrink-0" />
+                  ) : (
+                    <ImageRounded fontSize="small" className="text-blue-400 shrink-0" aria-hidden />
+                  )}
+                  <span className="flex-1 truncate text-xs text-white/70">{pf.name}</span>
+                  <button
+                    type="button"
+                    onClick={() => handleRemovePendingFile(index)}
+                    className="shrink-0 text-white/30 hover:text-white/70 transition-colors"
+                    aria-label={`Remover ${pf.name}`}
+                  >
+                    <CloseRounded fontSize="small" />
+                  </button>
+                </div>
+              ))}
             </div>
           )}
+
           <ChatInput
             value={inputValue}
             onChange={setInputValue}
@@ -279,6 +308,7 @@ export function AIChatFeature({ conversationId, caseId }: AIChatFeatureProps) {
             isRecording={isRecording}
             isTranscribing={isTranscribing}
             isProcessingFile={isProcessingFile}
+            hasPendingFiles={pendingFiles.length > 0}
             maxHeight={160}
           />
         </div>

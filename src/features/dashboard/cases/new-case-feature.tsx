@@ -19,6 +19,12 @@ import { VoiceRecorder } from "@/components/ui/voice-recorder";
 import { useChat } from "@/hooks/useChat";
 import { chatService } from "@/services/chat.service";
 
+interface AttachedFile {
+  file: File;
+  name: string;
+  type: 'pdf' | 'image';
+}
+
 export function NewCaseFeature() {
   const router = useRouter();
   const [story, setStory] = useState("");
@@ -26,7 +32,7 @@ export function NewCaseFeature() {
   const [isTranscribing, setIsTranscribing] = useState(false);
   const [elapsed, setElapsed] = useState(0);
   const [isReady, setIsReady] = useState(false);
-  const [attachedFile, setAttachedFile] = useState<{ file: File; name: string; type: 'pdf' | 'image' } | null>(null);
+  const [attachedFiles, setAttachedFiles] = useState<AttachedFile[]>([]);
   const [isProcessingFile, setIsProcessingFile] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -103,49 +109,63 @@ export function NewCaseFeature() {
   };
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    const isPdf = file.type === 'application/pdf';
-    const isImage = file.type.startsWith('image/');
-    if (!isPdf && !isImage) return;
+    const files = Array.from(e.target.files ?? []);
+    if (files.length === 0) return;
 
-    setAttachedFile({ file, name: file.name, type: isPdf ? 'pdf' : 'image' });
+    const valid = files
+      .filter((f) => f.type === 'application/pdf' || f.type.startsWith('image/'))
+      .map((f) => ({
+        file: f,
+        name: f.name,
+        type: (f.type === 'application/pdf' ? 'pdf' : 'image') as 'pdf' | 'image',
+      }));
+
+    if (valid.length > 0) {
+      setAttachedFiles((prev) => [...prev, ...valid]);
+    }
     if (fileInputRef.current) fileInputRef.current.value = '';
   };
 
-  const handleRemoveAttachment = () => {
-    setAttachedFile(null);
+  const handleRemoveAttachment = (index: number) => {
+    setAttachedFiles((prev) => prev.filter((_, i) => i !== index));
   };
 
-  const canSubmit = (story.trim().length > 0 || !!attachedFile) && !isLoading && !isTranscribing && !isProcessingFile;
+  const canSubmit = (story.trim().length > 0 || attachedFiles.length > 0) && !isLoading && !isTranscribing && !isProcessingFile;
 
   const handleSubmit = async () => {
     if (!canSubmit) return;
 
-    let extractedContent = '';
-    if (attachedFile) {
+    const extractedParts: string[] = [];
+
+    if (attachedFiles.length > 0) {
       setIsProcessingFile(true);
       try {
-        if (attachedFile.type === 'pdf') {
-          extractedContent = await extractPdfText(attachedFile.file);
-          if (!extractedContent.trim()) extractedContent = '(Não foi possível extrair texto deste PDF)';
-        } else {
-          const evidence = await chatService.uploadEvidence(attachedFile.file);
-          extractedContent = evidence.ocr_content ?? '(Nenhum texto identificado na imagem)';
+        for (const attached of attachedFiles) {
+          if (attached.type === 'pdf') {
+            // Try client-side text extraction first; fallback to backend OCR for scanned PDFs
+            let text = await extractPdfText(attached.file).catch(() => '');
+            if (!text.trim()) {
+              const ev = await chatService.uploadEvidence(attached.file).catch(() => null);
+              text = ev?.ocr_content ?? '';
+            }
+            const content = text.trim() || '(Não foi possível extrair texto deste PDF)';
+            extractedParts.push(`[PDF: ${attached.name}]\n${content}`);
+          } else {
+            const evidence = await chatService.uploadEvidence(attached.file).catch(() => null);
+            const content = evidence?.ocr_content?.trim() || '(Nenhum texto identificado na imagem)';
+            extractedParts.push(`[Imagem: ${attached.name}]\n${content}`);
+          }
         }
-      } catch {
-        extractedContent = '';
       } finally {
         setIsProcessingFile(false);
       }
     }
 
-    const visibleStory = story.trim() || attachedFile?.name || '';
-    const apiContent = extractedContent
-      ? story.trim() ? `${story}\n\n${extractedContent}` : extractedContent
-      : story;
+    const visibleStory = story.trim() || (attachedFiles.length > 0 ? 'Documentos para análise' : '');
+    const filesContent = extractedParts.join('\n\n');
+    const apiContent = [story.trim(), filesContent].filter(Boolean).join('\n\n') || visibleStory;
 
-    await startAnalysis(visibleStory, 'outros', apiContent || visibleStory);
+    await startAnalysis(visibleStory, 'outros', apiContent);
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
@@ -218,26 +238,33 @@ export function NewCaseFeature() {
           )}
         </div>
 
-        {attachedFile && (
-          <div className="mt-2 flex items-center gap-2 px-3 py-2 rounded-lg border border-[#1B2233] bg-[#0d1526]">
-            {attachedFile.type === 'pdf' ? (
-              <PictureAsPdfRounded fontSize="small" className="text-red-400 shrink-0" aria-hidden />
-            ) : (
-              <ImageRounded fontSize="small" className="text-blue-400 shrink-0" aria-hidden />
-            )}
-            <span className="text-xs text-white/70 flex-1 truncate">{attachedFile.name}</span>
-            {isProcessingFile ? (
-              <span className="h-3.5 w-3.5 animate-spin rounded-full border border-[#2585F4] border-t-transparent shrink-0" />
-            ) : (
-              <button
-                type="button"
-                onClick={handleRemoveAttachment}
-                className="shrink-0 text-white/30 hover:text-white/70 transition-colors"
-                aria-label="Remover anexo"
+        {attachedFiles.length > 0 && (
+          <div className="mt-2 flex flex-col gap-1">
+            {attachedFiles.map((attached, index) => (
+              <div
+                key={`${attached.name}-${index}`}
+                className="flex items-center gap-2 px-3 py-2 rounded-lg border border-[#1B2233] bg-[#0d1526]"
               >
-                <CloseRounded fontSize="small" />
-              </button>
-            )}
+                {attached.type === 'pdf' ? (
+                  <PictureAsPdfRounded fontSize="small" className="text-red-400 shrink-0" aria-hidden />
+                ) : (
+                  <ImageRounded fontSize="small" className="text-blue-400 shrink-0" aria-hidden />
+                )}
+                <span className="text-xs text-white/70 flex-1 truncate">{attached.name}</span>
+                {isProcessingFile ? (
+                  <span className="h-3.5 w-3.5 animate-spin rounded-full border border-[#2585F4] border-t-transparent shrink-0" />
+                ) : (
+                  <button
+                    type="button"
+                    onClick={() => handleRemoveAttachment(index)}
+                    className="shrink-0 text-white/30 hover:text-white/70 transition-colors"
+                    aria-label={`Remover ${attached.name}`}
+                  >
+                    <CloseRounded fontSize="small" />
+                  </button>
+                )}
+              </div>
+            ))}
           </div>
         )}
 
@@ -245,9 +272,10 @@ export function NewCaseFeature() {
           ref={fileInputRef}
           type="file"
           accept=".pdf,image/*"
+          multiple
           className="hidden"
           onChange={handleFileSelect}
-          aria-label="Anexar arquivo"
+          aria-label="Anexar arquivos"
         />
 
         <div className="mt-2 flex items-center justify-between gap-2">
@@ -262,7 +290,7 @@ export function NewCaseFeature() {
               onClick={() => fileInputRef.current?.click()}
               disabled={isProcessingFile}
               className="flex items-center gap-1 text-xs text-white/35 hover:text-white/60 transition-colors disabled:opacity-40"
-              aria-label="Anexar arquivo"
+              aria-label="Anexar arquivos"
             >
               <AttachFileRounded style={{ fontSize: 14 }} aria-hidden />
               Anexar
