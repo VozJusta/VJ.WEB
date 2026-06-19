@@ -11,7 +11,7 @@ import {
   PersonAddAltRounded,
   MessageRounded,
 } from "@mui/icons-material";
-import { cn } from "@/lib/utils";
+import { cn, parseApiDate } from "@/lib/utils";
 import { useAuthStore } from "@/store/auth.store";
 import type { ApiNotification } from "@/types/notification.types";
 
@@ -61,7 +61,7 @@ export function NotificationCard({ notification, onMarkAsRead, onDelete }: Notif
   const colors = colorMap[key];
   const userRole = useAuthStore((s) => s.userRole);
 
-  const timeAgo = formatDistanceToNow(new Date(notification.created_at), {
+  const timeAgo = formatDistanceToNow(parseApiDate(notification.created_at), {
     addSuffix: true,
     locale: ptBR,
   });

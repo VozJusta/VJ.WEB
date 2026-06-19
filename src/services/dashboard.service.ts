@@ -64,7 +64,8 @@ export interface OperationalStatsResponse {
 export interface HighRelevanceItem {
   id: string;
   title: string;
-  statusCase: string;
+  status?: string;
+  statusCase?: string;
   confidence_score: number;
   category_detected: string;
   clientName?: string;
