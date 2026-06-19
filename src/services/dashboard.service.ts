@@ -96,7 +96,13 @@ export const dashboardService = {
     const json = await response.json();
     const report = json?.user?.report ?? json?.report ?? json;
     // Normalize all possible field names from backend
-    report.caseId = report.caseId ?? report.case_id ?? json?.case_id ?? json?.caseId;
+    report.caseId =
+      report.caseId ??
+      report.case_id ??
+      json?.user?.case_id ??
+      json?.user?.caseId ??
+      json?.case_id ??
+      json?.caseId;
     return report;
   },
 

@@ -318,7 +318,7 @@ export function SimulatorSession() {
           </div>
 
           {/* Robot + waveform */}
-          <div className="flex flex-col items-center justify-center gap-5 py-10 px-4">
+          <div className="flex flex-col items-center justify-center gap-5 py-16 px-6">
             <RobotAvatar size={110} />
             <AudioWaveform
               isActive={isRecording && !isPaused}
@@ -426,6 +426,7 @@ export function SimulatorSession() {
                 onKeyDown={(e) => {
                   if (e.key === 'Enter' && !e.shiftKey && textInput.trim()) {
                     e.preventDefault();
+                    pendingUserMsgRef.current = textInput.trim();
                     sendChat(textInput.trim());
                     setTextInput('');
                   }
@@ -439,6 +440,7 @@ export function SimulatorSession() {
                 type="button"
                 onClick={() => {
                   if (textInput.trim()) {
+                    pendingUserMsgRef.current = textInput.trim();
                     sendChat(textInput.trim());
                     setTextInput('');
                   }

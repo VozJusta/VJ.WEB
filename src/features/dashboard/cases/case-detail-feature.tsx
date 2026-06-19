@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useReportDownload } from "@/hooks/useReportDownload";
 import { useChatStore } from "@/store/chat.store";
+import { useCaseMapStore } from "@/store/case-map.store";
 import { useToast } from "@/components/ui/toast/toast-provider";
 import type { DetailsReport } from "@/services/dashboard.service";
 import type { CaseStatus } from "@/components/ui/case-card/case-card.types";
@@ -30,6 +31,7 @@ export function CaseDetailFeature({ report, reportId }: CaseDetailFeatureProps) 
   const router = useRouter();
   const searchParams = useSearchParams();
   const chatStore = useChatStore();
+  const caseMapStore = useCaseMapStore();
   const { toast } = useToast();
   const { t } = useTranslation();
   const caseStatus = apiStatusToCaseStatus(report.status);
@@ -71,6 +73,7 @@ export function CaseDetailFeature({ report, reportId }: CaseDetailFeatureProps) 
   const caseId =
     report.caseId ||
     searchParams.get("caseId") ||
+    caseMapStore.get(reportId) ||
     (chatStore.reportId === reportId ? chatStore.caseId : "") ||
     "";
 
